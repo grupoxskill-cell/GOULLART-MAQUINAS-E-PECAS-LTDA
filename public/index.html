@@ -3,23 +3,106 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Goullart Máquinas e Peças</title>
+  <title>Goullart Peças | Peças para escavadeiras e linha amarela</title>
+  <meta name="description" content="Peças para escavadeiras, tratores de esteira e carregadeiras: material rodante, componentes elétricos, peças para motores e filtros. Enviamos para todo o Brasil.">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <nav class="topbar">
+    <div class="wrap topbar-inner">
+      <a class="logo" href="#">GOULLART<span>PEÇAS</span></a>
+      <div class="topbar-links">
+        <a href="#catalogo">Catálogo</a>
+        <a href="#sobre">Sobre</a>
+        <a href="#contato">Contato</a>
+      </div>
+    </div>
+  </nav>
+
   <header class="hero">
-    <h1>Goullart Máquinas e Peças LTDA</h1>
-    <p>Máquinas, peças e manutenção com atendimento de confiança.</p>
+    <div class="wrap">
+      <p class="hero-motd">Trabalhamos com toda linha de peças para escavadeiras</p>
+      <h1>Peças para <span>linha amarela</span></h1>
+      <p class="hero-sub">Não deixe sua máquina parada! Atendimento personalizado e pedido separado para entrega em menos de 48 horas.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="https://wa.me/5562999427276?text=Ol%C3%A1!%20Gostaria%20de%20um%20or%C3%A7amento." target="_blank" rel="noopener">Pedir orçamento no WhatsApp</a>
+        <button class="btn btn-ghost" type="button" data-open-chat>Falar com o assistente</button>
+      </div>
+    </div>
   </header>
 
-  <main class="content">
-    <section>
-      <h2>Fale com nosso assistente</h2>
-      <p>Tire dúvidas sobre máquinas, peças e manutenção, ou peça um orçamento pelo chat no canto da tela.</p>
+  <section class="perks">
+    <div class="wrap perks-grid">
+      <div class="perk"><strong>Atendimento</strong><span>Das 7:30 às 18:30 pelo WhatsApp</span></div>
+      <div class="perk"><strong>Frete</strong><span>Todo o Brasil e América Latina</span></div>
+      <div class="perk"><strong>Parcelamento</strong><span>Em até 12x no cartão</span></div>
+      <div class="perk"><strong>Trocas</strong><span>Até 7 dias para devolver</span></div>
+    </div>
+  </section>
+
+  <main>
+    <section class="section">
+      <div class="wrap">
+        <h2>O que fornecemos</h2>
+        <div class="cards">
+          <div class="card"><h3>Material rodante</h3><p>Esteiras, roletes inferiores e superiores, aros motrizes, rodas guia, sapatas e dentes.</p></div>
+          <div class="card"><h3>Componentes elétricos</h3><p>Chicotes, bobinas, válvulas e eletroventiladores.</p></div>
+          <div class="card"><h3>Peças para motores</h3><p>Bombas hidráulicas, redutores, kits de reparo, pinos e buchas.</p></div>
+          <div class="card"><h3>Filtros</h3><p>Filtros de óleo, combustível, ar e hidráulico.</p></div>
+        </div>
+        <p class="brands">Peças para Caterpillar, Komatsu, Volvo, Hyundai, John Deere, Sany, XCMG, Fiat e outras marcas.</p>
+      </div>
+    </section>
+
+    <section id="catalogo" class="section section-alt">
+      <div class="wrap">
+        <h2>Catálogo</h2>
+        <p>Procure pelo nome da peça, código ou modelo da máquina. Não achou? Fale com a gente, nós localizamos.</p>
+        <input id="busca" class="search" type="search" placeholder="Ex.: rolete, PC200, 320D, bomba hidráulica…" aria-label="Buscar peça">
+        <p id="catalogo-info" class="muted"></p>
+        <ul id="catalogo-lista" class="catalog"></ul>
+      </div>
+    </section>
+
+    <section id="sobre" class="section">
+      <div class="wrap about">
+        <div>
+          <h2>Especialistas em linha amarela</h2>
+          <p>Somos uma empresa focada no fornecimento de peças e soluções para máquinas pesadas utilizadas nos setores de mineração, construção civil, agronegócio e infraestrutura.</p>
+          <p>Trabalhamos com marcas reconhecidas e fornecedores homologados, garantindo durabilidade, desempenho e segurança operacional.</p>
+        </div>
+        <ul class="services">
+          <li>Consultoria técnica especializada</li>
+          <li>Identificação correta de peças</li>
+          <li>Logística rápida e segura</li>
+          <li>Atendimento técnico personalizado</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="contato" class="section section-dark">
+      <div class="wrap">
+        <h2>Ainda não encontrou o que buscava?</h2>
+        <p>Envie marca, modelo da máquina e, se tiver, o código da peça. Respondemos em até 24 horas.</p>
+        <div class="contact-grid">
+          <div><strong>WhatsApp</strong><a href="https://wa.me/5562999427276" target="_blank" rel="noopener">(62) 99942-7276</a></div>
+          <div><strong>Telefone</strong><a href="tel:+5562998531936">(62) 99853-1936</a></div>
+          <div><strong>Vendas</strong><a href="mailto:vendas@pecasparaescavadeira.com.br">vendas@pecasparaescavadeira.com.br</a></div>
+          <div><strong>SAC</strong><a href="mailto:sac@pecasparaescavadeira.com.br">sac@pecasparaescavadeira.com.br</a></div>
+        </div>
+      </div>
     </section>
   </main>
 
-  <button id="chat-toggle" class="chat-toggle" aria-expanded="false" aria-controls="chat">💬 Atendimento</button>
+  <footer class="footer">
+    <div class="wrap">
+      <p>Goullart Peças para Escavadeiras Ltda · CNPJ 29.759.621/0001-35</p>
+      <p>© <span id="ano">2026</span> Goullart Peças. Todos os direitos reservados.</p>
+    </div>
+  </footer>
+
+  <a class="whatsapp-float" href="https://wa.me/5562999427276" target="_blank" rel="noopener" aria-label="WhatsApp">WhatsApp</a>
+  <button id="chat-toggle" class="chat-toggle" aria-expanded="false" aria-controls="chat">💬 Assistente</button>
 
   <section id="chat" class="chat" hidden aria-label="Chat de atendimento">
     <div class="chat-header">
@@ -27,7 +110,7 @@
       <button id="chat-close" class="chat-close" aria-label="Fechar chat">×</button>
     </div>
     <div id="chat-messages" class="chat-messages" aria-live="polite">
-      <div class="msg assistant">Olá! Como posso ajudar você hoje?</div>
+      <div class="msg assistant">Olá! Qual peça você procura? Me diga a marca e o modelo da máquina que eu ajudo.</div>
     </div>
     <form id="chat-form" class="chat-form">
       <input id="chat-input" type="text" maxlength="2000" placeholder="Digite sua mensagem…" autocomplete="off" required>
@@ -35,6 +118,7 @@
     </form>
   </section>
 
+  <script src="catalogo.js"></script>
   <script src="chat.js"></script>
 </body>
 </html>

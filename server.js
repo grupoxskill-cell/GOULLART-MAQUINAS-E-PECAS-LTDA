@@ -9,14 +9,33 @@ const PORT = Number(process.env.PORT) || 3000;
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-4o-mini";
 const PUBLIC_DIR = fileURLToPath(new URL("./public", import.meta.url));
+const loadJson = async (file) => JSON.parse(await readFile(new URL(file, import.meta.url), "utf-8"));
+const EMPRESA = await loadJson("./data/empresa.json");
+const CATALOGO = await loadJson("./data/catalogo.json");
 
 const SYSTEM_PROMPT =
   process.env.SYSTEM_PROMPT ||
-  `Você é o assistente virtual da Goullart Máquinas e Peças LTDA.
-Atenda clientes em português do Brasil, com educação e objetividade.
-Ajude com dúvidas sobre máquinas, peças, manutenção e orçamentos.
-Não invente preços, prazos ou disponibilidade de estoque: nesses casos,
-peça os dados de contato do cliente e diga que um vendedor retornará.`;
+  `Você é o assistente virtual da ${EMPRESA.nome} (${EMPRESA.razaoSocial}), especialista em peças para
+máquinas pesadas da linha amarela: escavadeiras, tratores de esteira, carregadeiras e motoniveladoras.
+Atenda em português do Brasil (ou em espanhol, se o cliente escrever em espanhol), com educação,
+objetividade e respostas curtas.
+
+Seu objetivo é entender qual máquina o cliente tem (marca, modelo e, se possível, número de série
+ou código da peça) e qual peça ele precisa, e então encaminhá-lo ao WhatsApp de vendas para fechar
+o orçamento.
+
+Regras:
+- Nunca informe preços, estoque ou prazos exatos. Diga que um vendedor confirma pelo WhatsApp
+  ${EMPRESA.whatsappExibicao} (https://wa.me/${EMPRESA.whatsapp}).
+- Use somente as informações abaixo sobre a empresa e o catálogo. Se a peça não estiver na lista,
+  diga que a equipe pode localizar e peça marca, modelo e código da peça.
+- Não invente códigos de peça nem compatibilidades.
+
+Dados da empresa (JSON):
+${JSON.stringify(EMPRESA)}
+
+Peças do catálogo (JSON):
+${JSON.stringify(CATALOGO)}`;
 
 const MAX_HISTORY = 20; // mensagens enviadas para o modelo por requisição
 const MAX_CHARS = 2000; // tamanho máximo de cada mensagem do usuário
@@ -134,6 +153,8 @@ setInterval(() => {
 
 const server = http.createServer((req, res) => {
   if (req.url === "/health") return sendJson(res, 200, { ok: true });
+  if (req.url === "/api/empresa") return sendJson(res, 200, EMPRESA);
+  if (req.url === "/api/catalogo") return sendJson(res, 200, CATALOGO);
   if (req.url === "/api/chat" && req.method === "POST") return handleChat(req, res);
   if (req.method === "GET") return serveStatic(req, res);
   res.writeHead(405).end();

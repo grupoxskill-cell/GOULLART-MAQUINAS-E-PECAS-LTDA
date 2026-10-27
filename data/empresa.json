@@ -1,0 +1,32 @@
+{
+  "nome": "Goullart Peças",
+  "razaoSocial": "Goullart Peças para Escavadeiras Ltda",
+  "cnpj": "29.759.621/0001-35",
+  "responsavel": "G. Junior Goullart",
+  "slogan": "Peças para linha amarela",
+  "sobre": "Somos uma empresa focada no fornecimento de peças e soluções para máquinas pesadas utilizadas nos setores de mineração, construção civil, agronegócio e infraestrutura. Trabalhamos com marcas reconhecidas e fornecedores homologados, garantindo durabilidade, desempenho e segurança operacional.",
+  "whatsapp": "5562999427276",
+  "whatsappExibicao": "(62) 99942-7276",
+  "telefones": ["(62) 99942-7276", "(62) 99853-1936"],
+  "emails": {
+    "contato": "contato@pecasparaescavadeira.com.br",
+    "vendas": "vendas@pecasparaescavadeira.com.br",
+    "sac": "sac@pecasparaescavadeira.com.br"
+  },
+  "horario": "Das 7:30 às 18:30, direto pelo WhatsApp",
+  "politicas": {
+    "atendimento": "Atendimento em até 24 horas",
+    "pedido": "Pedido finalizado em 24 horas e separado para entrega em menos de 48 horas",
+    "trocas": "Até 7 dias para devolver a compra",
+    "frete": "Enviamos para todo o Brasil e países da América Latina",
+    "parcelamento": "Em até 12x no cartão"
+  },
+  "categorias": ["Material rodante", "Componentes elétricos", "Peças para motores", "Filtros"],
+  "servicos": [
+    "Consultoria técnica especializada",
+    "Identificação correta de peças",
+    "Logística rápida e segura",
+    "Atendimento técnico personalizado"
+  ],
+  "marcasAtendidas": ["Caterpillar", "Komatsu", "Volvo", "Hyundai", "John Deere", "Sany", "XCMG", "Fiat"]
+}

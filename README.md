@@ -1,6 +1,11 @@
-# Goullart Máquinas e Peças LTDA
+# Goullart Peças
 
-Site com chat de atendimento integrado ao ChatGPT (API da OpenAI).
+Site da Goullart Peças para Escavadeiras com catálogo pesquisável e assistente de atendimento integrado ao ChatGPT (API da OpenAI).
+
+## Dados do site
+
+- `data/empresa.json`: contatos, horário, políticas e textos da empresa (usados pelo assistente).
+- `data/catalogo.json`: lista de peças exibida no catálogo e conhecida pelo assistente. Não contém preços nem custos.
 
 ## Como rodar
 

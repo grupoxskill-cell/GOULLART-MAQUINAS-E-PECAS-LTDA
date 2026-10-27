@@ -15,6 +15,7 @@ function setOpen(open) {
 
 toggle.addEventListener("click", () => setOpen(chat.hidden));
 closeBtn.addEventListener("click", () => setOpen(false));
+document.querySelectorAll("[data-open-chat]").forEach((el) => el.addEventListener("click", () => setOpen(true)));
 
 function addMessage(role, text) {
   const el = document.createElement("div");
