@@ -124,7 +124,16 @@ async function serveStatic(req, res) {
   }
 }
 
+// Limpa contadores antigos para o mapa não crescer indefinidamente.
+setInterval(() => {
+  const now = Date.now();
+  for (const [ip, entry] of hits) {
+    if (now - entry.start > RATE_LIMIT.windowMs) hits.delete(ip);
+  }
+}, RATE_LIMIT.windowMs).unref();
+
 const server = http.createServer((req, res) => {
+  if (req.url === "/health") return sendJson(res, 200, { ok: true });
   if (req.url === "/api/chat" && req.method === "POST") return handleChat(req, res);
   if (req.method === "GET") return serveStatic(req, res);
   res.writeHead(405).end();

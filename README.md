@@ -16,6 +16,18 @@ Site com chat de atendimento integrado ao ChatGPT (API da OpenAI).
 
 Não há dependências para instalar.
 
+## Publicar na internet (Render, plano gratuito)
+
+1. Crie uma conta em https://render.com entrando com o GitHub.
+2. No painel, clique em **New → Blueprint** e escolha este repositório.
+   O Render lê o arquivo `render.yaml` e configura tudo sozinho.
+3. Quando pedir `OPENAI_API_KEY`, cole a sua chave da OpenAI e clique em **Apply**.
+4. Em alguns minutos o site fica no ar num endereço `https://….onrender.com`.
+
+A cada novo commit no branch `master`, o Render publica a nova versão automaticamente.
+No plano gratuito o site "dorme" após 15 minutos sem visitas e leva cerca de 1 minuto
+para acordar na próxima visita.
+
 ## Configuração
 
 | Variável         | Descrição                                          | Padrão        |
