@@ -1,0 +1,13 @@
+{
+  "name": "goullart-maquinas-e-pecas",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Site da Goullart Máquinas e Peças com chat de atendimento via ChatGPT",
+  "scripts": {
+    "start": "node --env-file-if-exists=.env server.js"
+  },
+  "engines": {
+    "node": ">=22.9"
+  }
+}

@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Goullart Máquinas e Peças</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="hero">
+    <h1>Goullart Máquinas e Peças LTDA</h1>
+    <p>Máquinas, peças e manutenção com atendimento de confiança.</p>
+  </header>
+
+  <main class="content">
+    <section>
+      <h2>Fale com nosso assistente</h2>
+      <p>Tire dúvidas sobre máquinas, peças e manutenção, ou peça um orçamento pelo chat no canto da tela.</p>
+    </section>
+  </main>
+
+  <button id="chat-toggle" class="chat-toggle" aria-expanded="false" aria-controls="chat">💬 Atendimento</button>
+
+  <section id="chat" class="chat" hidden aria-label="Chat de atendimento">
+    <div class="chat-header">
+      <span>Assistente Goullart</span>
+      <button id="chat-close" class="chat-close" aria-label="Fechar chat">×</button>
+    </div>
+    <div id="chat-messages" class="chat-messages" aria-live="polite">
+      <div class="msg assistant">Olá! Como posso ajudar você hoje?</div>
+    </div>
+    <form id="chat-form" class="chat-form">
+      <input id="chat-input" type="text" maxlength="2000" placeholder="Digite sua mensagem…" autocomplete="off" required>
+      <button type="submit">Enviar</button>
+    </form>
+  </section>
+
+  <script src="chat.js"></script>
+</body>
+</html>
