@@ -1,11 +1,16 @@
-# Goullart Peças
+# GOULLART
 
-Site da Goullart Peças para Escavadeiras com catálogo pesquisável e assistente de atendimento integrado ao ChatGPT (API da OpenAI).
+Site da GOULLART (Goullart Peças para Escavadeiras Ltda) com catálogo pesquisável de peças e a Sophia Goullart, assistente de atendimento.
+
+O site funciona de dois jeitos:
+
+- **Estático (GitHub Pages, gratuito):** catálogo e botões que abrem o WhatsApp (62) 99942-7276, onde a Sophia já atende. Publicado automaticamente pelo workflow `.github/workflows/pages.yml` a cada push no `master`.
+- **Com servidor (Render + OpenAI):** a Sophia também conversa direto no site, usando o ChatGPT. Veja abaixo.
 
 ## Dados do site
 
 - `data/empresa.json`: contatos, horário, políticas e textos da empresa (usados pelo assistente).
-- `data/catalogo.json`: lista de peças exibida no catálogo e conhecida pelo assistente. Não contém preços nem custos.
+- `data/catalogo.json`: peças das categorias atendidas hoje (rodante, roda-guia, roda motriz, bomba hidráulica, pinhão e motor de translação). Não contém preços nem custos.
 
 ## Como rodar
 

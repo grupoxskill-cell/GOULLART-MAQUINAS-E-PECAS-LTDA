@@ -9,7 +9,7 @@ const normalizar = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase
 let pecas = [];
 
 function linkOrcamento(peca) {
-  const texto = `Olá! Gostaria de um orçamento da peça: ${peca.nome}${peca.codigo ? ` (código ${peca.codigo})` : ""}`;
+  const texto = `Gostaria de um orçamento da peça:${peca.nome}${peca.codigo ? ` (código ${peca.codigo})` : ""}`;
   return `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(texto)}`;
 }
 
@@ -43,8 +43,10 @@ function render() {
     : "Nenhuma peça encontrada. Fale com a gente pelo WhatsApp que localizamos para você.";
 }
 
+// No site estático (GitHub Pages) não há /api, então usa o catalogo.json publicado junto.
 fetch("/api/catalogo")
-  .then((r) => r.json())
+  .then((r) => (r.ok ? r.json() : Promise.reject()))
+  .catch(() => fetch("catalogo.json").then((r) => r.json()))
   .then((dados) => {
     pecas = dados.map((p) => ({ ...p, indice: normalizar([p.nome, p.codigo, p.aplicacao].join(" ")) }));
     render();

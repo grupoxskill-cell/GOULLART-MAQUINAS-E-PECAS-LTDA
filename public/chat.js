@@ -5,9 +5,21 @@ const form = document.getElementById("chat-form");
 const input = document.getElementById("chat-input");
 const list = document.getElementById("chat-messages");
 
+const WHATSAPP_URL = "https://wa.me/5562999427276";
 const history = [];
 
+// Sem o servidor (ex.: site estático no GitHub Pages) a Sophia atende pelo WhatsApp.
+let chatOnline = false;
+fetch("/health")
+  .then((r) => r.ok && r.json())
+  .then((d) => (chatOnline = Boolean(d && d.ok)))
+  .catch(() => {});
+
 function setOpen(open) {
+  if (open && !chatOnline) {
+    window.open(WHATSAPP_URL, "_blank", "noopener");
+    return;
+  }
   chat.hidden = !open;
   toggle.setAttribute("aria-expanded", String(open));
   if (open) input.focus();
@@ -51,7 +63,7 @@ form.addEventListener("submit", async (e) => {
     history.push({ role: "assistant", content: data.reply });
   } catch (err) {
     pending.className = "msg error";
-    pending.textContent = err.message;
+    pending.textContent = `${err.message} Se preferir, chama no WhatsApp (62) 99942-7276.`;
     history.pop(); // permite reenviar a mesma pergunta
   } finally {
     form.querySelector("button").disabled = false;

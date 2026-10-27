@@ -1,0 +1,26 @@
+# Publica a versão estática do site (catálogo + WhatsApp) no GitHub Pages a cada push no master.
+name: Publicar site
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Montar site estático
+        run: |
+          mkdir _site
+          cp -r public/. _site/
+          cp data/catalogo.json _site/
+          touch _site/.nojekyll
+      - uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./_site

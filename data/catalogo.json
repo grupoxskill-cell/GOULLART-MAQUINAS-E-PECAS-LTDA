@@ -1,18 +1,5 @@
 [
  {
-  "nome": "ACOPLAMENTO DA BOMBA"
- },
- {
-  "nome": "ADAPTADOR 9.5kg R210"
- },
- {
-  "nome": "ADAPTADOR 9.7kg R210"
- },
- {
-  "nome": "ANEL DE VEDAÇAO O RING BORRACHA",
-  "codigo": "36332"
- },
- {
   "nome": "ARO MOTRIX XCMG"
  },
  {
@@ -29,26 +16,6 @@
  },
  {
   "nome": "ARRUELA ESTICADOR"
- },
- {
-  "nome": "BLOCO + PLACA K3V112"
- },
- {
-  "nome": "BLOCO HIDRAULICO"
- },
- {
-  "nome": "BLOCO M5X130"
- },
- {
-  "nome": "BOBINA CAT 145114404",
-  "codigo": "145114404"
- },
- {
-  "nome": "BOBINA D6R",
-  "codigo": "3239531"
- },
- {
-  "nome": "BOMBA DE EGRENAGEM HIDRAULICA PARA RETROESCAVADEIRA"
  },
  {
   "nome": "BOMBA HIDRAULICA EC240 VOLVO"
@@ -69,132 +36,10 @@
   "aplicacao": "John Deere: JD210G; JD250G; 200DLC Tag: 9262320; FYB60000045; YB60001363"
  },
  {
-  "nome": "BOMBA INJETORA JCB CX"
- },
- {
-  "nome": "BUCHA",
-  "codigo": "503244"
- },
- {
-  "nome": "BUCHA",
-  "codigo": "61620"
- },
- {
-  "nome": "BUCHA ACO PC200"
- },
- {
-  "nome": "BUCHA FLANGEADA PC200"
- },
- {
-  "nome": "CABEÇOTE DO MOTOR C4.4 CAT"
- },
- {
-  "nome": "CABINE XCMG225BR"
- },
- {
-  "nome": "CALCO",
-  "codigo": "40249"
- },
- {
-  "nome": "CALCO REDONDO (1MM)",
-  "codigo": "40307"
- },
- {
-  "nome": "CALCO REDONDO (2MM)",
-  "codigo": "40398"
- },
- {
-  "nome": "CANTO 18.7 KG LE R210"
- },
- {
-  "nome": "CANTO 18.7 KG R210"
- },
- {
-  "nome": "CANTO 20.8 KG LD"
- },
- {
-  "nome": "CARPETE CAT"
- },
- {
-  "nome": "CHICOTE DA CARREGADEIRA 924K CAT",
-  "codigo": "4947953"
- },
- {
-  "nome": "CHICOTE DO MOTOR JOHN DEERE 210G"
- },
- {
-  "nome": "CHICOTE PRINCPAL PC200-8"
- },
- {
-  "nome": "CJ FILTRO DE COMBUSTÍVEL"
- },
- {
   "nome": "CONJUNTO COROA E PINHAO 924K CAT"
  },
  {
-  "nome": "CONTROLADORA DO HIDRAULICO VECU E210 EC220d EC 140"
- },
- {
-  "nome": "COROA DE GIRO HYNDAI"
- },
- {
   "nome": "CORRENTE MÃO AMIGO D6C/D"
- },
- {
-  "nome": "CORRIMAO CAT"
- },
- {
-  "nome": "CUBO COMPLETO CARREGADEIRA JCB"
- },
- {
-  "nome": "DENTE 7.2 kg"
- },
- {
-  "nome": "DENTE DEVELON"
- },
- {
-  "nome": "DENTE RC 5.2 KG"
- },
- {
-  "nome": "DENTE RC FORJADO 5.1 kg R210"
- },
- {
-  "nome": "DENTES AUTOAFIANTE"
- },
- {
-  "nome": "DENTES JCB 220NXT"
- },
- {
-  "nome": "DENTES SANY215"
- },
- {
-  "nome": "DENTES XCMG215"
- },
- {
-  "nome": "DISCO FREIO M5X130"
- },
- {
-  "nome": "DISCO SEPARACAO M5X130"
- },
- {
-  "nome": "ECU MOTOR VOLVO EC220"
- },
- {
-  "nome": "ELEMENTO DO FILTRO DE AR XCMG25/215"
- },
- {
-  "nome": "ELEMENTO FILTRANTE XCMG215"
- },
- {
-  "nome": "ELETROVENTILADOR SUCCAO -24V"
- },
- {
-  "nome": "ESCAVADEIRA HYUNDAI 220LC-9",
-  "codigo": "jo9873"
- },
- {
-  "nome": "ESCAVADEIRA KOMATSU PC350",
-  "codigo": "BRU-ARM"
  },
  {
   "nome": "ESTEIRA 49 ELOS S/SAPATAS"
@@ -234,126 +79,13 @@
   "nome": "ESTEIRA S/SP SANY"
  },
  {
-  "nome": "FILTRO AR COND. HYUNDAI 220"
- },
- {
-  "nome": "FILTRO AR EXT."
- },
- {
-  "nome": "FILTRO AR INT."
- },
- {
-  "nome": "FILTRO AR PRIMARIO 416F"
- },
- {
-  "nome": "FILTRO BLINDADO DE DIESEL XCMG225"
- },
- {
-  "nome": "FILTRO COMB. 9SB"
- },
- {
-  "nome": "FILTRO COMBUSTIVEL 416F"
- },
- {
-  "nome": "FILTRO COMBUSTIVEL II 416F"
- },
- {
-  "nome": "FILTRO COMBUSTÍVEL R220"
- },
- {
-  "nome": "FILTRO DE AR SECUNDARIO 416F"
- },
- {
-  "nome": "FILTRO DE RESPIRO XCMG225/215"
- },
- {
-  "nome": "FILTRO DO AC XCMG225/215"
- },
- {
-  "nome": "FILTRO DO HIDRAULICO XCMG225/215"
- },
- {
-  "nome": "FILTRO DRENO"
- },
- {
-  "nome": "FILTRO HID. PILOTO"
- },
- {
-  "nome": "FILTRO HID. RESPIRO"
- },
- {
-  "nome": "FILTRO HIDRAULICO I 416F"
- },
- {
-  "nome": "FILTRO HIDRAULICO II 416F"
- },
- {
-  "nome": "FILTRO HIDRÁULICO RETORNO R220"
- },
- {
-  "nome": "FILTRO LUB. 9SB",
-  "codigo": "11N8-70110"
- },
- {
-  "nome": "FILTRO LUBRIFICANTE 416F"
- },
- {
-  "nome": "FILTRO OLEO MOTOR XCMG225"
- },
- {
-  "nome": "FILTRO PILOTO XCMG225/215"
- },
- {
-  "nome": "FILTRO REFIL COMBUSTIVEL XCMG225/215"
- },
- {
-  "nome": "FILTRO RETORNO XCMG225/215"
- },
- {
-  "nome": "FILTRO SEPARADOR 9SB R220"
- },
- {
-  "nome": "FILTRO SEPARADOR XCMG225/215"
- },
- {
-  "nome": "FRETE"
- },
- {
   "nome": "GAXETA ESTICADOR ESTEIRA"
- },
- {
-  "nome": "HPV118 - PLACA VALVULA DIREITA"
- },
- {
-  "nome": "HPV118 - PLACA VALVULA ESQUERDA"
- },
- {
-  "nome": "Hélice do motor R210"
  },
  {
   "nome": "JG DE SEGMENTO D6"
  },
  {
-  "nome": "JOGO DE LAMINA BIPARTIDA 5/8 FIAT AD7",
-  "codigo": "8321318T"
- },
- {
   "nome": "JOGO DE SEGMENTO DO ARO MOTRIZ D5E"
- },
- {
-  "nome": "KIT REPARO CONCHA R220"
- },
- {
-  "nome": "KIT REPARO NOK BOMBA HV118"
- },
- {
-  "nome": "KIT VEDAÇAO MOTOR M5X130"
- },
- {
-  "nome": "MODULO ECU - EC140"
- },
- {
-  "nome": "Modulo John Deere 524k"
  },
  {
   "nome": "MOLA TENSORA D6D"
@@ -368,22 +100,10 @@
   "nome": "MOTOR DESLOCAMENTO LINKBELT X3"
  },
  {
-  "nome": "OLEO MOTOR 15W40 20LT"
- },
- {
-  "nome": "PAINEL VOLVO EC240"
- },
- {
   "nome": "PAR ESTEIRA D50"
  },
  {
   "nome": "Par Esteira John deere 210"
- },
- {
-  "nome": "PARAFUSO ACO 12.9"
- },
- {
-  "nome": "PARAFUSO COM PORCA"
  },
  {
   "nome": "PARAFUSO SAPATA"
@@ -408,86 +128,10 @@
   "nome": "PINHÃO REDUTOR D6D"
  },
  {
-  "nome": "PINO",
-  "codigo": "26253"
- },
- {
-  "nome": "PINO ACO PC200"
- },
- {
-  "nome": "PINO DE AÇO",
-  "codigo": "25675"
- },
- {
-  "nome": "PINO DENTE JCB"
- },
- {
-  "nome": "PINO PC200 80"
- },
- {
-  "nome": "PINO.",
-  "codigo": "24131"
- },
- {
-  "nome": "PISTAO M5X130"
- },
- {
-  "nome": "PLACA RETENTORA C/MOLA M5X130"
- },
- {
-  "nome": "PLACA TORQUE M5X130"
- },
- {
-  "nome": "PLACA VALVURA MOTOR M5X130"
- },
- {
   "nome": "PORCA P/ ESTEIRA"
  },
  {
-  "nome": "PORCA SANY 215"
- },
- {
-  "nome": "PROTETOR"
- },
- {
-  "nome": "PROTETOR DO TRUCK D5E"
- },
- {
-  "nome": "R220LC-9 HYUNDAI - REARO CONCHA 85X125"
- },
- {
-  "nome": "R220LC-9 HYUNDAI - REPARO CONCHA 85X125"
- },
- {
-  "nome": "R220LC-9 HYUNDAI - REPARO ELEVACAO 85X120"
- },
- {
   "nome": "RASPADOR ESTICADOR ESTEIRA"
- },
- {
-  "nome": "REDUTOR DE GIRO E215",
-  "codigo": "YN15V00067F1"
- },
- {
-  "nome": "REDUTOR DE GIRO JOHN DEERE 215G"
- },
- {
-  "nome": "REGULADOR K3V112"
- },
- {
-  "nome": "REPARO BRACO R220"
- },
- {
-  "nome": "REPARO CIL DE INCLINAÇÃO"
- },
- {
-  "nome": "REPARO CILINDRO (LEVANTE) R220"
- },
- {
-  "nome": "RESERVATORIO DE AGUA EC200"
- },
- {
-  "nome": "RETROVISOR CAT"
  },
  {
   "nome": "RODA GUIA 312"
@@ -641,35 +285,6 @@
   "nome": "SEGMENTO ARO MOTRIZ"
  },
  {
-  "nome": "SOLENOIDE DE PARADA HYUNDAI 220"
- },
- {
-  "nome": "TELA DE PROTEÇÃO RADIADOR CAT"
- },
- {
-  "nome": "TRAVA DENTE JCB"
- },
- {
-  "nome": "VALVULA CAT"
- },
- {
   "nome": "VALVULA ESTICADOR ESTEIRA HYUNDAI 220"
- },
- {
-  "nome": "VEDADOR DE POEIRA",
-  "codigo": "53837"
- },
- {
-  "nome": "VEDADOR POEIRA",
-  "codigo": "53841"
- },
- {
-  "nome": "VEDAÇÃO COMPLETA XCMG225"
- },
- {
-  "nome": "VÁLVULA SOLENOIDE VOLVO EC210/220"
- },
- {
-  "nome": "ÓLEO 85W140 REDUTOR GIRO/TRACAO"
  }
 ]
