@@ -76,6 +76,7 @@
         <h2>Pátios</h2>
         <p>Consulte as máquinas do catálogo e fale com a equipe para confirmar a localização física de cada unidade e agendar sua visita.</p>
         <p>O endereço do vendedor não comprova onde a máquina está. A visita depende de localização e disponibilidade confirmadas.</p>
+        <ul id="patio-lista" class="machines machines-dark"></ul>
         <a class="btn btn-ghost" href="#maquinas">Ver máquinas do catálogo</a> 
         <a class="btn btn-primary" href="https://wa.me/5562999427276?text=Gostaria%20de%20agendar%20uma%20visita%20para%20ver%20uma%20m%C3%A1quina." target="_blank" rel="noopener">Agendar visita</a>
       </div>
@@ -127,6 +128,10 @@
   </footer>
 
   <a class="whatsapp-float" href="https://wa.me/5562999427276" target="_blank" rel="noopener" aria-label="Falar com a equipe GOULLART no WhatsApp">Falar com a equipe</a>
+  <dialog id="detalhe" class="detalhe" aria-labelledby="detalhe-titulo">
+    <button type="button" class="detalhe-fechar" aria-label="Fechar">×</button>
+    <div id="detalhe-conteudo"></div>
+  </dialog>
   <script src="maquinas.js"></script>
 </body>
 </html>
