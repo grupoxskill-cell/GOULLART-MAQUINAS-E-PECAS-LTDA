@@ -465,5 +465,17 @@
    "maquinas/039-escavadeira-hyundai-210-lc-7-1.jpg",
    "maquinas/039-escavadeira-hyundai-210-lc-7-2.jpg"
   ]
+ },
+ {
+  "ficha": "radar-2026-10-22",
+  "referencia": "RADAR-PC200-2018",
+  "titulo": "Escavadeira Komatsu PC200",
+  "categoria": "Escavadeiras",
+  "ano": "2018",
+  "horas": "14.170 h",
+  "preco": "R$ 259.000",
+  "fotos": [
+   "maquinas/radar-komatsu-pc200-2018-1.jpg"
+  ]
  }
 ]
