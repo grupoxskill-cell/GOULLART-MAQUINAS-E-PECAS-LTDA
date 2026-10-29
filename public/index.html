@@ -7,10 +7,11 @@
   <meta name="description" content="Máquinas pesadas novas e usadas, locação, transporte e peças para linha amarela: rodante, roda-guia, roda motriz, bomba hidráulica, pinhão e motor de translação.">
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <nav class="topbar">
+<body id="inicio">
+  <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+  <nav class="topbar" aria-label="Navegação principal">
     <div class="wrap topbar-inner">
-      <a class="logo" href="#">GOULLART<span>MÁQUINAS PESADAS</span></a>
+      <a class="logo" href="#inicio" aria-label="GOULLART — início"><img src="assets/logo-oficial.png" width="472" height="290" alt="GOULLART Pesados — Força que move o seu negócio"></a>
       <div class="topbar-links">
         <a href="#catalogo">Catálogo</a>
         <a href="#sobre">Sobre</a>
@@ -26,21 +27,21 @@
       <p class="hero-sub">Não deixe sua máquina parada! Me fala o modelo da máquina e a peça que você precisa, que a gente identifica certinho.</p>
       <div class="hero-actions">
         <a class="btn btn-primary" href="https://wa.me/5562999427276?text=Ol%C3%A1!%20Gostaria%20de%20um%20or%C3%A7amento." target="_blank" rel="noopener">Chamar no WhatsApp</a>
-        <button class="btn btn-ghost" type="button" data-open-chat>Falar com a Sophia</button>
+        <a class="btn btn-ghost" href="#catalogo">Consultar peças</a>
       </div>
     </div>
   </header>
 
   <section class="perks">
     <div class="wrap perks-grid">
-      <div class="perk"><strong>Atendimento</strong><span>Das 7:30 às 18:30 pelo WhatsApp</span></div>
-      <div class="perk"><strong>Frete</strong><span>Todo o Brasil e América Latina</span></div>
+      <div class="perk"><strong>Atendimento</strong><span>Direto com nossa equipe pelo WhatsApp</span></div>
+      <div class="perk"><strong>Frete</strong><span>Destino, custo e prazo sob consulta</span></div>
       <div class="perk"><strong>Peça certa</strong><span>Identificação pelo modelo e série</span></div>
-      <div class="perk"><strong>Trocas</strong><span>Até 7 dias para devolver</span></div>
+      <div class="perk"><strong>Orçamento</strong><span>Preço e disponibilidade sob consulta</span></div>
     </div>
   </section>
 
-  <main>
+  <main id="conteudo">
     <section class="section">
       <div class="wrap">
         <h2>O que a GOULLART faz</h2>
@@ -57,9 +58,11 @@
     <section id="catalogo" class="section section-alt">
       <div class="wrap">
         <h2>Catálogo</h2>
-        <p>Procure pelo nome da peça, código ou modelo da máquina. Não achou? Chama no WhatsApp que a gente localiza.</p>
+        <p>Procure pelo nome da peça, código ou modelo da máquina. Não achou? Consulte nossa equipe pelo WhatsApp.</p>
+        <p class="muted">Referências para cotação. Confirme aplicação, disponibilidade, preço e prazo com a equipe antes da compra.</p>
         <input id="busca" class="search" type="search" placeholder="Ex.: rolete, PC200, 320D, roda guia…" aria-label="Buscar peça">
-        <p id="catalogo-info" class="muted"></p>
+        <p id="catalogo-info" class="muted" role="status" aria-live="polite">Carregando referências…</p>
+        <noscript>Ative o JavaScript para pesquisar peças ou <a href="https://wa.me/5562999427276" rel="noopener" target="_blank">peça uma cotação pelo WhatsApp</a>.</noscript>
         <ul id="catalogo-lista" class="catalog"></ul>
       </div>
     </section>
@@ -69,12 +72,12 @@
         <div>
           <h2>Sobre a GOULLART</h2>
           <p>A GOULLART atende máquinas pesadas novas e usadas, peças, locação, intermediação e transporte para mineração, construção civil, agronegócio e infraestrutura.</p>
-          <p>Trabalhamos com marcas reconhecidas e fornecedores homologados, com foco em durabilidade, desempenho e segurança operacional.</p>
+          <p>A equipe ajuda a identificar a aplicação da peça e consulta as condições de fornecimento para cada pedido.</p>
         </div>
         <ul class="services">
           <li>Identificação correta de peças</li>
           <li>Atendimento direto pelo WhatsApp</li>
-          <li>Envio para todo o Brasil e América Latina</li>
+          <li>Frete e prazo de entrega sob consulta</li>
           <li>Atendimento técnico personalizado</li>
         </ul>
       </div>
@@ -83,12 +86,10 @@
     <section id="contato" class="section section-dark">
       <div class="wrap">
         <h2>Ainda não encontrou o que buscava?</h2>
-        <p>Envie marca, modelo da máquina e, se tiver, o código da peça. Respondemos em até 24 horas.</p>
+        <p>Envie marca, modelo da máquina e, se tiver, o código da peça. Nossa equipe dará continuidade ao atendimento pelo WhatsApp.</p>
         <div class="contact-grid">
           <div><strong>WhatsApp</strong><a href="https://wa.me/5562999427276" target="_blank" rel="noopener">(62) 99942-7276</a></div>
           <div><strong>Telefone</strong><a href="tel:+5562998531936">(62) 99853-1936</a></div>
-          <div><strong>Vendas</strong><a href="mailto:vendas@pecasparaescavadeira.com.br">vendas@pecasparaescavadeira.com.br</a></div>
-          <div><strong>SAC</strong><a href="mailto:sac@pecasparaescavadeira.com.br">sac@pecasparaescavadeira.com.br</a></div>
         </div>
       </div>
     </section>
@@ -96,29 +97,12 @@
 
   <footer class="footer">
     <div class="wrap">
-      <p>Goullart Peças para Escavadeiras Ltda · CNPJ 29.759.621/0001-35</p>
+      <p>GOULLART · CNPJ 29.759.621/0001-35</p>
       <p>© <span id="ano">2026</span> GOULLART. Todos os direitos reservados.</p>
     </div>
   </footer>
 
-  <a class="whatsapp-float" href="https://wa.me/5562999427276" target="_blank" rel="noopener" aria-label="WhatsApp">WhatsApp</a>
-  <button id="chat-toggle" class="chat-toggle" aria-expanded="false" aria-controls="chat">💬 Sophia</button>
-
-  <section id="chat" class="chat" hidden aria-label="Chat de atendimento">
-    <div class="chat-header">
-      <span>Sophia Goullart</span>
-      <button id="chat-close" class="chat-close" aria-label="Fechar chat">×</button>
-    </div>
-    <div id="chat-messages" class="chat-messages" aria-live="polite">
-      <div class="msg assistant">Sou a Sophia Goullart, da GOULLART. Me fala, você tá procurando máquina, peça ou locação?</div>
-    </div>
-    <form id="chat-form" class="chat-form">
-      <input id="chat-input" type="text" maxlength="2000" placeholder="Digite sua mensagem…" autocomplete="off" required>
-      <button type="submit">Enviar</button>
-    </form>
-  </section>
-
+  <a class="whatsapp-float" href="https://wa.me/5562999427276" target="_blank" rel="noopener" aria-label="Falar com a equipe GOULLART no WhatsApp">Falar com a equipe</a>
   <script src="catalogo.js"></script>
-  <script src="chat.js"></script>
 </body>
 </html>

@@ -3,9 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Site da Goullart Máquinas e Peças com chat de atendimento via ChatGPT",
+  "description": "Site GOULLART com catálogo de referências e atendimento humano pelo WhatsApp",
   "scripts": {
-    "start": "node --env-file-if-exists=.env server.js"
+    "start": "node --env-file-if-exists=.env server.js",
+    "build": "node scripts/build.mjs",
+    "test": "node --test"
   },
   "engines": {
     "node": ">=22.9"

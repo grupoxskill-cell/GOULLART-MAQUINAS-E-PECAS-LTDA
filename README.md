@@ -1,61 +1,57 @@
-# GOULLART
+# GOULLART — catálogo e atendimento humano
 
-Site da GOULLART (Goullart Peças para Escavadeiras Ltda) com catálogo pesquisável de peças e a Sophia Goullart, assistente de atendimento.
+Site da GOULLART com catálogo pesquisável de referências de peças e links para atendimento humano no WhatsApp **(62) 99942-7276**.
 
-O site funciona de dois jeitos:
+**Sophia permanece desativada.** Esta versão não chama a OpenAI, não precisa de chave de IA e responde HTTP 410 em `/api/chat`, inclusive se existir uma chave antiga no ambiente. Sua reativação exige autorização de Júnior e alteração de código.
 
-- **Estático (GitHub Pages, gratuito):** catálogo e botões que abrem o WhatsApp (62) 99942-7276, onde a Sophia já atende. Publicado automaticamente pelo workflow `.github/workflows/pages.yml` a cada push no `master`.
-- **No servidor da Azure (aaPanel):** o domínio www.goullartmaquinaspesadas.com.br aponta para o servidor 20.69.167.61. Para instalar ou atualizar o site lá, rode como root (no portal da Azure: máquina virtual → Operações → Executar comando → RunShellScript):
+## Executar e validar
 
-  ```bash
-  curl -fsSL https://raw.githubusercontent.com/grupoxskill-cell/GOULLART-MAQUINAS-E-PECAS-LTDA/master/scripts/instalar-no-servidor.sh | bash
-  ```
+Node.js 22.9 ou superior, sem dependências de aplicação:
 
-  O script guarda um backup da configuração do nginx e imprime o comando para voltar ao site antigo.
-- **Com servidor (Render + OpenAI):** a Sophia também conversa direto no site, usando o ChatGPT. Veja abaixo.
+```sh
+npm start
+npm test
+npm run build
+```
 
-## Dados do site
+Abra `http://localhost:3000`. O build estático fica em `_site/`. A mesma URL relativa `catalogo.json` funciona no servidor e no GitHub Pages, inclusive em subdiretórios.
 
-- `data/empresa.json`: contatos, horário, políticas e textos da empresa (usados pelo assistente).
-- `data/catalogo.json`: peças das categorias atendidas hoje (rodante, roda-guia, roda motriz, bomba hidráulica, pinhão e motor de translação). Não contém preços nem custos.
+## Publicação existente no GitHub Pages
 
-## Como rodar
+O workflow `.github/workflows/pages.yml` copia `public/` e `data/catalogo.json` para a branch `gh-pages`. A atualização remota `1c83d49` removeu o domínio personalizado do workflow enquanto esta revisão estava em andamento. Essa alteração foi preservada. Endereço de publicação: `https://grupoxskill-cell.github.io/GOULLART-MAQUINAS-E-PECAS-LTDA/`.
 
-1. Instale o [Node.js](https://nodejs.org) 22.9 ou superior.
-2. Copie `.env.example` para `.env` e coloque sua chave da OpenAI em `OPENAI_API_KEY`.
-3. Rode:
+Em 29/10/2026, o domínio oficial respondeu por HTTPS com uma aplicação Laravel/Inertia diferente deste repositório, incluindo catálogo de máquinas, login e rastreamento. Não substituir essa aplicação nem trocar o DNS sem preservar seus dados e a continuidade do painel administrativo.
 
-   ```bash
-   npm start
-   ```
+## Instalação existente no Azure / aaPanel
 
-4. Abra http://localhost:3000 e clique em **💬 Atendimento**.
+O script `scripts/instalar-no-servidor.sh`, adicionado em paralelo na atualização `1c83d49`, foi preservado sem execução. Ele troca a raiz do nginx para o site estático; não migra catálogo de máquinas, login, pedidos ou banco de dados do aplicativo atual. Exige revisão da configuração e backup integral antes de uso neste domínio. A referência existente de hospedagem é a VM `goullart1`, IP `20.69.167.61`; a origem não foi confirmada no painel nesta revisão.
 
-Não há dependências para instalar.
+## Render
 
-## Publicar na internet (Render, plano gratuito)
+O `render.yaml` está pronto para Node, `npm run build`, `npm start` e health check `/health`. Nenhuma variável OpenAI é necessária. A existência deste arquivo não comprova que um serviço Render tenha sido criado ou publicado.
 
-1. Crie uma conta em https://render.com entrando com o GitHub.
-2. No painel, clique em **New → Blueprint** e escolha este repositório.
-   O Render lê o arquivo `render.yaml` e configura tudo sozinho.
-3. Quando pedir `OPENAI_API_KEY`, cole a sua chave da OpenAI e clique em **Apply**.
-4. Em alguns minutos o site fica no ar num endereço `https://….onrender.com`.
+## Conteúdo e marca
 
-A cada novo commit no branch `master`, o Render publica a nova versão automaticamente.
-No plano gratuito o site "dorme" após 15 minutos sem visitas e leva cerca de 1 minuto
-para acordar na próxima visita.
-
-## Configuração
-
-| Variável         | Descrição                                          | Padrão        |
-| ---------------- | -------------------------------------------------- | ------------- |
-| `OPENAI_API_KEY` | Chave da API da OpenAI (obrigatória)               | —             |
-| `OPENAI_MODEL`   | Modelo usado no chat                               | `gpt-4o-mini` |
-| `SYSTEM_PROMPT`  | Instruções do assistente (personalidade, regras)   | texto em `server.js` |
-| `PORT`           | Porta do servidor                                  | `3000`        |
+- `public/assets/logo-oficial.png`: cópia sem edição da referência aprovada por Júnior em 27/10/2026 (`goullart_pesados_logo_referencia.png`).
+- `data/catalogo.json`: referências para orçamento, sem preços, custos ou confirmação de estoque. Duplicação literal é suprimida na exibição sem excluir o registro de origem.
+- `data/empresa.json`: contato comercial. WhatsApp 7276 conferido no iZap em 29/10/2026. O telefone 1936 foi preservado do projeto e do histórico do usuário; não foi efetuada ligação.
+- CNPJ 29.759.621/0001-35: presente no projeto e correspondente a Goulart Pecas e Maquinas Pesadas Ltda em consultas públicas Serasa/CNPJ.biz. A razão social anterior do projeto divergia. Não foi obtido novo comprovante diretamente da Receita; o rodapé usa marca e CNPJ.
+- E-mails, horário, promessa de retorno em 24h, cobertura internacional e texto de trocas foram retirados da apresentação por falta de validação atual. Consulte o histórico Git para os valores anteriores.
 
 ## Segurança
 
-- A chave da OpenAI fica só no servidor; o navegador conversa apenas com `/api/chat`.
-- Cada IP pode enviar até 20 mensagens por minuto.
-- Nunca faça commit do arquivo `.env`.
+Nunca incluir `.env`, tokens, dados de CRM, fornecedores, custos ou chaves de API na pasta pública. O script legado `chat.js` permanece vazio para evitar novas chamadas por HTML antigo. Configurações do iZap não são alteradas por este site.
+
+## Domínio: configuração possível, ainda não aplicada
+
+Consulta pública em 29/10/2026 identificou nameservers `aragorn.ns.cloudflare.com` e `gail.ns.cloudflare.com`, com os endereços de proxy Cloudflare `104.21.21.130` e `172.67.198.204`. Isso não revela o IP da origem.
+
+O DNS deve ser inventariado e salvo antes de qualquer migração. Preservar MX, SPF, DKIM e registros de serviços. Para GitHub Pages, após validar a propriedade e configurar o domínio no painel:
+
+- `www`: CNAME `grupoxskill-cell.github.io` (sem nome do repositório).
+- Raiz, somente se a migração da aplicação atual for decidida: A `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`.
+- Depois da validação do DNS/certificado, habilitar Enforce HTTPS e testar raiz e www.
+
+Fonte oficial: https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site
+
+Para Render, usar os registros retornados pelo serviço efetivamente criado; não adivinhar seu hostname. Fonte: https://render.com/docs/custom-domains

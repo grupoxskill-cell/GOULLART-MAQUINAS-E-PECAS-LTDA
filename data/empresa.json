@@ -1,6 +1,6 @@
 {
   "nome": "GOULLART",
-  "razaoSocial": "Goullart Peças para Escavadeiras Ltda",
+  "razaoSocial": "Goulart Pecas e Maquinas Pesadas Ltda",
   "cnpj": "29.759.621/0001-35",
   "responsavel": "G. Junior Goullart",
   "slogan": "Máquinas pesadas e peças para linha amarela",
@@ -11,17 +11,6 @@
     "(62) 99942-7276",
     "(62) 99853-1936"
   ],
-  "emails": {
-    "contato": "contato@pecasparaescavadeira.com.br",
-    "vendas": "vendas@pecasparaescavadeira.com.br",
-    "sac": "sac@pecasparaescavadeira.com.br"
-  },
-  "horario": "Das 7:30 às 18:30, direto pelo WhatsApp",
-  "politicas": {
-    "atendimento": "Respondemos em até 24 horas",
-    "trocas": "Até 7 dias para devolver a compra",
-    "frete": "Enviamos para todo o Brasil e países da América Latina"
-  },
   "categorias": [
     "Rodante (esteiras, roletes, sapatas, correntes e segmentos)",
     "Roda-guia",
@@ -51,5 +40,7 @@
     "Link-Belt",
     "Fiat"
   ],
-  "assistente": "Sophia Goullart"
+  "atendimento": "Equipe GOULLART pelo WhatsApp",
+  "respostasAutomaticas": false,
+  "condicoes": "Preço, disponibilidade, compatibilidade e frete sob consulta."
 }
