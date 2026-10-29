@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>ADM GOULLART</title>
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <section id="tela-login" class="login" hidden>
+    <form id="form-login" class="cartao">
+      <h1>ADM GOULLART</h1>
+      <label>Senha <input id="senha" type="password" autocomplete="current-password" required></label>
+      <button class="btn">Entrar</button>
+      <p id="login-erro" class="erro" role="alert"></p>
+    </form>
+  </section>
+
+  <div id="app" hidden>
+    <header class="topo">
+      <strong>ADM GOULLART</strong>
+      <nav id="abas" class="abas" aria-label="Seções do ADM">
+        <button data-aba="inicio" aria-current="page">Início</button>
+        <button data-aba="radar">Radar</button>
+        <button data-aba="patio">Pátio</button>
+        <button data-aba="encontros">Encontros</button>
+        <button data-aba="crm">CRM</button>
+        <button data-aba="config">Config.</button>
+      </nav>
+    </header>
+    <main id="conteudo" class="conteudo"></main>
+  </div>
+  <div id="aviso" class="aviso" role="status" aria-live="polite" hidden></div>
+  <script src="app.js"></script>
+</body>
+</html>

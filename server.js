@@ -3,8 +3,10 @@ import http from "node:http";
 import { readFile } from "node:fs/promises";
 import { extname, resolve, relative, isAbsolute } from "node:path";
 import { fileURLToPath } from "node:url";
+import { rotaAdm, servirFoto, maquinasPublicas } from "./lib/adm.js";
 
 const PORT = Number(process.env.PORT) || 3000;
+const HOST = process.env.HOST || undefined;
 const PUBLIC_DIR = fileURLToPath(new URL("./public", import.meta.url));
 const loadJson = async (file) => JSON.parse(await readFile(new URL(file, import.meta.url), "utf-8"));
 const EMPRESA = await loadJson("./data/empresa.json");
@@ -50,13 +52,18 @@ const server = http.createServer(async (req, res) => {
       message: "O atendimento deste site é realizado pela equipe no WhatsApp.",
       whatsapp: `https://wa.me/${EMPRESA.whatsapp}` });
   }
+  // ADM privado (login próprio) e fotos enviadas pelo ADM.
+  if (pathname === "/adm" || pathname.startsWith("/adm/")) return rotaAdm(req, res, pathname);
   if (req.method !== "GET" && req.method !== "HEAD") {
     res.setHeader("Allow", "GET, HEAD");
     return res.writeHead(405).end();
   }
   if (pathname === "/health") return sendJson(res, 200, { ok: true, automaticReplies: false, atendimento: "humano" });
   if (pathname === "/api/empresa") return sendJson(res, 200, EMPRESA);
+  if (pathname.startsWith("/fotos/")) return servirFoto(res, pathname);
+  // Catálogo do site + máquinas publicadas pelo ADM (Radar com margem e Pátio).
+  if (pathname === "/maquinas.json") return sendJson(res, 200, await maquinasPublicas());
   if (pathname === "/api/catalogo" || pathname === "/catalogo.json") return sendJson(res, 200, CATALOGO);
   return serveStatic(req, res, pathname);
 });
-server.listen(PORT, () => console.log(`GOULLART em http://localhost:${PORT} — atendimento humano; IA desativada.`));
+server.listen(PORT, HOST, () => console.log(`GOULLART em http://localhost:${PORT} — atendimento humano; IA desativada.`));

@@ -1,0 +1,50 @@
+:root { --ink: #061e42; --brand: #f5b301; --bg: #f3f6fa; --border: #dde3ea; --muted: #5f6b7a; --ok: #126b38; --erro: #b42318; }
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: #1e1e1e; line-height: 1.45; }
+h1, h2, h3 { margin: 0 0 8px; }
+.login { min-height: 100vh; display: grid; place-items: center; padding: 16px; background: var(--ink); }
+.cartao { background: #fff; border-radius: 12px; padding: 20px; display: grid; gap: 12px; width: min(380px, 100%); }
+label { display: grid; gap: 4px; font-weight: 600; font-size: 0.9rem; }
+input, select, textarea { font: inherit; padding: 10px; border: 1px solid var(--border); border-radius: 8px; width: 100%; background: #fff; }
+textarea { min-height: 70px; }
+.btn { font: inherit; font-weight: 700; padding: 10px 14px; min-height: 44px; border-radius: 8px; border: 0; background: var(--brand); color: var(--ink); cursor: pointer; }
+.btn.sec { background: #fff; border: 1px solid var(--border); }
+.btn.perigo { background: #fff; color: var(--erro); border: 1px solid #f1c0bb; }
+.btn.ok { background: var(--ok); color: #fff; }
+.btn:disabled { opacity: 0.6; cursor: wait; }
+.erro { color: var(--erro); margin: 0; }
+.topo { background: var(--ink); color: #fff; padding: 10px 16px 0; position: sticky; top: 0; z-index: 5; }
+.abas { display: flex; gap: 4px; overflow-x: auto; margin-top: 8px; }
+.abas button { font: inherit; color: #cfd8e3; background: none; border: 0; padding: 10px 12px; min-height: 44px; border-bottom: 3px solid transparent; cursor: pointer; white-space: nowrap; }
+.abas button[aria-current="page"] { color: #fff; border-bottom-color: var(--brand); font-weight: 700; }
+.conteudo { max-width: 1100px; margin: 0 auto; padding: 16px; display: grid; gap: 16px; }
+.painel { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 16px; display: grid; gap: 12px; min-width: 0; }
+.numeros { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.numero { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 14px; }
+.numero b { display: block; font-size: 1.8rem; color: var(--ink); }
+.alerta { background: #fff7e0; border: 1px solid #f5d27a; border-radius: 12px; padding: 14px; }
+.grade { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; }
+.lista { display: grid; gap: 12px; }
+.item { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 12px; display: grid; grid-template-columns: 96px 1fr; gap: 12px; min-width: 0; }
+.item img, .item .semfoto { width: 96px; height: 72px; object-fit: cover; border-radius: 8px; background: var(--bg); }
+.item .semfoto { display: grid; place-items: center; color: var(--muted); font-size: 0.75rem; text-align: center; }
+.item .corpo { display: grid; gap: 4px; min-width: 0; overflow-wrap: anywhere; }
+.item .acoes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.muted { color: var(--muted); font-size: 0.9rem; }
+.selo { display: inline-block; font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--bg); color: var(--ink); }
+.selo.publicado { background: #dff3e6; color: var(--ok); }
+.selo.novo { background: #fff1c2; color: #7a5300; }
+.selo.descartado { background: #f4f4f4; color: #777; }
+.selo.atrasado { background: #fde3e1; color: var(--erro); }
+.preco { font-weight: 800; color: var(--ink); }
+.tabela { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.tabela th, .tabela td { text-align: left; padding: 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.rolar { overflow-x: auto; }
+.encontro { border-left: 4px solid var(--brand); }
+.achado { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 6px 0; border-top: 1px dashed var(--border); }
+.fotos-prev { display: flex; gap: 8px; flex-wrap: wrap; }
+.fotos-prev img { width: 64px; height: 48px; object-fit: cover; border-radius: 6px; }
+.aviso { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 12px 16px; border-radius: 10px; max-width: calc(100% - 32px); z-index: 20; }
+a { color: var(--ink); }
+@media (max-width: 520px) { .item { grid-template-columns: 72px 1fr; } .item img, .item .semfoto { width: 72px; height: 56px; } }

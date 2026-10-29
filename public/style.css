@@ -100,6 +100,25 @@ h2 { font-size: clamp(1.4rem, 3vw, 2rem); margin: 0 0 12px; }
 .btn-dark { background: var(--ink); color: #fff; }
 .btn-dark:hover { background: #0a315e; }
 
+.machine-abrir { position: relative; display: block; padding: 0; border: 0; background: none; cursor: pointer; width: 100%; }
+.machine-abrir img, .machine-abrir .machine-nofoto { display: flex; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+.machine-qtd { position: absolute; right: 8px; bottom: 8px; background: rgb(0 0 0 / 0.65); color: #fff; font-size: 0.75rem; padding: 2px 8px; border-radius: 999px; }
+.btn-ghost-dark { background: #fff; color: var(--ink); border-color: var(--border); margin-top: 12px; }
+.machine-body .btn-ghost-dark + .machine-btn { margin-top: 8px; }
+.machines-dark { margin-bottom: 24px; }
+.machines-dark:empty { display: none; }
+.machines-dark .machine { color: var(--text); }
+.detalhe { width: min(760px, calc(100% - 24px)); max-height: calc(100vh - 24px); border: 0; border-radius: 12px; padding: 16px; }
+.detalhe::backdrop { background: rgb(6 30 66 / 0.7); }
+.detalhe-fechar { position: sticky; top: 0; float: right; font-size: 1.8rem; line-height: 1; width: 44px; height: 44px; border: 0; border-radius: 999px; background: #fff; cursor: pointer; }
+.detalhe-galeria { display: grid; gap: 8px; margin-bottom: 12px; }
+.detalhe-galeria img, .detalhe-galeria .machine-nofoto { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 8px; background: var(--bg-alt); }
+.detalhe h3 { margin: 4px 0 8px; font-size: 1.3rem; }
+.detalhe-ficha { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; margin: 0 0 8px; }
+.detalhe-ficha dt { color: var(--muted); }
+.detalhe-ficha dd { margin: 0; font-weight: 600; }
+.detalhe .machine-btn { display: block; margin-top: 12px; }
+
 .about { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 32px; align-items: center; }
 .services { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
 .services li { background: var(--bg-alt); border-left: 4px solid var(--brand); padding: 12px 16px; border-radius: 4px; font-weight: 600; }
