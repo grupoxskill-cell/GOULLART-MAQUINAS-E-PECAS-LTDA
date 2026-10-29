@@ -173,3 +173,21 @@ h2 { font-size: clamp(1.4rem, 3vw, 2rem); margin: 0 0 12px; }
   .machines, .catalog { grid-template-columns: 1fr; }
   .topbar-links a { font-size: 0.71rem; padding-inline: 3px; }
 }
+
+/* GOULLART premium commerce additions */
+.topbar-links a:last-child { color:var(--brand);font-weight:800; }
+.hero-banner { overflow:hidden;border:1px solid #f5b30188;border-radius:13px;background:#0c274c;margin:12px 0 22px; }
+.hero-banner-track { display:flex;width:300%;animation:goullart-banners 18s infinite; }
+.hero-banner-slide { display:flex;flex:0 0 33.333%;flex-direction:column;align-items:flex-start;gap:5px;padding:22px 24px;min-width:0; }
+.hero-banner-slide strong {font-size:clamp(1.15rem,3vw,1.7rem);color:#f5b301;letter-spacing:.03em;}
+.hero-banner-slide span {font-size:.95rem;}
+.hero-banner-slide a {display:inline-block;border-radius:5px;background:#f5b301;color:#061e42;font-weight:800;padding:9px 15px;text-decoration:none;margin-top:4px;}
+@keyframes goullart-banners {0%,27%{transform:translateX(0)}33%,60%{transform:translateX(-33.333%)}66%,93%{transform:translateX(-66.666%)}100%{transform:translateX(0)}}
+.brand-strip {background:white;border-block:1px solid #e3e8f0;padding:13px 0 7px;overflow:hidden;}
+.brand-marquee {width:100%;overflow:hidden;}
+.brand-scroll {display:flex;gap:44px;align-items:center;white-space:nowrap;width:max-content;animation:goullart-marquee 32s linear infinite;}
+.brand-scroll span {font-weight:900;font-size:clamp(.9rem,2vw,1.2rem);letter-spacing:.06em;color:#193451;}
+.brand-note {font-size:.7rem;color:#667085;text-align:center;padding:5px 12px;margin:8px 0 0;}
+@keyframes goullart-marquee {to{transform:translateX(-50%)}}
+@media(max-width:600px){.hero-banner {margin:8px 0 16px}.hero-banner-slide {padding:14px 12px;gap:4px}.hero-banner-slide strong{font-size:1rem}.hero-banner-slide span{font-size:.78rem}.hero-banner-slide a{padding:7px 10px;font-size:.78rem}.brand-scroll{gap:24px}.brand-scroll span{font-size:.85rem}}
+@media(prefers-reduced-motion:reduce){.hero-banner-track,.brand-scroll{animation:none}.hero-banner-track{width:100%;display:block}.hero-banner-slide{display:none}.hero-banner-slide:first-child{display:flex}}
