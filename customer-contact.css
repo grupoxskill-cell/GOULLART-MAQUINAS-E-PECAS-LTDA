@@ -1,0 +1,62 @@
+.goullart-faq{padding:64px max(5%,16px);background:#f6f7f9;color:#10274b}
+.goullart-faq-inner{max-width:1120px;margin:0 auto}
+.goullart-faq-kicker{margin:0 0 12px;font:700 11px/1.5 Arial,sans-serif;letter-spacing:1.7px;color:#566477}
+.goullart-faq h2{margin:0 0 32px;font:800 clamp(30px,4.5vw,52px)/1.1 Arial,sans-serif;letter-spacing:-1.3px}
+.goullart-faq h2:after{content:"";display:block;width:60px;height:5px;background:#ffcb05;margin-top:22px}
+.goullart-faq details{border-top:1px solid #d8dfe7}
+.goullart-faq details:last-child{border-bottom:1px solid #d8dfe7}
+.goullart-faq summary{display:flex;align-items:center;justify-content:space-between;gap:20px;min-height:68px;padding:20px 0;list-style:none;cursor:pointer;font:600 clamp(17px,2vw,21px)/1.45 Arial,sans-serif;box-sizing:border-box}
+.goullart-faq summary::-webkit-details-marker{display:none}
+.goullart-faq summary>span{width:10px;height:10px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg);margin-right:5px;flex-shrink:0;transition:transform .2s}
+.goullart-faq details[open] summary>span{transform:rotate(225deg)}
+.goullart-faq details[open] summary{color:#0a633a}
+.goullart-faq details>p{max-width:850px;margin:0;padding:0 30px 24px 0;color:#435369;font:400 16px/1.7 Arial,sans-serif}
+.goullart-faq summary:focus-visible{outline:3px solid #ac8000;outline-offset:4px;border-radius:3px}
+footer.goullart-watermark-footer{position:relative;isolation:isolate;overflow:hidden;background:#0a1b31}
+footer.goullart-watermark-footer>.goullart-footer-watermark{position:absolute;inset:0 0 0 auto;width:52%;height:100%;max-height:none;object-fit:contain;object-position:right center;opacity:.23;z-index:-1;pointer-events:none;filter:grayscale(15%)}
+footer.goullart-watermark-footer:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#0a1b31 30%,transparent 100%);z-index:-1;pointer-events:none}
+.goullart-contact,.goullart-contact *{box-sizing:border-box}
+.goullart-contact{position:fixed;right:max(20px,env(safe-area-inset-right,0px));bottom:calc(24px + env(safe-area-inset-bottom,0px));z-index:80;width:340px;max-width:calc(100vw - 32px);font:400 16px/1.5 Arial,sans-serif;color:#10274b;pointer-events:none}
+.goullart-contact-panel{width:100%;background:#fff;border:1px solid #dce3eb;border-radius:18px;overflow:auto;max-height:calc(100dvh - 124px);box-shadow:0 12px 50px #04182735;margin-bottom:16px;pointer-events:auto;animation:goullart-contact-rise .25s ease-out}
+.goullart-contact-panel[hidden]{display:none!important}
+.goullart-contact-header{display:flex;align-items:center;gap:12px;padding:12px 12px 12px 16px;background:#10274b;color:#fff;border-top:4px solid #ffcb05}
+.goullart-contact-header>div{flex:1;min-width:0}
+.goullart-contact .goullart-contact-avatar{width:52px;height:52px;max-width:none;object-fit:cover;object-position:50% 5%;border-radius:50%;border:2px solid #ffcb05;flex-shrink:0}
+.goullart-contact-header h2{margin:0;font:700 18px/1.25 Arial,sans-serif;letter-spacing:0;color:#fff}
+.goullart-contact-header p{margin:4px 0 0;color:#ffdb48;font:700 10px/1.4 Arial,sans-serif;letter-spacing:1.3px}
+.goullart-contact button{cursor:pointer;font-family:Arial,sans-serif}
+.goullart-contact-close{width:44px;height:44px;min-width:44px;border:0;border-radius:50%;background:#ffffff12;color:#fff;font-size:28px;line-height:1;padding:0}
+.goullart-contact-body{padding:16px;background:#f5f7fa}
+.goullart-contact-greeting{margin:0 0 16px;padding:12px;border-radius:0 12px 12px;background:#fff;box-shadow:0 1px 3px #10274b0d;font:400 17px/1.55 Arial,sans-serif;color:#10274b}
+.goullart-contact form{display:block;margin:0;padding:0;background:none;border:0}
+.goullart-contact label{display:block;font:700 13px/1.4 Arial,sans-serif;margin:0 0 8px;color:#10274b}
+.goullart-contact textarea{display:block;width:100%;min-height:80px;max-height:180px;resize:vertical;padding:12px;border:1px solid #bac7d5;border-radius:8px;background:#fff;color:#10274b;font:400 16px/1.5 Arial,sans-serif;margin:0 0 12px;box-shadow:none}
+.goullart-contact .goullart-contact-send{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;min-height:48px;border:0;border-radius:8px;padding:12px;background:#087941;color:#fff;font:700 14px/1.4 Arial,sans-serif}
+.goullart-contact-send svg{width:20px;height:20px;flex-shrink:0}
+.goullart-contact-note{margin:10px 0 0;font:400 12px/1.5 Arial,sans-serif;color:#536479}
+.goullart-contact-launcher{position:relative;display:block;width:72px;height:72px;margin-left:auto;pointer-events:auto;border:3px solid #fff;border-radius:50%;background:#10274b;box-shadow:0 4px 24px #061c3a40;text-decoration:none;color:#10274b;transition:transform .2s}
+.goullart-contact-launcher>img{display:block;width:100%;height:100%;max-width:none;object-fit:cover;object-position:50% 5%;border-radius:50%}
+.goullart-contact-badge{position:absolute;right:-4px;bottom:-3px;display:grid;place-items:center;width:30px;height:30px;padding:5px;border:2px solid #fff;border-radius:50%;background:#087941;color:#fff}
+.goullart-contact-badge svg{width:100%;height:100%}
+.goullart-contact-label{position:absolute;right:calc(100% + 12px);top:50%;transform:translateY(-50%);white-space:nowrap;background:#fff;border:1px solid #dce3eb;border-radius:9px;padding:8px 12px;font-size:13px;font-weight:700;box-shadow:0 3px 15px #10274b0d}
+.goullart-contact-launcher[aria-expanded=true] .goullart-contact-label{display:none}
+.goullart-contact :focus-visible{outline:3px solid #d59d00;outline-offset:3px}
+.goullart-contact-header :focus-visible{outline-color:#ffcb05}
+.goullart-contact-launcher.is-scrolling{animation:goullart-contact-walk .65s ease-in-out}
+@keyframes goullart-contact-walk{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes goullart-contact-rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:900px){
+ .goullart-contact{right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px))}
+ .goullart-contact-launcher{width:64px;height:64px}
+ .goullart-contact-launcher .goullart-contact-label{display:none}
+ .goullart-faq{padding:44px 20px}
+ .goullart-faq h2{letter-spacing:-.7px;margin-bottom:24px}
+ .goullart-faq summary{padding:20px 0;font-size:17px;gap:16px}
+ footer.goullart-watermark-footer>.goullart-footer-watermark{width:100%;object-position:center bottom;opacity:.18}
+ footer.goullart-watermark-footer:before{background:linear-gradient(180deg,#0a1b31cc,transparent)}
+ .goullart-contact-keyboard .goullart-contact{bottom:calc(var(--goullart-keyboard-inset,0px) + 12px)}
+ .goullart-contact-keyboard .goullart-contact-launcher{display:none}
+ .goullart-contact-keyboard .goullart-contact-panel{max-height:calc(var(--goullart-visual-height,100dvh) - 24px);margin-bottom:0}
+}
+@media(max-height:520px){.goullart-contact-panel{max-height:calc(100dvh - 108px)}.goullart-contact-header{padding-block:8px}.goullart-contact-body{padding:12px}.goullart-contact-greeting{margin-bottom:12px;padding:10px}}
+@media(prefers-reduced-motion:reduce){.goullart-contact-panel,.goullart-contact-launcher.is-scrolling{animation:none}.goullart-contact-launcher,.goullart-faq summary>span{transition:none}}
