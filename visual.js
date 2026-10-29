@@ -37,7 +37,8 @@
     clearInterval(timer);
     pause.textContent = userPaused ? 'Reproduzir' : 'Pausar';
     pause.setAttribute('aria-pressed', String(userPaused));
-    if (!userPaused && !hover && !touching && !document.hidden && !banner.contains(document.activeElement)) timer = setInterval(() => show(current + 1), 6500);
+    const focusedInside = banner.contains(document.activeElement) && document.activeElement !== pause;
+    if (!userPaused && !hover && !touching && !document.hidden && !focusedInside) timer = setInterval(() => show(current + 1), 6500);
   };
   pause.addEventListener('click', () => { userPaused = !userPaused; schedule(); });
   banner.querySelector('[data-banner-next]').addEventListener('click', () => { show(current + 1); schedule(); });
