@@ -1,19 +1,23 @@
-// Catálogo de máquinas: lê maquinas.json (gerado a partir das fichas aprovadas) e filtra por tipo e busca.
+// Catálogo de máquinas: lê maquinas.json (catálogo do site + publicações do ADM).
+// Na página inicial (lista com data-destaque) mostra alguns destaques com foto; em maquinas.html mostra tudo com filtros.
 (() => {
   const WHATSAPP = "5562999427276";
   const filtros = document.getElementById("maquinas-filtros");
   const busca = document.getElementById("maquinas-busca");
   const lista = document.getElementById("maquinas-lista");
   const info = document.getElementById("maquinas-info");
+  const patioSecao = document.getElementById("patios");
   const patioLista = document.getElementById("patio-lista");
+  const qtd = document.getElementById("qtd-maquinas");
   const detalhe = document.getElementById("detalhe");
   const detalheConteudo = document.getElementById("detalhe-conteudo");
+  const destaque = Number(lista?.dataset.destaque) || 0;
 
-  const normalizar = (s) => String(s).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  const normalizar = (s) => String(s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
   const ORDEM = ["Escavadeiras", "Pás-carregadeiras", "Retroescavadeiras", "Tratores", "Motoniveladoras", "Caminhões", "Outros"];
   const posicao = (c) => (ORDEM.includes(c) ? ORDEM.indexOf(c) : ORDEM.length);
   let maquinas = [];
-  let categoria = "Todas";
+  let categoria = new URLSearchParams(location.search).get("tipo") || "Todas";
 
   function el(tag, cls, texto) {
     const e = document.createElement(tag);
@@ -60,29 +64,30 @@
       el("p", "machine-status", "Disponibilidade, estado e condições confirmados pela equipe antes da negociação."), botaoInteresse(m));
     detalhe.showModal();
   }
-  detalhe.querySelector(".detalhe-fechar").addEventListener("click", () => detalhe.close());
-  detalhe.addEventListener("click", (e) => { if (e.target === detalhe) detalhe.close(); });
+  detalhe?.querySelector(".detalhe-fechar").addEventListener("click", () => detalhe.close());
+  detalhe?.addEventListener("click", (e) => { if (e.target === detalhe) detalhe.close(); });
 
   function card(m) {
     const li = el("li", "machine");
     const abrir = el("button", "machine-abrir");
     abrir.type = "button";
-    abrir.setAttribute("aria-label", `Ver detalhes: ${m.titulo}`);
+    abrir.setAttribute("aria-label", `Ver fotos e detalhes: ${m.titulo}`);
     abrir.append(m.fotos.length ? foto(m.fotos[0], m.titulo) : el("div", "machine-nofoto", "Foto sob consulta"));
+    if (m.patio) abrir.append(el("span", "machine-selo", "No pátio"));
     if (m.fotos.length > 1) abrir.append(el("span", "machine-qtd", `${m.fotos.length} fotos`));
     abrir.addEventListener("click", () => abrirDetalhe(m));
     li.append(abrir);
     const corpo = el("div", "machine-body");
-    corpo.append(el("span", "machine-cat", m.patio ? `No pátio · ${m.categoria}` : m.categoria), el("h3", "", m.titulo));
-    const dados = [m.ano && `Ano ${m.ano}`, m.horas].filter(Boolean).join(" · ");
+    const titulo = el("button", "machine-titulo", m.titulo);
+    titulo.type = "button";
+    titulo.addEventListener("click", () => abrirDetalhe(m));
+    const h3 = el("h3");
+    h3.append(titulo);
+    corpo.append(el("span", "machine-cat", m.categoria), h3);
+    const dados = [m.ano && `Ano ${m.ano}`, m.horas, m.patio && m.local].filter(Boolean).join(" · ");
     if (dados) corpo.append(el("p", "machine-dados", dados));
     corpo.append(el("p", "machine-preco", m.preco || "Preço sob consulta"));
-    if (m.patio && m.local) corpo.append(el("p", "machine-dados", `Local: ${m.local}`));
-    corpo.append(el("p", "machine-status", "Disponibilidade a confirmar"));
-    const ver = el("button", "btn btn-ghost-dark", "Ver detalhes");
-    ver.type = "button";
-    ver.addEventListener("click", () => abrirDetalhe(m));
-    corpo.append(ver, botaoInteresse(m));
+    corpo.append(el("p", "machine-status", "Disponibilidade a confirmar"), botaoInteresse(m));
     li.append(corpo);
     return li;
   }
@@ -115,18 +120,40 @@
       : "Nenhuma máquina encontrada. Fale com a equipe pelo WhatsApp que a gente procura para você.";
   }
 
+  // Destaques: máquinas com foto, alternando os tipos para a vitrine não ficar só com escavadeiras.
+  function renderDestaques() {
+    const porTipo = new Map();
+    const anoDe = (m) => Number(String(m.ano).match(/\d{4}/)?.[0]) || 0;
+    const comFoto = maquinas.filter((x) => x.fotos.length).sort((a, b) => Number(Boolean(b.patio)) - Number(Boolean(a.patio)) || anoDe(b) - anoDe(a));
+    // Vitrine só com máquinas pesadas, na ordem dos tipos (escavadeiras primeiro); "Outros" fica no catálogo completo.
+    for (const tipo of ORDEM.filter((t) => t !== "Outros")) porTipo.set(tipo, []);
+    for (const m of comFoto) if (porTipo.has(m.categoria)) porTipo.get(m.categoria).push(m);
+    const escolhidas = [];
+    while (escolhidas.length < destaque && [...porTipo.values()].some((v) => v.length)) {
+      for (const v of porTipo.values()) if (v.length && escolhidas.length < destaque) escolhidas.push(v.shift());
+    }
+    lista.replaceChildren(...escolhidas.map(card));
+    info.hidden = true;
+  }
+
   fetch("maquinas.json")
     .then((r) => { if (!r.ok) throw new Error("Catálogo indisponível"); return r.json(); })
     .then((dados) => {
       maquinas = dados
         .map((m) => ({ ...m, indice: normalizar([m.titulo, m.categoria, m.ano, m.referencia].join(" ")) }))
-        .sort((a, b) => posicao(a.categoria) - posicao(b.categoria));
-      renderFiltros();
-      render();
+        .sort((a, b) => Number(Boolean(b.patio)) - Number(Boolean(a.patio)) || posicao(a.categoria) - posicao(b.categoria));
+      if (qtd) qtd.textContent = String(maquinas.length);
+      if (filtros) {
+        if (!["Todas", ...ORDEM].includes(categoria)) categoria = "Todas";
+        renderFiltros();
+        render();
+        busca.addEventListener("input", render);
+      } else if (lista) renderDestaques();
       const doPatio = maquinas.filter((m) => m.patio);
-      if (patioLista) patioLista.replaceChildren(...doPatio.map(card));
+      if (patioLista && doPatio.length) {
+        patioLista.replaceChildren(...doPatio.map(card));
+        if (patioSecao) patioSecao.hidden = false;
+      }
     })
-    .catch(() => { info.textContent = "Não foi possível carregar as máquinas. Consulte a equipe pelo WhatsApp."; });
-
-  busca.addEventListener("input", render);
+    .catch(() => { if (info) info.textContent = "Não foi possível carregar as máquinas. Consulte a equipe pelo WhatsApp."; });
 })();
