@@ -4,7 +4,14 @@ Site da GOULLART (Goullart Peças para Escavadeiras Ltda) com catálogo pesquis�
 
 O site funciona de dois jeitos:
 
-- **Estático (GitHub Pages, gratuito):** catálogo e botões que abrem o WhatsApp (62) 99942-7276, onde a Sophia já atende. Publicado automaticamente pelo workflow `.github/workflows/pages.yml` a cada push no `master`, no endereço https://www.goullartmaquinaspesadas.com.br
+- **Estático (GitHub Pages, gratuito):** catálogo e botões que abrem o WhatsApp (62) 99942-7276, onde a Sophia já atende. Publicado automaticamente pelo workflow `.github/workflows/pages.yml` a cada push no `master`.
+- **No servidor da Azure (aaPanel):** o domínio www.goullartmaquinaspesadas.com.br aponta para o servidor 20.69.167.61. Para instalar ou atualizar o site lá, rode como root (no portal da Azure: máquina virtual → Operações → Executar comando → RunShellScript):
+
+  ```bash
+  curl -fsSL https://raw.githubusercontent.com/grupoxskill-cell/GOULLART-MAQUINAS-E-PECAS-LTDA/master/scripts/instalar-no-servidor.sh | bash
+  ```
+
+  O script guarda um backup da configuração do nginx e imprime o comando para voltar ao site antigo.
 - **Com servidor (Render + OpenAI):** a Sophia também conversa direto no site, usando o ChatGPT. Veja abaixo.
 
 ## Dados do site
