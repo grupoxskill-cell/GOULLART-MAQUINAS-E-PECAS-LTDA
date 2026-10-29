@@ -52,20 +52,23 @@ trap 'rm -rf "$TMP"' EXIT
 
 # Baixa um branch do GitHub para uma pasta, trocando a antiga sem deixar o site pela metade.
 # Devolve 0 se instalou versão nova, 1 se já estava atualizado.
+# Chamada dentro de `if`, onde o bash ignora `set -e`: por isso cada passo tem sua própria checagem.
+falhar() { echo "ERRO: $1"; exit 1; }
 sincronizar() {
   local branch="$1" pasta="$2" teste="$3" versao origem
   versao=$(curl -fsSL -H "Accept: application/vnd.github.sha" "https://api.github.com/repos/$REPO/commits/$branch" || true)
   if [ -n "$versao" ] && [ -d "$pasta" ] && [ "$(cat "$pasta/.versao" 2>/dev/null)" = "$versao" ]; then return 1; fi
-  rm -rf "$TMP/$branch" && mkdir -p "$TMP/$branch"
-  curl -fsSL "https://github.com/$REPO/archive/${versao:-refs/heads/$branch}.tar.gz" | tar -xz -C "$TMP/$branch"
+  rm -rf "$TMP/$branch" && mkdir -p "$TMP/$branch" "$(dirname "$pasta")" || falhar "não consegui preparar as pastas de $branch."
+  curl -fsSL "https://github.com/$REPO/archive/${versao:-refs/heads/$branch}.tar.gz" | tar -xz -C "$TMP/$branch" \
+    || falhar "download de $branch falhou. Nada foi alterado."
   origem=$(dirname "$(ls "$TMP/$branch"/*/"$teste" 2>/dev/null | head -1)")
-  [ -f "$origem/$teste" ] || { echo "ERRO: download de $branch incompleto. Nada foi alterado."; exit 1; }
+  [ -f "$origem/$teste" ] || falhar "download de $branch incompleto. Nada foi alterado."
   rm -f "$origem/CNAME"
-  [ -n "$versao" ] && echo "$versao" > "$origem/.versao"
+  if [ -n "$versao" ]; then echo "$versao" > "$origem/.versao"; fi
   rm -rf "$pasta.novo" "$pasta.velho"
-  mv "$origem" "$pasta.novo"
-  [ -d "$pasta" ] && mv "$pasta" "$pasta.velho"
-  mv "$pasta.novo" "$pasta"
+  mv "$origem" "$pasta.novo" || falhar "não consegui copiar $branch. Nada foi alterado."
+  if [ -d "$pasta" ]; then mv "$pasta" "$pasta.velho" || falhar "não consegui substituir $pasta."; fi
+  mv "$pasta.novo" "$pasta" || { mv "$pasta.velho" "$pasta" 2>/dev/null; falhar "não consegui instalar $branch; versão anterior mantida."; }
   rm -rf "$pasta.velho"
   echo "$(date '+%F %T') $branch atualizado em $pasta (versão ${versao:-desconhecida})"
   return 0

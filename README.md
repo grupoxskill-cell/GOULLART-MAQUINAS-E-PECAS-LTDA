@@ -38,6 +38,17 @@ Rodar o script de novo atualiza o site e liga a atualização automática: o cro
 curl -fsSL https://raw.githubusercontent.com/grupoxskill-cell/GOULLART-MAQUINAS-E-PECAS-LTDA/master/scripts/instalar-no-servidor.sh | bash
 ```
 
+## ADM (Radar, Pátio, CRM e Encontros)
+
+Área privada em `/adm`, com senha. Roda como serviço Node (`goullart-app`) no servidor, ouvindo só em `127.0.0.1:3210`; o nginx encaminha `/adm`, `/fotos/` e `/maquinas.json`. Os dados ficam em `/www/goullart-dados` (variável `DATA_DIR`), nunca no GitHub.
+
+- **Radar:** máquina com preço de origem; o preço do site é origem + margem (R$ 20.000 por padrão, editável em Configurações) e fica congelado no momento da publicação. Só aparece no site depois de "Publicar". Fonte, local e observações não são públicos.
+- **Pátio:** máquinas da GOULLART; publicadas aparecem na seção Pátio do site com o local informado.
+- **CRM:** importado do backup JSON do painel do CRM (substitui a base anterior).
+- **Encontros:** pedidos abertos do CRM (compra/locação, exceto peças e serviços) cruzados com Radar, Pátio e catálogo por tipo, marca, modelo e orçamento (`lib/encontros.js`).
+
+A senha é criada na instalação e aparece uma única vez na saída do script. Para gerar outra: `runuser -u goullart -- env DATA_DIR=/www/goullart-dados node /opt/goullart-app/scripts/criar-senha.mjs --nova`.
+
 ## Render
 
 O `render.yaml` está pronto para Node, `npm run build`, `npm start` e health check `/health`. Nenhuma variável OpenAI é necessária. A existência deste arquivo não comprova que um serviço Render tenha sido criado ou publicado.
