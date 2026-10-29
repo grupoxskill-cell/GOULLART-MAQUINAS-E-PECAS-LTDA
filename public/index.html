@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>GOULLART | Máquinas pesadas e peças para linha amarela</title>
-  <meta name="description" content="Máquinas pesadas novas e usadas, locação, transporte e peças para linha amarela: rodante, roda-guia, roda motriz, bomba hidráulica, pinhão e motor de translação.">
+  <title>GOULLART Pesados | Máquinas pesadas, peças e locação</title>
+  <meta name="description" content="Escavadeiras, pás-carregadeiras, retroescavadeiras, tratores, caminhões e peças para linha amarela. Compra, venda, peças e locação com a GOULLART.">
   <link rel="stylesheet" href="style.css">
 </head>
 <body id="inicio">
@@ -13,8 +13,9 @@
     <div class="wrap topbar-inner">
       <a class="logo" href="#inicio" aria-label="GOULLART — início"><img src="assets/logo-oficial.png" width="472" height="290" alt="GOULLART Pesados — Força que move o seu negócio"></a>
       <div class="topbar-links">
-        <a href="#catalogo">Catálogo</a>
-        <a href="#sobre">Sobre</a>
+        <a href="#maquinas">Máquinas</a>
+        <a href="#pecas">Peças</a>
+        <a href="#locacao">Locação</a>
         <a href="#contato">Contato</a>
       </div>
     </div>
@@ -22,13 +23,15 @@
 
   <header class="hero">
     <div class="wrap">
-      <p class="hero-motd">Máquinas, peças, locação e transporte</p>
-      <h1>Especialistas em <span>linha amarela</span></h1>
-      <p class="hero-sub">Não deixe sua máquina parada! Me fala o modelo da máquina e a peça que você precisa, que a gente identifica certinho.</p>
-      <div class="hero-actions">
-        <a class="btn btn-primary" href="https://wa.me/5562999427276?text=Ol%C3%A1!%20Gostaria%20de%20um%20or%C3%A7amento." target="_blank" rel="noopener">Chamar no WhatsApp</a>
-        <a class="btn btn-ghost" href="#catalogo">Consultar peças</a>
-      </div>
+      <p class="hero-motd">GOULLART Pesados</p>
+      <h1>Máquinas pesadas para <span>grandes negócios.</span></h1>
+      <p class="hero-sub">Compra, venda, peças, locações e soluções para o setor pesado.</p>
+      <nav class="tiles" aria-label="Áreas do site">
+        <a class="tile" href="#maquinas"><span aria-hidden="true">🚜</span>Catálogo</a>
+        <a class="tile" href="#patios"><span aria-hidden="true">📍</span>Pátios</a>
+        <a class="tile" href="#pecas"><span aria-hidden="true">🔧</span>Peças</a>
+        <a class="tile" href="#locacao"><span aria-hidden="true">🏗️</span>Locação</a>
+      </nav>
     </div>
   </header>
 
@@ -42,28 +45,44 @@
   </section>
 
   <main id="conteudo">
-    <section class="section">
+    <section id="maquinas" class="section">
       <div class="wrap">
-        <h2>O que a GOULLART faz</h2>
-        <div class="cards">
-          <div class="card"><h3>Máquinas pesadas</h3><p>Escavadeiras, tratores de esteira, carregadeiras e retroescavadeiras novas e usadas.</p></div>
-          <div class="card"><h3>Peças</h3><p>Rodante, roda-guia, roda motriz, bomba hidráulica, pinhão e motor de translação.</p></div>
-          <div class="card"><h3>Locação</h3><p>Máquinas para obra, fazenda, mineração e terraplanagem.</p></div>
-          <div class="card"><h3>Transporte e intermediação</h3><p>Transporte de máquinas e apoio na compra e venda entre proprietários.</p></div>
-        </div>
-        <p class="brands">Peças para Caterpillar, Komatsu, Volvo, Hyundai, John Deere, Sany, XCMG, Doosan, LiuGong e outras marcas.</p>
+        <h2>Catálogo de máquinas</h2>
+        <p>Escavadeiras, pás-carregadeiras, retroescavadeiras, tratores, caminhões e implementos.</p>
+        <p class="muted">Preços anunciados. Disponibilidade, estado e condições devem ser confirmados com a equipe antes de negociar.</p>
+        <div id="maquinas-filtros" class="chips" role="group" aria-label="Filtrar por tipo de máquina"></div>
+        <input id="maquinas-busca" class="search" type="search" placeholder="Ex.: escavadeira, D6, 966, Volvo…" aria-label="Buscar máquina">
+        <p id="maquinas-info" class="muted" role="status" aria-live="polite">Carregando máquinas…</p>
+        <noscript>Ative o JavaScript para ver as máquinas ou <a href="https://wa.me/5562999427276" rel="noopener" target="_blank">consulte pelo WhatsApp</a>.</noscript>
+        <ul id="maquinas-lista" class="machines"></ul>
       </div>
     </section>
 
-    <section id="catalogo" class="section section-alt">
+    <section id="patios" class="section section-dark">
       <div class="wrap">
-        <h2>Catálogo</h2>
+        <h2>Pátios</h2>
+        <p>Quer ver a máquina de perto? A equipe informa onde cada máquina está e agenda a sua visita.</p>
+        <a class="btn btn-primary" href="https://wa.me/5562999427276?text=Gostaria%20de%20agendar%20uma%20visita%20para%20ver%20uma%20m%C3%A1quina." target="_blank" rel="noopener">Agendar visita</a>
+      </div>
+    </section>
+
+    <section id="pecas" class="section section-alt">
+      <div class="wrap">
+        <h2>Peças</h2>
         <p>Procure pelo nome da peça, código ou modelo da máquina. Não achou? Consulte nossa equipe pelo WhatsApp.</p>
         <p class="muted">Referências para cotação. Confirme aplicação, disponibilidade, preço e prazo com a equipe antes da compra.</p>
         <input id="busca" class="search" type="search" placeholder="Ex.: rolete, PC200, 320D, roda guia…" aria-label="Buscar peça">
         <p id="catalogo-info" class="muted" role="status" aria-live="polite">Carregando referências…</p>
         <noscript>Ative o JavaScript para pesquisar peças ou <a href="https://wa.me/5562999427276" rel="noopener" target="_blank">peça uma cotação pelo WhatsApp</a>.</noscript>
         <ul id="catalogo-lista" class="catalog"></ul>
+      </div>
+    </section>
+
+    <section id="locacao" class="section">
+      <div class="wrap">
+        <h2>Locação</h2>
+        <p>Máquinas para obra, fazenda, mineração e terraplanagem. Conte para a equipe o equipamento, o serviço, a cidade, quando começa e por quanto tempo.</p>
+        <a class="btn btn-dark" href="https://wa.me/5562999427276?text=Gostaria%20de%20alugar%20uma%20m%C3%A1quina.%20Equipamento%3A%20%20Servi%C3%A7o%3A%20%20Cidade%3A%20%20In%C3%ADcio%3A%20%20Dura%C3%A7%C3%A3o%3A" target="_blank" rel="noopener">Pedir cotação de locação</a>
       </div>
     </section>
 
@@ -103,6 +122,7 @@
   </footer>
 
   <a class="whatsapp-float" href="https://wa.me/5562999427276" target="_blank" rel="noopener" aria-label="Falar com a equipe GOULLART no WhatsApp">Falar com a equipe</a>
+  <script src="maquinas.js"></script>
   <script src="catalogo.js"></script>
 </body>
 </html>

@@ -73,6 +73,33 @@ h2 { font-size: clamp(1.4rem, 3vw, 2rem); margin: 0 0 12px; }
 .catalog-item a { margin-top: auto; padding-top: 8px; font-weight: 700; color: var(--ink); text-decoration: underline; min-height: 44px; display: flex; align-items: center; }
 .catalog-item a:hover { text-decoration: underline; }
 
+.tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; max-width: 560px; }
+.tile { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 18px 12px; border-radius: 10px;
+  background: rgb(255 255 255 / 0.08); border: 1px solid rgb(255 255 255 / 0.25); color: #fff; font-weight: 700; text-decoration: none; }
+.tile span { font-size: 1.6rem; }
+.tile:hover { border-color: var(--brand); color: var(--brand); }
+@media (min-width: 720px) { .tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); max-width: none; } }
+
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.chip { padding: 10px 14px; min-height: 44px; border-radius: 999px; border: 1px solid var(--border); background: #fff; color: var(--ink); font: inherit; font-weight: 600; cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+.machines { list-style: none; padding: 0; margin: 16px 0 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+.machine { display: flex; flex-direction: column; background: #fff; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; min-width: 0; }
+.machine img, .machine-nofoto { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: var(--bg-alt); }
+.machine-nofoto { display: flex; align-items: center; justify-content: center; color: var(--muted); }
+.machine-body { display: flex; flex-direction: column; gap: 4px; padding: 14px; flex: 1; overflow-wrap: anywhere; }
+.machine-body h3 { margin: 0; font-size: 1.05rem; }
+.machine-body p { margin: 0; }
+.machine-cat { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); font-weight: 700; }
+.machine-dados { color: var(--muted); font-size: 0.9rem; }
+.machine-preco { font-size: 1.2rem; font-weight: 800; color: var(--ink); margin-top: 6px !important; }
+.machine-status { font-size: 0.8rem; color: #8a5a00; }
+.machine-btn { margin-top: auto; text-align: center; }
+.machine-body .machine-btn { margin-top: 12px; }
+.btn-dark { background: var(--ink); color: #fff; }
+.btn-dark:hover { background: #0a315e; }
+
 .about { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 32px; align-items: center; }
 .services { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
 .services li { background: var(--bg-alt); border-left: 4px solid var(--brand); padding: 12px 16px; border-radius: 4px; font-weight: 600; }
@@ -96,7 +123,8 @@ h2 { font-size: clamp(1.4rem, 3vw, 2rem); margin: 0 0 12px; }
 @media (max-width: 600px) {
   .topbar-inner { min-height: 96px; }
   .logo img { width: 120px; }
-  .topbar-links { gap: 8px; font-size: 0.9rem; }
+  .topbar-links { flex-wrap: wrap; justify-content: flex-end; gap: 0 10px; font-size: 0.85rem; }
+  .topbar-links a { padding: 10px 2px; }
   .hero { padding: 48px 0; }
   .catalog { max-height: none; }
   [id] { scroll-margin-top: 110px; }

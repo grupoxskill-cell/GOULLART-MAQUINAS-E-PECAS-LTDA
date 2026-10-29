@@ -45,6 +45,7 @@ O `render.yaml` está pronto para Node, `npm run build`, `npm start` e health ch
 ## Conteúdo e marca
 
 - `public/assets/logo-oficial.png`: cópia sem edição da referência aprovada por Júnior em 27/10/2026 (`goullart_pesados_logo_referencia.png`).
+- `public/maquinas.json` e `public/maquinas/`: catálogo público de máquinas, gerado em 29/10/2026 a partir das fichas do levantamento interno (partes 1 e 2), com publicação e preços aprovados por Júnior. Ficaram de fora as ofertas de terceiros do CRM (GOUL-CRM-*), a localização, as observações internas e duas imagens (anúncio de terceiro e arte do Radar).
 - `data/catalogo.json`: referências para orçamento, sem preços, custos ou confirmação de estoque. Duplicação literal é suprimida na exibição sem excluir o registro de origem.
 - `data/empresa.json`: contato comercial. WhatsApp 7276 conferido no iZap em 29/10/2026. O telefone 1936 foi preservado do projeto e do histórico do usuário; não foi efetuada ligação.
 - CNPJ 29.759.621/0001-35: presente no projeto e correspondente a Goulart Pecas e Maquinas Pesadas Ltda em consultas públicas Serasa/CNPJ.biz. A razão social anterior do projeto divergia. Não foi obtido novo comprovante diretamente da Receita; o rodapé usa marca e CNPJ.

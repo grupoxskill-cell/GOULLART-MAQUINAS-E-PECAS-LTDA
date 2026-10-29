@@ -1,0 +1,469 @@
+[
+ {
+  "ficha": "001",
+  "referencia": "GOUL-273",
+  "titulo": "Jet RXTX 325 RS",
+  "categoria": "Outros",
+  "ano": "2026",
+  "horas": "20 h",
+  "preco": "R$ 180.000 ou R$ 195.000",
+  "fotos": [
+   "maquinas/001-jet-rxtx-325-rs-1.jpg"
+  ]
+ },
+ {
+  "ficha": "002",
+  "referencia": "GOUL-275",
+  "titulo": "Escavadeira Doosan DX220 LC",
+  "categoria": "Escavadeiras",
+  "ano": "2023",
+  "horas": "6.200 h",
+  "preco": "R$ 520.000",
+  "fotos": [
+   "maquinas/002-escavadeira-doosan-dx220-lc-1.jpg"
+  ]
+ },
+ {
+  "ficha": "003",
+  "referencia": "GOUL-277",
+  "titulo": "Caminhão Volkswagen 15-180",
+  "categoria": "Caminhões",
+  "ano": "2008/2008",
+  "horas": "",
+  "preco": "R$ 150.000",
+  "fotos": [
+   "maquinas/003-caminhao-volkswagen-15-180-1.jpg"
+  ]
+ },
+ {
+  "ficha": "004",
+  "referencia": "GOUL-278",
+  "titulo": "Tratores Valtra BM 125 - lote anunciado de 2",
+  "categoria": "Tratores",
+  "ano": "2016",
+  "horas": "3.800 h / 2.600 h",
+  "preco": "R$ 275.000 cada",
+  "fotos": [
+   "maquinas/004-tratores-valtra-bm-125-lote-anunciado-de-2-1.jpg"
+  ]
+ },
+ {
+  "ficha": "005",
+  "referencia": "GOUL-279",
+  "titulo": "Minicarregadeira Caterpillar 226B3",
+  "categoria": "Pás-carregadeiras",
+  "ano": "2010",
+  "horas": "3.000 h",
+  "preco": "R$ 180.000",
+  "fotos": [
+   "maquinas/005-minicarregadeira-caterpillar-226b3-1.jpg"
+  ]
+ },
+ {
+  "ficha": "006",
+  "referencia": "GOUL-281",
+  "titulo": "Retroescavadeiras JCB 3CX - lote anunciado",
+  "categoria": "Retroescavadeiras",
+  "ano": "2025",
+  "horas": "1.800 h",
+  "preco": "R$ 355.000 cada",
+  "fotos": [
+   "maquinas/006-retroescavadeiras-jcb-3cx-lote-anunciado-1.jpg"
+  ]
+ },
+ {
+  "ficha": "007",
+  "referencia": "GOUL-282",
+  "titulo": "Escavadeira John Deere 210G",
+  "categoria": "Escavadeiras",
+  "ano": "2018",
+  "horas": "7.900 h",
+  "preco": "R$ 380.000",
+  "fotos": [
+   "maquinas/007-escavadeira-john-deere-210g-1.jpg"
+  ]
+ },
+ {
+  "ficha": "008",
+  "referencia": "GOUL-283",
+  "titulo": "Caminhão basculante Scania P 420",
+  "categoria": "Caminhões",
+  "ano": "2008",
+  "horas": "",
+  "preco": "R$ 300.000",
+  "fotos": [
+   "maquinas/008-caminhao-basculante-scania-p-420-1.jpg"
+  ]
+ },
+ {
+  "ficha": "009",
+  "referencia": "GOUL-284",
+  "titulo": "Trator de esteira Caterpillar D6N XL",
+  "categoria": "Tratores",
+  "ano": "2004",
+  "horas": "20.000 h",
+  "preco": "R$ 370.000",
+  "fotos": [
+   "maquinas/009-trator-de-esteira-caterpillar-d6n-xl-1.jpg"
+  ]
+ },
+ {
+  "ficha": "010",
+  "referencia": "GOUL-286",
+  "titulo": "Caminhão Volkswagen 31/320",
+  "categoria": "Caminhões",
+  "ano": "2011",
+  "horas": "",
+  "preco": "R$ 250.000",
+  "fotos": []
+ },
+ {
+  "ficha": "011",
+  "referencia": "GOUL-288",
+  "titulo": "Gerador 55 kVA - motor MWM",
+  "categoria": "Outros",
+  "ano": "2009",
+  "horas": "",
+  "preco": "R$ 56.000",
+  "fotos": [
+   "maquinas/011-gerador-55-kva-motor-mwm-1.jpg"
+  ]
+ },
+ {
+  "ficha": "012",
+  "referencia": "GOUL-289",
+  "titulo": "Gerador 100 kVA - motor Caterpillar",
+  "categoria": "Outros",
+  "ano": "2010",
+  "horas": "",
+  "preco": "R$ 82.000",
+  "fotos": [
+   "maquinas/012-gerador-100-kva-motor-caterpillar-1.jpg"
+  ]
+ },
+ {
+  "ficha": "013",
+  "referencia": "GOUL-293",
+  "titulo": "Trator de esteira Komatsu D51",
+  "categoria": "Tratores",
+  "ano": "2019",
+  "horas": "",
+  "preco": "R$ 600.000",
+  "fotos": [
+   "maquinas/013-trator-de-esteira-komatsu-d51-1.jpg"
+  ]
+ },
+ {
+  "ficha": "014",
+  "referencia": "GOUL-294",
+  "titulo": "Caminhão basculante Volkswagen 31.280",
+  "categoria": "Caminhões",
+  "ano": "2022",
+  "horas": "71.020 km",
+  "preco": "R$ 540.000 (último anúncio)",
+  "fotos": [
+   "maquinas/014-caminhao-basculante-volkswagen-31-280-1.jpg",
+   "maquinas/014-caminhao-basculante-volkswagen-31-280-2.jpg"
+  ]
+ },
+ {
+  "ficha": "015",
+  "referencia": "GOUL-295",
+  "titulo": "Escavadeira Develon DX 220 LCB-BR 10",
+  "categoria": "Escavadeiras",
+  "ano": "2024",
+  "horas": "4.469 h",
+  "preco": "R$ 640.000",
+  "fotos": [
+   "maquinas/015-escavadeira-develon-dx-220-lcb-br-10-1.jpg"
+  ]
+ },
+ {
+  "ficha": "016",
+  "referencia": "GOUL-296",
+  "titulo": "Retroescavadeira Case 580N",
+  "categoria": "Retroescavadeiras",
+  "ano": "2018",
+  "horas": "3.000 h",
+  "preco": "R$ 300.000",
+  "fotos": [
+   "maquinas/016-retroescavadeira-case-580n-1.jpg"
+  ]
+ },
+ {
+  "ficha": "017",
+  "referencia": "GOUL-297",
+  "titulo": "Retroescavadeira Case 580N 4x4 Turbo",
+  "categoria": "Retroescavadeiras",
+  "ano": "2020",
+  "horas": "6.149 h",
+  "preco": "R$ 310.000",
+  "fotos": [
+   "maquinas/017-retroescavadeira-case-580n-4x4-turbo-1.jpg"
+  ]
+ },
+ {
+  "ficha": "018",
+  "referencia": "GOUL-298",
+  "titulo": "Escavadeira John Deere 210G",
+  "categoria": "Escavadeiras",
+  "ano": "2017",
+  "horas": "10.200 h",
+  "preco": "R$ 330.000",
+  "fotos": [
+   "maquinas/018-escavadeira-john-deere-210g-1.jpg"
+  ]
+ },
+ {
+  "ficha": "019",
+  "referencia": "GOUL-299",
+  "titulo": "Escavadeira Hyundai 210",
+  "categoria": "Escavadeiras",
+  "ano": "2012",
+  "horas": "7.000 h (anunciadas)",
+  "preco": "R$ 320.000",
+  "fotos": [
+   "maquinas/019-escavadeira-hyundai-210-1.jpg"
+  ]
+ },
+ {
+  "ficha": "020",
+  "referencia": "GOUL-305",
+  "titulo": "Pá-carregadeira Caterpillar 966H",
+  "categoria": "Pás-carregadeiras",
+  "ano": "2022 (anunciado)",
+  "horas": "14.846 h",
+  "preco": "R$ 380.000",
+  "fotos": [
+   "maquinas/020-pa-carregadeira-caterpillar-966h-1.jpg"
+  ]
+ },
+ {
+  "ficha": "021",
+  "referencia": "GOUL-306",
+  "titulo": "Caminhão-pipa Volkswagen 31.330 Gascom",
+  "categoria": "Caminhões",
+  "ano": "2022",
+  "horas": "13.100 h",
+  "preco": "R$ 540.000",
+  "fotos": [
+   "maquinas/021-caminhao-pipa-volkswagen-31-330-gascom-1.jpg"
+  ]
+ },
+ {
+  "ficha": "022",
+  "referencia": "GOUL-307",
+  "titulo": "Cavalo mecânico Mercedes-Benz 2035 S",
+  "categoria": "Outros",
+  "ano": "2009",
+  "horas": "241.220 km",
+  "preco": "R$ 150.000",
+  "fotos": [
+   "maquinas/022-cavalo-mecanico-mercedes-benz-2035-s-1.jpg"
+  ]
+ },
+ {
+  "ficha": "023",
+  "referencia": "GOUL-314",
+  "titulo": "Trator de esteira Komatsu D61 EX",
+  "categoria": "Tratores",
+  "ano": "2013",
+  "horas": "9.978 h",
+  "preco": "R$ 500.000",
+  "fotos": [
+   "maquinas/023-trator-de-esteira-komatsu-d61-ex-1.jpg"
+  ]
+ },
+ {
+  "ficha": "024",
+  "referencia": "GOUL-315",
+  "titulo": "Trator de esteira Komatsu D61 EX",
+  "categoria": "Tratores",
+  "ano": "2014",
+  "horas": "11.400 h",
+  "preco": "R$ 450.000",
+  "fotos": [
+   "maquinas/024-trator-de-esteira-komatsu-d61-ex-1.jpg"
+  ]
+ },
+ {
+  "ficha": "025",
+  "referencia": "GOUL-316",
+  "titulo": "Escavadeira Volvo EC220DL",
+  "categoria": "Escavadeiras",
+  "ano": "2022",
+  "horas": "7.000 h",
+  "preco": "R$ 400.000",
+  "fotos": [
+   "maquinas/025-escavadeira-volvo-ec220dl-1.jpg"
+  ]
+ },
+ {
+  "ficha": "026",
+  "referencia": "GOUL-318",
+  "titulo": "Caminhão Mercedes-Benz 1620 eletrônico",
+  "categoria": "Caminhões",
+  "ano": "2011",
+  "horas": "",
+  "preco": "R$ 270.000",
+  "fotos": [
+   "maquinas/026-caminhao-mercedes-benz-1620-eletronico-1.jpg"
+  ]
+ },
+ {
+  "ficha": "027",
+  "referencia": "GOUL-328",
+  "titulo": "Motoniveladora Case 845B",
+  "categoria": "Motoniveladoras",
+  "ano": "2021",
+  "horas": "3.200 h",
+  "preco": "R$ 600.000",
+  "fotos": [
+   "maquinas/027-motoniveladora-case-845b-1.jpg"
+  ]
+ },
+ {
+  "ficha": "028",
+  "referencia": "GOUL-329",
+  "titulo": "Pá-carregadeira John Deere 524K",
+  "categoria": "Pás-carregadeiras",
+  "ano": "2019",
+  "horas": "7.115 h",
+  "preco": "R$ 355.000 no Pix (anunciado)",
+  "fotos": [
+   "maquinas/028-pa-carregadeira-john-deere-524k-1.jpg"
+  ]
+ },
+ {
+  "ficha": "029",
+  "referencia": "GOUL-341",
+  "titulo": "Retroescavadeira Caterpillar 416E",
+  "categoria": "Retroescavadeiras",
+  "ano": "2015",
+  "horas": "",
+  "preco": "R$ 250.000",
+  "fotos": [
+   "maquinas/029-retroescavadeira-caterpillar-416e-1.jpg"
+  ]
+ },
+ {
+  "ficha": "030",
+  "referencia": "GOUL-343",
+  "titulo": "Escavadeira Hyundai 180 LC-9",
+  "categoria": "Escavadeiras",
+  "ano": "2019",
+  "horas": "4.321 h",
+  "preco": "R$ 450.000 no Pix (anunciado)",
+  "fotos": [
+   "maquinas/030-escavadeira-hyundai-180-lc-9-1.jpg"
+  ]
+ },
+ {
+  "ficha": "031",
+  "referencia": "GOUL-344",
+  "titulo": "Escavadeira John Deere 200G LC",
+  "categoria": "Escavadeiras",
+  "ano": "2022",
+  "horas": "5.168 h",
+  "preco": "R$ 464.000",
+  "fotos": [
+   "maquinas/031-escavadeira-john-deere-200g-lc-1.jpg"
+  ]
+ },
+ {
+  "ficha": "032",
+  "referencia": "GOUL-345",
+  "titulo": "Escavadeira Hyundai 220 LC-9S",
+  "categoria": "Escavadeiras",
+  "ano": "2021",
+  "horas": "6.050 h",
+  "preco": "",
+  "fotos": [
+   "maquinas/032-escavadeira-hyundai-220-lc-9s-1.jpg"
+  ]
+ },
+ {
+  "ficha": "033",
+  "referencia": "GOUL-347",
+  "titulo": "Conjunto: VW Fuscão 26260 + Ford Cargo",
+  "categoria": "Outros",
+  "ano": "2004/05 e 2008/09",
+  "horas": "Fuscão: 300 mil km",
+  "preco": "R$ 550.000 o conjunto",
+  "fotos": [
+   "maquinas/033-conjunto-vw-fuscao-26260-ford-cargo-1.jpg",
+   "maquinas/033-conjunto-vw-fuscao-26260-ford-cargo-2.jpg"
+  ]
+ },
+ {
+  "ficha": "034",
+  "referencia": "GOUL-349",
+  "titulo": "Caminhão Ford Cargo 2429 roll-on/roll-off",
+  "categoria": "Caminhões",
+  "ano": "2014/2015 (anúncio 14/15)",
+  "horas": "",
+  "preco": "R$ 350.000",
+  "fotos": [
+   "maquinas/034-caminhao-ford-cargo-2429-roll-on-roll-off-1.jpg"
+  ]
+ },
+ {
+  "ficha": "035",
+  "referencia": "GOUL-350",
+  "titulo": "Caminhão Volkswagen 31.330 roll-on/roll-off",
+  "categoria": "Caminhões",
+  "ano": "2018/2019",
+  "horas": "",
+  "preco": "R$ 420.000",
+  "fotos": [
+   "maquinas/035-caminhao-volkswagen-31-330-roll-on-roll-off-1.jpg"
+  ]
+ },
+ {
+  "ficha": "036",
+  "referencia": "GOUL-352",
+  "titulo": "Escavadeira John Deere 180G",
+  "categoria": "Escavadeiras",
+  "ano": "2019",
+  "horas": "5.396 h",
+  "preco": "R$ 390.000",
+  "fotos": [
+   "maquinas/036-escavadeira-john-deere-180g-1.jpg"
+  ]
+ },
+ {
+  "ficha": "037",
+  "referencia": "GOUL-353",
+  "titulo": "Caminhão basculante Volkswagen 31.330",
+  "categoria": "Caminhões",
+  "ano": "2020/2021",
+  "horas": "137.898 km",
+  "preco": "R$ 465.000",
+  "fotos": [
+   "maquinas/037-caminhao-basculante-volkswagen-31-330-1.jpg"
+  ]
+ },
+ {
+  "ficha": "038",
+  "referencia": "GOUL-403",
+  "titulo": "Pá-carregadeira Caterpillar 966L",
+  "categoria": "Pás-carregadeiras",
+  "ano": "2022",
+  "horas": "14.800 h",
+  "preco": "R$ 330.000",
+  "fotos": []
+ },
+ {
+  "ficha": "039",
+  "referencia": "GOUL-404",
+  "titulo": "Escavadeira Hyundai 210 LC-7",
+  "categoria": "Escavadeiras",
+  "ano": "2012",
+  "horas": "14.600 h",
+  "preco": "R$ 255.900",
+  "fotos": [
+   "maquinas/039-escavadeira-hyundai-210-lc-7-1.jpg",
+   "maquinas/039-escavadeira-hyundai-210-lc-7-2.jpg"
+  ]
+ }
+]

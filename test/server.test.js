@@ -35,6 +35,14 @@ test('site, logo e HEAD disponíveis; sem UI da Sophia', async () => {
   const h = await fetch(base, { method: 'HEAD' });
   assert.equal(h.status, 200); assert.equal(await h.text(), '');
 });
+test('catálogo de máquinas e fotos disponíveis, sem dados internos', async () => {
+  const maquinas = await (await fetch(base + '/maquinas.json')).json();
+  assert.ok(maquinas.length > 0);
+  for (const m of maquinas) {
+    assert.ok(!m.referencia.includes('CRM'));
+    for (const f of m.fotos) assert.equal((await fetch(base + '/' + f, { method: 'HEAD' })).headers.get('content-type'), 'image/jpeg');
+  }
+});
 test('dados privados e caminhos malformados não são servidos', async () => {
   for (const path of ['/.env', '/data/empresa.json', '/%2e%2e%2f.env', '/.git/config']) {
     const r = await fetch(base + path); assert.ok([403,404].includes(r.status));
