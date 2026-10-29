@@ -210,3 +210,44 @@ h2 { font-size: clamp(1.4rem, 3vw, 2rem); margin: 0 0 12px; }
 @keyframes goullart-marquee {to{transform:translateX(-50%)}}
 @media(max-width:600px){.hero-banner {margin:8px 0 16px}.hero-banner-slide {padding:14px 12px;gap:4px}.hero-banner-slide strong{font-size:1rem}.hero-banner-slide span{font-size:.78rem}.hero-banner-slide a{padding:7px 10px;font-size:.78rem}.brand-scroll{gap:24px}.brand-scroll span{font-size:.85rem}}
 @media(prefers-reduced-motion:reduce){.hero-banner-track,.brand-scroll{animation:none}.hero-banner-track{width:100%;display:block}.hero-banner-slide{display:none}.hero-banner-slide:first-child{display:flex}}
+
+/* Seis banners, cards comerciais e institucional GOULLART */
+.hero-banner-track{width:600%;animation:goullart-six-banners 36s infinite;}
+.hero-banner-slide{flex:0 0 16.6666667%;}
+@keyframes goullart-six-banners{
+  0%,13%{transform:translateX(0)}
+  16.666%,29.7%{transform:translateX(-16.6667%)}
+  33.333%,46.4%{transform:translateX(-33.3333%)}
+  50%,63%{transform:translateX(-50%)}
+  66.667%,79.7%{transform:translateX(-66.6667%)}
+  83.333%,96.4%{transform:translateX(-83.3333%)}
+  100%{transform:translateX(0)}
+}
+.business-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:18px 0 4px}
+.business-card{display:flex;flex-direction:column;gap:8px;min-width:0;padding:17px;border:1px solid rgba(255,255,255,.24);background:rgba(255,255,255,.085);border-radius:12px;color:#fff;text-decoration:none}
+.business-card:hover,.business-card:focus-visible{border-color:var(--brand)}
+.business-card-icon{font-size:1.6rem}.business-card strong{font-size:.94rem;color:var(--brand);line-height:1.2}
+.business-card small{color:#ecf1f8;font-size:.79rem;line-height:1.4;flex:1}
+.business-card-cta{font-weight:800;font-size:.81rem}
+.institutional{background:#fff}.eyebrow{font-size:.75rem;font-weight:800;letter-spacing:.12em;color:#b48100}
+.institutional-lead{max-width:850px;font-size:1.05rem;line-height:1.75}
+.institutional-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:22px}
+.institutional-card{background:#f3f6fa;border:1px solid #dfe5ee;border-top:4px solid var(--brand);border-radius:12px;padding:20px}
+.institutional-card h3{margin:0 0 10px;color:var(--ink)}.institutional-card p{margin:0;font-size:.94rem;line-height:1.7}
+.testimonials-carousel{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:8px 2px 14px}
+.testimonial-card{flex:0 0 min(410px,90%);scroll-snap-align:start;border:1px solid #dde3ec;border-radius:12px;background:#fff;padding:20px;min-height:170px}
+.testimonial-card strong{color:var(--ink)}.testimonial-card span{font-size:.8rem;color:#6b6b6b}.testimonial-card a{color:var(--ink);font-weight:800}
+@media(max-width:600px){
+ .business-cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:12px}
+ .business-card{padding:11px;gap:6px}
+ .business-card strong{font-size:.78rem}
+ .business-card small{font-size:.7rem}
+ .business-card-icon{font-size:1.2rem}
+ .business-card-cta{font-size:.72rem}
+ .institutional-lead{font-size:.91rem;line-height:1.6}
+ .institutional-cards{grid-template-columns:1fr;gap:9px}
+ .institutional-card{padding:14px}.institutional-card p{font-size:.83rem}
+ .testimonials-carousel{gap:9px}
+ .testimonial-card{flex-basis:88%;min-height:150px;padding:15px;font-size:.84rem}
+}
+@media(prefers-reduced-motion:reduce){.hero-banner-track{animation:none;width:100%}.hero-banner-slide{display:none}.hero-banner-slide:first-child{display:flex}}
