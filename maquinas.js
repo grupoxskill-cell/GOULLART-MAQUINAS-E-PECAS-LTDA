@@ -9,8 +9,6 @@
   const patioSecao = document.getElementById("patios");
   const patioLista = document.getElementById("patio-lista");
   const qtd = document.getElementById("qtd-maquinas");
-  const detalhe = document.getElementById("detalhe");
-  const detalheConteudo = document.getElementById("detalhe-conteudo");
   const destaque = Number(lista?.dataset.destaque) || 0;
 
   const normalizar = (s) => String(s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
@@ -51,44 +49,28 @@
     a.href = linkInteresse(m);
     a.target = "_blank";
     a.rel = "noopener";
+    a.dataset.interesse = "";
+    a.dataset.ref = m.referencia;
     return a;
   }
 
-  function abrirDetalhe(m) {
-    const galeria = el("div", "detalhe-galeria");
-    if (m.fotos.length) galeria.append(...m.fotos.map((f, i) => foto(f, `${m.titulo} — foto ${i + 1}`)));
-    else galeria.append(el("div", "machine-nofoto", "Foto sob consulta"));
-    const titulo = el("h3", "", m.titulo);
-    titulo.id = "detalhe-titulo";
-    const ficha = el("dl", "detalhe-ficha");
-    for (const [rotulo, valor] of [["Tipo", m.categoria], ["Ano", m.ano], ["Horas / km", m.horas],
-      ["Local", m.patio ? m.local : ""], ["Referência", m.referencia]]) {
-      if (valor) ficha.append(el("dt", "", rotulo), el("dd", "", valor));
-    }
-    detalheConteudo.replaceChildren(galeria, el("span", "machine-cat", m.patio ? "No pátio GOULLART" : m.categoria), titulo, ficha,
-      el("p", "machine-preco", m.preco || "Preço sob consulta"),
-      el("p", "machine-status", "Disponibilidade, estado e condições confirmados pela equipe antes da negociação."), botaoInteresse(m));
-    detalhe.showModal();
+  // Cada máquina tem página própria (maquina/<slug>.html), com prévia de foto e preço ao compartilhar.
+  function link(m, cls, conteudo) {
+    const a = el("a", cls);
+    a.href = `maquina/${m.slug}.html`;
+    a.append(...conteudo);
+    return a;
   }
-  detalhe?.querySelector(".detalhe-fechar").addEventListener("click", () => detalhe.close());
-  detalhe?.addEventListener("click", (e) => { if (e.target === detalhe) detalhe.close(); });
 
   function card(m) {
     const li = el("li", "machine");
-    const abrir = el("button", "machine-abrir");
-    abrir.type = "button";
-    abrir.setAttribute("aria-label", `Ver fotos e detalhes: ${m.titulo}`);
-    abrir.append(m.fotos.length ? foto(m.fotos[0], m.titulo) : el("div", "machine-nofoto", "Foto sob consulta"));
-    if (m.patio) abrir.append(el("span", "machine-selo", "No pátio"));
-    if (m.fotos.length > 1) abrir.append(el("span", "machine-qtd", `${m.fotos.length} fotos`));
-    abrir.addEventListener("click", () => abrirDetalhe(m));
-    li.append(abrir);
+    const capa = [m.fotos.length ? foto(m.fotos[0], m.titulo) : el("div", "machine-nofoto", "Foto sob consulta")];
+    if (m.patio) capa.push(el("span", "machine-selo", "No pátio"));
+    if (m.fotos.length > 1) capa.push(el("span", "machine-qtd", `${m.fotos.length} fotos`));
+    li.append(link(m, "machine-abrir", capa));
     const corpo = el("div", "machine-body");
-    const titulo = el("button", "machine-titulo", m.titulo);
-    titulo.type = "button";
-    titulo.addEventListener("click", () => abrirDetalhe(m));
     const h3 = el("h3");
-    h3.append(titulo);
+    h3.append(link(m, "machine-titulo", [m.titulo]));
     corpo.append(el("span", "machine-cat", m.categoria), h3);
     const dados = [m.ano && `Ano ${m.ano}`, m.horas, m.patio && m.local].filter(Boolean).join(" · ");
     if (dados) corpo.append(el("p", "machine-dados", dados));

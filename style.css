@@ -200,8 +200,6 @@ p { margin: 0; }
 .machine-body { display: flex; flex-direction: column; gap: 4px; padding: 16px; flex: 1; overflow-wrap: anywhere; }
 .machine-cat { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 700; }
 .machine-body h3 { font-size: 1.05rem; color: var(--ink); }
-.machine-titulo { all: unset; cursor: pointer; }
-.machine-titulo:hover { text-decoration: underline; }
 .machine-titulo:focus-visible { outline: 3px solid #0877d1; outline-offset: 2px; }
 .machine-dados { color: var(--muted); font-size: 0.9rem; }
 .machine-preco { font-size: 1.3rem; font-weight: 800; color: var(--ink); margin-top: 8px; }
@@ -212,19 +210,26 @@ p { margin: 0; }
 @media (min-width: 861px) { .machines[data-destaque] { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 .ver-todas { margin-top: 32px; text-align: center; }
 
-/* ---------- Detalhe da máquina ---------- */
-.detalhe { width: min(860px, calc(100% - 24px)); max-height: calc(100dvh - 24px); border: 0; border-radius: 16px; padding: 0; box-shadow: var(--shadow); }
-.detalhe::backdrop { background: rgb(6 30 66 / 0.72); }
-.detalhe-fechar { position: sticky; top: 10px; float: right; margin: 10px 10px -54px 0; z-index: 2; width: 44px; height: 44px; font-size: 1.6rem; line-height: 1;
-  border: 0; border-radius: 999px; background: #fff; color: var(--ink); box-shadow: var(--shadow); cursor: pointer; }
-#detalhe-conteudo { padding: 16px 20px 22px; }
-.detalhe-galeria { display: grid; gap: 8px; margin: 0 -20px 16px; margin-top: -16px; }
-.detalhe-galeria img, .detalhe-galeria .machine-nofoto { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: var(--bg-alt); }
-.detalhe h3 { font-size: 1.5rem; color: var(--ink); margin: 6px 0 12px; }
-.detalhe-ficha { display: grid; grid-template-columns: max-content 1fr; gap: 6px 20px; margin: 0 0 12px; }
+/* ---------- Página da máquina ---------- */
+.trilha { font-size: 0.9rem; color: var(--muted); margin-bottom: 18px; }
+.trilha a { color: var(--ink); text-decoration: none; }
+.trilha a:hover { text-decoration: underline; }
+.maquina { display: grid; grid-template-columns: 1.4fr 1fr; gap: 32px; align-items: start; }
+.maquina-fotos { display: grid; gap: 10px; }
+.maquina-fotos img, .maquina-fotos .machine-nofoto { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--radius); background: #fff; }
+.maquina-info { position: sticky; top: calc(var(--header) + 16px); background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; display: grid; gap: 10px; }
+.maquina-info h1 { font-size: clamp(1.5rem, 3vw, 2rem); color: var(--ink); }
+.maquina-preco { font-size: 1.8rem; font-weight: 800; color: var(--ink); }
+.maquina-btn { width: 100%; }
+.detalhe-ficha { display: grid; grid-template-columns: max-content 1fr; gap: 6px 20px; margin: 4px 0; }
 .detalhe-ficha dt { color: var(--muted); }
 .detalhe-ficha dd { margin: 0; font-weight: 600; }
-.detalhe .machine-btn { display: flex; width: 100%; margin-top: 16px; }
+.parecidas { margin-top: 56px; }
+.parecidas h2 { margin-bottom: 4px; }
+a.machine-abrir { text-decoration: none; }
+a.machine-titulo { color: inherit; text-decoration: none; }
+a.machine-titulo:hover { text-decoration: underline; }
+@media (max-width: 860px) { .maquina { grid-template-columns: 1fr; gap: 18px; } .maquina-info { position: static; } }
 
 /* ---------- Catálogo de peças ---------- */
 .catalog { list-style: none; padding: 0; margin: 20px 0 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; }

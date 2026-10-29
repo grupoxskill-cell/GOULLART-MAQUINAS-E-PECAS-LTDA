@@ -9,7 +9,8 @@
   "preco": "R$ 180.000 ou R$ 195.000",
   "fotos": [
    "maquinas/001-jet-rxtx-325-rs-1.jpg"
-  ]
+  ],
+  "slug": "jet-rxtx-325-rs-2026"
  },
  {
   "ficha": "002",
@@ -21,7 +22,8 @@
   "preco": "R$ 520.000",
   "fotos": [
    "maquinas/002-escavadeira-doosan-dx220-lc-1.jpg"
-  ]
+  ],
+  "slug": "escavadeira-doosan-dx220-lc-2023"
  },
  {
   "ficha": "003",
@@ -33,7 +35,8 @@
   "preco": "R$ 150.000",
   "fotos": [
    "maquinas/003-caminhao-volkswagen-15-180-1.jpg"
-  ]
+  ],
+  "slug": "caminhao-volkswagen-15-180-2008"
  },
  {
   "ficha": "004",
@@ -45,7 +48,8 @@
   "preco": "R$ 275.000 cada",
   "fotos": [
    "maquinas/004-tratores-valtra-bm-125-lote-anunciado-de-2-1.jpg"
-  ]
+  ],
+  "slug": "tratores-valtra-bm-125-lote-anunciado-de-2-2016"
  },
  {
   "ficha": "005",
@@ -57,7 +61,8 @@
   "preco": "R$ 180.000",
   "fotos": [
    "maquinas/005-minicarregadeira-caterpillar-226b3-1.jpg"
-  ]
+  ],
+  "slug": "minicarregadeira-caterpillar-226b3-2010"
  },
  {
   "ficha": "006",
@@ -69,7 +74,8 @@
   "preco": "R$ 355.000 cada",
   "fotos": [
    "maquinas/006-retroescavadeiras-jcb-3cx-lote-anunciado-1.jpg"
-  ]
+  ],
+  "slug": "retroescavadeiras-jcb-3cx-lote-anunciado-2025"
  },
  {
   "ficha": "007",
@@ -81,7 +87,8 @@
   "preco": "R$ 380.000",
   "fotos": [
    "maquinas/007-escavadeira-john-deere-210g-1.jpg"
-  ]
+  ],
+  "slug": "escavadeira-john-deere-210g-2018"
  },
  {
   "ficha": "008",
@@ -93,7 +100,8 @@
   "preco": "R$ 300.000",
   "fotos": [
    "maquinas/008-caminhao-basculante-scania-p-420-1.jpg"
-  ]
+  ],
+  "slug": "caminhao-basculante-scania-p-420-2008"
  },
  {
   "ficha": "009",
@@ -105,7 +113,8 @@
   "preco": "R$ 370.000",
   "fotos": [
    "maquinas/009-trator-de-esteira-caterpillar-d6n-xl-1.jpg"
-  ]
+  ],
+  "slug": "trator-de-esteira-caterpillar-d6n-xl-2004"
  },
  {
   "ficha": "010",
@@ -115,7 +124,8 @@
   "ano": "2011",
   "horas": "",
   "preco": "R$ 250.000",
-  "fotos": []
+  "fotos": [],
+  "slug": "caminhao-volkswagen-31-320-2011"
  },
  {
   "ficha": "011",
@@ -127,7 +137,8 @@
   "preco": "R$ 56.000",
   "fotos": [
    "maquinas/011-gerador-55-kva-motor-mwm-1.jpg"
-  ]
+  ],
+  "slug": "gerador-55-kva-motor-mwm-2009"
  },
  {
   "ficha": "012",
@@ -139,7 +150,8 @@
   "preco": "R$ 82.000",
   "fotos": [
    "maquinas/012-gerador-100-kva-motor-caterpillar-1.jpg"
-  ]
+  ],
+  "slug": "gerador-100-kva-motor-caterpillar-2010"
  },
  {
   "ficha": "013",
@@ -151,7 +163,8 @@
   "preco": "R$ 600.000",
   "fotos": [
    "maquinas/013-trator-de-esteira-komatsu-d51-1.jpg"
-  ]
+  ],
+  "slug": "trator-de-esteira-komatsu-d51-2019"
  },
  {
   "ficha": "014",
@@ -164,7 +177,8 @@
   "fotos": [
    "maquinas/014-caminhao-basculante-volkswagen-31-280-1.jpg",
    "maquinas/014-caminhao-basculante-volkswagen-31-280-2.jpg"
-  ]
+  ],
+  "slug": "caminhao-basculante-volkswagen-31-280-2022"
  },
  {
   "ficha": "015",
@@ -176,7 +190,8 @@
   "preco": "R$ 640.000",
   "fotos": [
    "maquinas/015-escavadeira-develon-dx-220-lcb-br-10-1.jpg"
-  ]
+  ],
+  "slug": "escavadeira-develon-dx-220-lcb-br-10-2024"
  },
  {
   "ficha": "016",
@@ -188,7 +203,8 @@
   "preco": "R$ 300.000",
   "fotos": [
    "maquinas/016-retroescavadeira-case-580n-1.jpg"
-  ]
+  ],
+  "slug": "retroescavadeira-case-580n-2018"
  },
  {
   "ficha": "017",
@@ -200,7 +216,8 @@
   "preco": "R$ 310.000",
   "fotos": [
    "maquinas/017-retroescavadeira-case-580n-4x4-turbo-1.jpg"
-  ]
+  ],
+  "slug": "retroescavadeira-case-580n-4x4-turbo-2020"
  },
  {
   "ficha": "018",
@@ -212,7 +229,8 @@
   "preco": "R$ 330.000",
   "fotos": [
    "maquinas/018-escavadeira-john-deere-210g-1.jpg"
-  ]
+  ],
+  "slug": "escavadeira-john-deere-210g-2017"
  },
  {
   "ficha": "019",
@@ -224,7 +242,8 @@
   "preco": "R$ 320.000",
   "fotos": [
    "maquinas/019-escavadeira-hyundai-210-1.jpg"
-  ]
+  ],
+  "slug": "escavadeira-hyundai-210-2012"
  },
  {
   "ficha": "020",
@@ -236,7 +255,8 @@
   "preco": "R$ 380.000",
   "fotos": [
    "maquinas/020-pa-carregadeira-caterpillar-966h-1.jpg"
-  ]
+  ],
+  "slug": "pa-carregadeira-caterpillar-966h-2022"
  },
  {
   "ficha": "021",
@@ -248,7 +268,8 @@
   "preco": "R$ 540.000",
   "fotos": [
    "maquinas/021-caminhao-pipa-volkswagen-31-330-gascom-1.jpg"
-  ]
+  ],
+  "slug": "caminhao-pipa-volkswagen-31-330-gascom-2022"
  },
  {
   "ficha": "022",
@@ -260,7 +281,8 @@
   "preco": "R$ 150.000",
   "fotos": [
    "maquinas/022-cavalo-mecanico-mercedes-benz-2035-s-1.jpg"
-  ]
+  ],
+  "slug": "cavalo-mecanico-mercedes-benz-2035-s-2009"
  },
  {
   "ficha": "023",
@@ -272,7 +294,8 @@
   "preco": "R$ 500.000",
   "fotos": [
    "maquinas/023-trator-de-esteira-komatsu-d61-ex-1.jpg"
-  ]
+  ],
+  "slug": "trator-de-esteira-komatsu-d61-ex-2013"
  },
  {
   "ficha": "024",
@@ -284,7 +307,8 @@
   "preco": "R$ 450.000",
   "fotos": [
    "maquinas/024-trator-de-esteira-komatsu-d61-ex-1.jpg"
-  ]
+  ],
+  "slug": "trator-de-esteira-komatsu-d61-ex-2014"
  },
  {
   "ficha": "025",
@@ -296,7 +320,8 @@
   "preco": "R$ 400.000",
   "fotos": [
    "maquinas/025-escavadeira-volvo-ec220dl-1.jpg"
-  ]
+  ],
+  "slug": "escavadeira-volvo-ec220dl-2022"
  },
  {
   "ficha": "026",
@@ -308,7 +333,8 @@
   "preco": "R$ 270.000",
   "fotos": [
    "maquinas/026-caminhao-mercedes-benz-1620-eletronico-1.jpg"
-  ]
+  ],
+  "slug": "caminhao-mercedes-benz-1620-eletronico-2011"
  },
  {
   "ficha": "027",
@@ -320,7 +346,8 @@
   "preco": "R$ 600.000",
   "fotos": [
    "maquinas/027-motoniveladora-case-845b-1.jpg"
-  ]
+  ],
+  "slug": "motoniveladora-case-845b-2021"
  },
  {
   "ficha": "028",
@@ -332,7 +359,8 @@
   "preco": "R$ 355.000 no Pix (anunciado)",
   "fotos": [
    "maquinas/028-pa-carregadeira-john-deere-524k-1.jpg"
-  ]
+  ],
+  "slug": "pa-carregadeira-john-deere-524k-2019"
  },
  {
   "ficha": "029",
@@ -344,7 +372,8 @@
   "preco": "R$ 250.000",
   "fotos": [
    "maquinas/029-retroescavadeira-caterpillar-416e-1.jpg"
-  ]
+  ],
+  "slug": "retroescavadeira-caterpillar-416e-2015"
  },
  {
   "ficha": "030",
@@ -356,7 +385,8 @@
   "preco": "R$ 450.000 no Pix (anunciado)",
   "fotos": [
    "maquinas/030-escavadeira-hyundai-180-lc-9-1.jpg"
-  ]
+  ],
+  "slug": "escavadeira-hyundai-180-lc-9-2019"
  },
  {
   "ficha": "031",
@@ -368,7 +398,8 @@
   "preco": "R$ 464.000",
   "fotos": [
    "maquinas/031-escavadeira-john-deere-200g-lc-1.jpg"
-  ]
+  ],
+  "slug": "escavadeira-john-deere-200g-lc-2022"
  },
  {
   "ficha": "032",
@@ -380,7 +411,8 @@
   "preco": "",
   "fotos": [
    "maquinas/032-escavadeira-hyundai-220-lc-9s-1.jpg"
-  ]
+  ],
+  "slug": "escavadeira-hyundai-220-lc-9s-2021"
  },
  {
   "ficha": "033",
@@ -393,7 +425,8 @@
   "fotos": [
    "maquinas/033-conjunto-vw-fuscao-26260-ford-cargo-1.jpg",
    "maquinas/033-conjunto-vw-fuscao-26260-ford-cargo-2.jpg"
-  ]
+  ],
+  "slug": "conjunto-vw-fuscao-26260-ford-cargo-2004"
  },
  {
   "ficha": "034",
@@ -405,7 +438,8 @@
   "preco": "R$ 350.000",
   "fotos": [
    "maquinas/034-caminhao-ford-cargo-2429-roll-on-roll-off-1.jpg"
-  ]
+  ],
+  "slug": "caminhao-ford-cargo-2429-roll-on-roll-off-2014"
  },
  {
   "ficha": "035",
@@ -417,7 +451,8 @@
   "preco": "R$ 420.000",
   "fotos": [
    "maquinas/035-caminhao-volkswagen-31-330-roll-on-roll-off-1.jpg"
-  ]
+  ],
+  "slug": "caminhao-volkswagen-31-330-roll-on-roll-off-2018"
  },
  {
   "ficha": "036",
@@ -429,7 +464,8 @@
   "preco": "R$ 390.000",
   "fotos": [
    "maquinas/036-escavadeira-john-deere-180g-1.jpg"
-  ]
+  ],
+  "slug": "escavadeira-john-deere-180g-2019"
  },
  {
   "ficha": "037",
@@ -441,7 +477,8 @@
   "preco": "R$ 465.000",
   "fotos": [
    "maquinas/037-caminhao-basculante-volkswagen-31-330-1.jpg"
-  ]
+  ],
+  "slug": "caminhao-basculante-volkswagen-31-330-2020"
  },
  {
   "ficha": "038",
@@ -451,7 +488,8 @@
   "ano": "2022",
   "horas": "14.800 h",
   "preco": "R$ 330.000",
-  "fotos": []
+  "fotos": [],
+  "slug": "pa-carregadeira-caterpillar-966l-2022"
  },
  {
   "ficha": "039",
@@ -464,7 +502,8 @@
   "fotos": [
    "maquinas/039-escavadeira-hyundai-210-lc-7-1.jpg",
    "maquinas/039-escavadeira-hyundai-210-lc-7-2.jpg"
-  ]
+  ],
+  "slug": "escavadeira-hyundai-210-lc-7-2012"
  },
  {
   "ficha": "radar-2026-10-22",
@@ -476,6 +515,7 @@
   "preco": "R$ 259.000",
   "fotos": [
    "maquinas/radar-komatsu-pc200-2018-1.jpg"
-  ]
+  ],
+  "slug": "escavadeira-komatsu-pc200-2018"
  }
 ]
