@@ -89,7 +89,8 @@ async function iniciar() {
 
 // ---------- Início ----------
 async function inicio() {
-  resumo = await api("/resumo");
+  const [r, interesse] = await Promise.all([api("/resumo"), api("/interesse").catch(() => [])]);
+  resumo = r;
   const n = (titulo, valor, aba) => h("button", { class: "numero btn sec", onclick: () => abrir(aba) }, h("b", {}, valor), titulo);
   conteudo.replaceChildren(
     resumo.encontrosRadarNovo ? h("div", { class: "alerta" },
@@ -100,6 +101,14 @@ async function inicio() {
       n("Publicadas do Radar", resumo.radarPublicados, "radar"),
       n("Máquinas no Pátio", `${resumo.patioPublicados}/${resumo.patio}`, "patio"),
       n("Encontros com pedidos", resumo.encontros, "encontros")),
+    h("div", { class: "painel" },
+      h("h2", {}, "Interesse no site"),
+      h("p", { class: "muted" }, "Visitas à página de cada máquina e cliques em \"Tenho interesse\" (WhatsApp). Uma mesma pessoa conta uma vez a cada 30 minutos."),
+      interesse.length ? h("div", { class: "rolar" }, h("table", { class: "tabela" },
+        h("thead", {}, h("tr", {}, ["Máquina", "Cliques 7 dias", "Visitas 7 dias", "Cliques total", "Visitas total"].map((c) => h("th", {}, c)))),
+        h("tbody", {}, interesse.slice(0, 15).map((m) => h("tr", {}, h("td", {}, m.titulo, h("br"), h("span", { class: "muted" }, m.ref)),
+          h("td", {}, h("strong", {}, m.interesses7)), h("td", {}, m.visitas7), h("td", {}, m.interesses), h("td", {}, m.visitas))))))
+        : h("p", {}, "Ainda sem visitas registradas. Os números aparecem assim que clientes abrirem as máquinas no site.")),
     h("div", { class: "painel" },
       h("h2", {}, "Como funciona"),
       h("p", {}, `Radar: cadastre a máquina com o preço de origem. O sistema soma ${reais(resumo.margem)} e mostra o preço do site. Ela só aparece no site quando você toca em Publicar.`),

@@ -14,12 +14,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
       - name: Montar site estático
-        run: |
-          mkdir _site
-          cp -r public/. _site/
-          cp data/catalogo.json _site/
-          touch _site/.nojekyll
+        run: node scripts/build.mjs
       - uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

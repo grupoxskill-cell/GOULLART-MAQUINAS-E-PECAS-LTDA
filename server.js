@@ -4,6 +4,8 @@ import { readFile } from "node:fs/promises";
 import { extname, resolve, relative, isAbsolute } from "node:path";
 import { fileURLToPath } from "node:url";
 import { rotaAdm, servirFoto, maquinasPublicas } from "./lib/adm.js";
+import { paginaMaquina, sitemap } from "./lib/paginas.js";
+import { registrar } from "./lib/interesse.js";
 
 const PORT = Number(process.env.PORT) || 3000;
 const HOST = process.env.HOST || undefined;
@@ -38,6 +40,25 @@ async function serveStatic(req, res, pathname) {
   }
 }
 
+async function servirPaginaMaquina(req, res, slug) {
+  const todas = await maquinasPublicas();
+  const m = todas.find((x) => x.slug === slug);
+  if (!m) return res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" }).end("Máquina não encontrada");
+  res.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-cache" });
+  res.end(req.method === "HEAD" ? undefined : await paginaMaquina(m, todas));
+}
+
+async function contarInteresse(req, res) {
+  let corpo = "";
+  for await (const parte of req) { corpo += parte; if (corpo.length > 1024) return res.writeHead(413).end(); }
+  let dados;
+  try { dados = JSON.parse(corpo); } catch { return res.writeHead(400).end(); }
+  const refs = new Map((await maquinasPublicas()).map((m) => [m.referencia, m.titulo]));
+  const ip = String(req.headers["x-forwarded-for"] || req.socket.remoteAddress || "").split(",")[0].trim();
+  const ok = registrar(String(dados?.ref || ""), String(dados?.tipo || ""), ip, refs);
+  res.writeHead(ok ? 204 : 400).end();
+}
+
 const server = http.createServer(async (req, res) => {
   res.setHeader("X-Content-Type-Options", "nosniff");
   res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
@@ -54,6 +75,7 @@ const server = http.createServer(async (req, res) => {
   }
   // ADM privado (login próprio) e fotos enviadas pelo ADM.
   if (pathname === "/adm" || pathname.startsWith("/adm/")) return rotaAdm(req, res, pathname);
+  if (pathname === "/api/interesse" && req.method === "POST") return contarInteresse(req, res);
   if (req.method !== "GET" && req.method !== "HEAD") {
     res.setHeader("Allow", "GET, HEAD");
     return res.writeHead(405).end();
@@ -63,6 +85,12 @@ const server = http.createServer(async (req, res) => {
   if (pathname.startsWith("/fotos/")) return servirFoto(res, pathname);
   // Catálogo do site + máquinas publicadas pelo ADM (Radar com margem e Pátio).
   if (pathname === "/maquinas.json") return sendJson(res, 200, await maquinasPublicas());
+  const pagina = /^\/maquina\/([a-z0-9-]+?)(?:\.html)?$/.exec(pathname);
+  if (pagina) return servirPaginaMaquina(req, res, pagina[1]);
+  if (pathname === "/sitemap.xml") {
+    res.writeHead(200, { "Content-Type": "application/xml; charset=utf-8" });
+    return res.end(sitemap(await maquinasPublicas()));
+  }
   if (pathname === "/api/catalogo" || pathname === "/catalogo.json") return sendJson(res, 200, CATALOGO);
   return serveStatic(req, res, pathname);
 });

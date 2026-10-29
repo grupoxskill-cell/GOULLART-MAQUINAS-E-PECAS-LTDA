@@ -114,3 +114,33 @@ test('Encontros cruzam pedido do CRM com máquina do Radar', async () => {
   const e = enc.find((x) => x.pedidoId === 'd1');
   assert.ok(e.achados.some((a) => /PC200/.test(a.maquina.titulo)));
 });
+
+test('cada máquina tem página própria com prévia para WhatsApp e Google', async () => {
+  const maquinas = await (await fetch(base + '/maquinas.json')).json();
+  const m = maquinas.find((x) => /PC200/.test(x.titulo) && !x.referencia.startsWith('R-'));
+  assert.equal(m.slug, 'escavadeira-komatsu-pc200-2018');
+  const r = await fetch(`${base}/maquina/${m.slug}.html`);
+  assert.equal(r.status, 200);
+  const html = await r.text();
+  assert.match(html, /<meta property="og:title" content="Escavadeira Komatsu PC200 — R\$ 259\.000">/);
+  assert.match(html, /og:image" content="https:\/\/www\.goullartmaquinaspesadas\.com\.br\/maquinas\//);
+  assert.match(html, /"@type":"Product"/);
+  assert.equal((await fetch(base + '/maquina/nao-existe.html')).status, 404);
+  assert.match(await (await fetch(base + '/sitemap.xml')).text(), /maquina\/escavadeira-komatsu-pc200-2018\.html/);
+});
+
+test('contador conta visitas e cliques, ignora repetição e referência desconhecida', async () => {
+  const cookie = await entrar();
+  const m = (await (await fetch(base + '/maquinas.json')).json()).find((x) => /Volvo EC220DL/.test(x.titulo));
+  const contar = (ref, tipo) => fetch(base + '/api/interesse', { method: 'POST', body: JSON.stringify({ ref, tipo }) });
+  assert.equal((await contar(m.referencia, 'visita')).status, 204);
+  assert.equal((await contar(m.referencia, 'interesse')).status, 204);
+  assert.equal((await contar(m.referencia, 'interesse')).status, 204);
+  assert.equal((await contar('GOUL-INEXISTENTE', 'interesse')).status, 400);
+  await new Promise((r) => setTimeout(r, 100));
+  const lista = await (await enviar(cookie, '/adm/api/interesse', 'GET')).json();
+  const linha = lista.find((x) => x.ref === m.referencia);
+  assert.equal(linha.visitas, 1);
+  assert.equal(linha.interesses, 1);
+  assert.equal((await fetch(base + '/adm/api/interesse')).status, 401);
+});

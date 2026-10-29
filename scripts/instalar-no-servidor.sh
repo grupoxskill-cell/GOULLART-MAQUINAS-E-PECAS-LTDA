@@ -133,7 +133,7 @@ UNIT
   for _ in 1 2 3 4 5 6 7 8 9 10; do curl -fsS "http://127.0.0.1:$PORTA/health" >/dev/null 2>&1 && break; sleep 1; done
   curl -fsS "http://127.0.0.1:$PORTA/health" >/dev/null || { echo "ERRO: o ADM não respondeu. Veja: journalctl -u goullart-app -n 50"; exit 1; }
 
-  cat > "$INCLUDE" <<NGX
+  cat > "$INCLUDE.tmp" <<NGX
 # GOULLART: ADM, fotos do ADM e catálogo dinâmico vão para o serviço Node local.
 location ^~ /adm {
     proxy_pass http://127.0.0.1:$PORTA;
@@ -152,12 +152,48 @@ location = /maquinas.json {
     proxy_pass http://127.0.0.1:$PORTA;
     proxy_set_header Host \$host;
 }
+location = /sitemap.xml {
+    proxy_pass http://127.0.0.1:$PORTA;
+    proxy_set_header Host \$host;
+}
+location = /api/interesse {
+    proxy_pass http://127.0.0.1:$PORTA;
+    proxy_set_header Host \$host;
+    proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+    client_max_body_size 4k;
+}
+# Páginas das máquinas do catálogo existem como arquivos; as publicadas pelo ADM são geradas pelo serviço.
+location ^~ /maquina/ {
+    try_files \$uri @goullart_app;
+}
+location @goullart_app {
+    proxy_pass http://127.0.0.1:$PORTA;
+    proxy_set_header Host \$host;
+}
 NGX
+  # Troca o arquivo de rotas só se mudou; se o nginx recusar, volta o anterior.
+  INCLUDE_NOVO=0
+  if ! cmp -s "$INCLUDE.tmp" "$INCLUDE" 2>/dev/null; then
+    [ -f "$INCLUDE" ] && cp "$INCLUDE" "$INCLUDE.anterior"
+    mv "$INCLUDE.tmp" "$INCLUDE"
+    INCLUDE_NOVO=1
+  else
+    rm -f "$INCLUDE.tmp"
+  fi
   if ! grep -qF "include $INCLUDE;" "$CONF"; then
     fazer_backup
     sed -i -E "0,/^[[:space:]]*root[[:space:]]+[^;]+;/s##&\n    include $INCLUDE;#" "$CONF"
     recarregar_nginx
     echo "ADM LIGADO: https://www.$DOMINIO/adm"
+  elif [ "$INCLUDE_NOVO" = "1" ]; then
+    if "$NGINX" -t; then
+      "$NGINX" -s reload
+      echo "Rotas do ADM atualizadas."
+    else
+      if [ -f "$INCLUDE.anterior" ]; then mv "$INCLUDE.anterior" "$INCLUDE"; else rm -f "$INCLUDE"; fi
+      echo "ERRO: o nginx recusou as rotas novas; as anteriores foram mantidas."
+      exit 1
+    fi
   elif [ "$APP_NOVO" = "1" ]; then
     echo "ADM atualizado."
   fi

@@ -38,6 +38,12 @@ Rodar o script de novo atualiza o site e liga a atualização automática: o cro
 curl -fsSL https://raw.githubusercontent.com/grupoxskill-cell/GOULLART-MAQUINAS-E-PECAS-LTDA/master/scripts/instalar-no-servidor.sh | bash
 ```
 
+## Páginas das máquinas e contador de interesse
+
+Cada máquina tem página própria em `maquina/<slug>.html`, com título, foto e preço nas tags Open Graph (prévia no WhatsApp) e dados estruturados de produto para o Google. O build (`node scripts/build.mjs`, rodado pelo workflow) gera as páginas do catálogo, `sitemap.xml` e `robots.txt`; as máquinas publicadas pelo ADM são geradas pelo servidor (`lib/paginas.js`).
+
+O botão "Tenho interesse" e a abertura das páginas são contados em `/api/interesse` (sem dados pessoais; a mesma pessoa conta uma vez a cada 30 minutos). Os números aparecem no início do ADM.
+
 ## ADM (Radar, Pátio, CRM e Encontros)
 
 Área privada em `/adm`, com senha. Roda como serviço Node (`goullart-app`) no servidor, ouvindo só em `127.0.0.1:3210`; o nginx encaminha `/adm`, `/fotos/` e `/maquinas.json`. Os dados ficam em `/www/goullart-dados` (variável `DATA_DIR`), nunca no GitHub.
