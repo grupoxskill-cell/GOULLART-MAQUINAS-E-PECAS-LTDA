@@ -44,6 +44,8 @@
     a.href = linkInteresse(m);
     a.target = "_blank";
     a.rel = "noopener";
+    a.dataset.interesse = "";
+    a.dataset.ref = m.referencia;
     return a;
   }
 
@@ -61,6 +63,11 @@
     detalheConteudo.replaceChildren(galeria, el("span", "machine-cat", m.patio ? "No pátio GOULLART" : m.categoria), titulo, ficha,
       el("p", "machine-preco", m.preco || "Preço sob consulta"),
       el("p", "machine-status", "Disponibilidade, estado e condições confirmados pela equipe antes da negociação."), botaoInteresse(m));
+    if (m.slug) {
+      const pagina = el("a", "text-link", "Abrir página deste anúncio →");
+      pagina.href = `../maquina/${encodeURIComponent(m.slug)}.html`;
+      detalheConteudo.append(pagina);
+    }
     detalhe.showModal();
   }
   detalhe.querySelector(".detalhe-fechar").addEventListener("click", () => detalhe.close());
