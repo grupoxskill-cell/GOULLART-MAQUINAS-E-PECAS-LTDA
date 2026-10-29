@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GOULLART Pesados | Máquinas pesadas, peças e locação</title>
   <meta name="description" content="Escavadeiras, pás-carregadeiras, retroescavadeiras, tratores e caminhões. Compra, venda, peças para linha amarela, locação e transporte com a GOULLART.">
-  <meta property="og:title" content="GOULLART Pesados — Máquinas pesadas para grandes negócios">
-  <meta property="og:description" content="Compra, venda, peças, locação e transporte de máquinas pesadas.">
-  <meta property="og:image" content="assets/hero.jpg">
+  <meta property="og:title" content="GOULLART Pesados — Sua próxima máquina está aqui">
+  <meta property="og:description" content="Máquinas, peças e locações em um só lugar.">
+  <meta property="og:image" content="assets/slide-maquinas.jpg">
   <meta name="theme-color" content="#061e42">
-  <link rel="preload" as="image" href="assets/hero.jpg">
+  <link rel="preload" as="image" href="assets/slide-maquinas.jpg">
   <link rel="stylesheet" href="style.css">
 </head>
 <body id="inicio">
@@ -26,38 +26,76 @@
         <a href="pecas.html">Peças</a>
         <a href="#areas">Serviços</a>
         <a href="#sobre">Sobre</a>
-        <a href="#contato">Contato</a>
+        <a href="#pedido">Contato</a>
         <a class="nav-adm" href="https://catalogo-goullart-pesados-brasil.fitbun9.chatgpt.site/admin/central" target="_blank" rel="noopener noreferrer" aria-label="Entrar na área administrativa protegida">ADM</a>
         <a class="btn btn-primary" href="https://wa.me/5562999427276?text=Ol%C3%A1!%20Vim%20pelo%20site%20da%20GOULLART." target="_blank" rel="noopener">WhatsApp</a>
       </nav>
     </div>
   </header>
 
-  <section class="hero" aria-labelledby="hero-titulo">
-    <div class="hero-inner">
-      <div class="hero-content">
-        <span class="eyebrow">GOULLART Pesados</span>
-        <h1 id="hero-titulo">Máquinas pesadas para <span>grandes negócios.</span></h1>
-        <p class="hero-sub">Compra, venda, peças para linha amarela, locação e transporte. Atendimento direto com a nossa equipe, do primeiro contato à entrega.</p>
-        <div class="hero-actions">
-          <a class="btn btn-primary" href="maquinas.html">Ver máquinas disponíveis</a>
-          <a class="btn btn-ghost" href="https://wa.me/5562999427276?text=Ol%C3%A1!%20Estou%20procurando%20uma%20m%C3%A1quina." target="_blank" rel="noopener">Falar com a equipe</a>
+  <section class="slider" aria-roledescription="carrossel" aria-label="Destaques GOULLART">
+    <div class="slides">
+      <article class="slide ativo" style="--foto: url('assets/slide-maquinas.jpg')" aria-roledescription="slide" aria-label="1 de 3">
+        <div class="slide-inner">
+          <p class="slide-marca">GOULLART Pesados</p>
+          <h1>Sua próxima máquina está aqui.</h1>
+          <p>Escavadeiras, tratores, pás-carregadeiras, retroescavadeiras e caminhões com foto, ano, horas e preço.</p>
+          <a class="btn btn-primary" href="maquinas.html">Ver máquinas</a>
         </div>
-        <ul class="hero-trust">
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>Escavadeiras, tratores, pás e caminhões</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>Peças identificadas pelo modelo</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>Atendimento humano pelo WhatsApp</li>
-        </ul>
+      </article>
+      <article class="slide" style="--foto: url('assets/slide-pecas.jpg')" aria-roledescription="slide" aria-label="2 de 3" aria-hidden="true">
+        <div class="slide-inner">
+          <p class="slide-marca">GOULLART Peças</p>
+          <h2>A peça certa para continuar.</h2>
+          <p>Rodante, roda-guia, roda motriz, bomba hidráulica, pinhão e motor de translação. Consulte aplicação, preço e disponibilidade.</p>
+          <a class="btn btn-primary" href="pecas.html" tabindex="-1">Encontrar peças</a>
+        </div>
+      </article>
+      <article class="slide" style="--foto: url('assets/slide-locacao.jpg')" aria-roledescription="slide" aria-label="3 de 3" aria-hidden="true">
+        <div class="slide-inner">
+          <p class="slide-marca">GOULLART Locações</p>
+          <h2>Sua operação precisa de máquina?</h2>
+          <p>Conte o serviço, a cidade e o prazo. A equipe monta a proposta de locação para você.</p>
+          <a class="btn btn-primary" href="#pedido" tabindex="-1">Consultar locação</a>
+        </div>
+      </article>
+    </div>
+    <div class="slider-controles">
+      <button class="slider-seta" type="button" data-dir="-1" aria-label="Slide anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></button>
+      <div class="slider-pontos" role="tablist" aria-label="Escolher slide">
+        <button type="button" role="tab" aria-selected="true" aria-label="Slide 1"></button>
+        <button type="button" role="tab" aria-selected="false" aria-label="Slide 2"></button>
+        <button type="button" role="tab" aria-selected="false" aria-label="Slide 3"></button>
       </div>
+      <button class="slider-seta" type="button" data-dir="1" aria-label="Próximo slide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
     </div>
   </section>
 
-  <section class="stats" aria-label="Destaques">
-    <div class="wrap stats-grid">
-      <div class="stat"><strong><span id="qtd-maquinas">Dezenas de</span> máquinas</strong><span>no catálogo online</span></div>
-      <div class="stat"><strong>Linha amarela</strong><span>Caterpillar, Komatsu, Volvo, John Deere, Hyundai e mais</span></div>
-      <div class="stat"><strong>Compra, venda e locação</strong><span>para obra, agro e mineração</span></div>
-      <div class="stat"><strong>Transporte</strong><span>de máquinas mediante cotação</span></div>
+  <section class="busca-rapida" aria-labelledby="busca-titulo">
+    <form class="wrap busca-cartao" action="maquinas.html" method="get">
+      <h2 id="busca-titulo">Encontre o que sua operação precisa</h2>
+      <label>Tipo
+        <select name="tipo">
+          <option value="Todas">Todos os tipos</option>
+          <option>Escavadeiras</option><option>Pás-carregadeiras</option><option>Retroescavadeiras</option>
+          <option>Tratores</option><option>Motoniveladoras</option><option>Caminhões</option>
+        </select>
+      </label>
+      <label>Marca ou modelo
+        <input name="q" type="search" placeholder="Ex.: Volvo, 320D, D6">
+      </label>
+      <label>Até quanto quer investir?
+        <input name="max" inputmode="numeric" placeholder="R$ 400.000">
+      </label>
+      <button class="btn btn-primary" type="submit">Buscar máquinas</button>
+    </form>
+  </section>
+
+  <section class="marcas" aria-label="Marcas com que trabalhamos">
+    <p class="marcas-titulo">Máquinas e peças das principais marcas</p>
+    <div class="marcas-trilho">
+      <ul class="marcas-lista"><li>Caterpillar</li><li>Komatsu</li><li>Volvo</li><li>John Deere</li><li>Hyundai</li><li>Case</li><li>JCB</li><li>Doosan</li><li>LiuGong</li><li>XCMG</li><li>Sany</li><li>New Holland</li></ul>
+      <ul class="marcas-lista" aria-hidden="true"><li>Caterpillar</li><li>Komatsu</li><li>Volvo</li><li>John Deere</li><li>Hyundai</li><li>Case</li><li>JCB</li><li>Doosan</li><li>LiuGong</li><li>XCMG</li><li>Sany</li><li>New Holland</li></ul>
     </div>
   </section>
 
@@ -66,16 +104,14 @@
       <div class="wrap">
         <div class="section-head">
           <div>
-            <span class="eyebrow">Catálogo</span>
             <h2 id="destaques-titulo">Máquinas em destaque</h2>
-            <p>Preços anunciados. Disponibilidade, estado e condições são confirmados pela equipe antes da negociação.</p>
+            <p>Valores anunciados. Disponibilidade, estado e frete são confirmados pela equipe.</p>
           </div>
-          <a class="link-seta" href="maquinas.html">Ver todas as máquinas →</a>
+          <a class="link-seta" href="maquinas.html">Ver todas as <span id="qtd-maquinas"></span> máquinas →</a>
         </div>
         <p id="maquinas-info" class="contagem" role="status" aria-live="polite">Carregando máquinas…</p>
         <ul id="maquinas-lista" class="machines" data-destaque="6"></ul>
         <noscript><p>Ative o JavaScript para ver as máquinas ou <a href="https://wa.me/5562999427276" rel="noopener" target="_blank">consulte pelo WhatsApp</a>.</p></noscript>
-        <div class="ver-todas"><a class="btn btn-dark" href="maquinas.html">Ver catálogo completo</a></div>
       </div>
     </section>
 
@@ -83,8 +119,7 @@
       <div class="wrap">
         <div class="section-head">
           <div>
-            <span class="eyebrow">Pátio GOULLART</span>
-            <h2 id="patios-titulo">Máquinas no nosso pátio</h2>
+            <h2 id="patios-titulo">No pátio GOULLART</h2>
             <p>Agende uma visita para ver de perto. A equipe confirma o local e a disponibilidade antes.</p>
           </div>
           <a class="btn btn-primary" href="https://wa.me/5562999427276?text=Gostaria%20de%20agendar%20uma%20visita%20ao%20p%C3%A1tio." target="_blank" rel="noopener">Agendar visita</a>
@@ -97,90 +132,71 @@
       <div class="wrap">
         <div class="section-head">
           <div>
-            <span class="eyebrow">O que fazemos</span>
-            <h2 id="areas-titulo">Uma operação completa para o setor pesado</h2>
+            <h2 id="areas-titulo">O que a GOULLART faz por você</h2>
+            <p>Compra, venda, peças, locação e transporte em uma só operação.</p>
           </div>
         </div>
-        <div class="areas">
-          <a class="area" href="maquinas.html">
-            <span class="area-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 18h11M5 18v-3h7v3M7 15v-3h4l1 3M12 12l4-6 4 3-2 3M18 12v3h2"/><circle cx="6" cy="20" r="1"/><circle cx="12" cy="20" r="1"/></svg></span>
-            <h3>Máquinas pesadas</h3>
-            <p>Compra, venda e intermediação de escavadeiras, tratores, pás-carregadeiras, retroescavadeiras e caminhões.</p>
-            <span class="link-seta">Ver catálogo →</span>
-          </a>
-          <a class="area" href="pecas.html">
-            <span class="area-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1L7 17M17 7l2.1-2.1"/></svg></span>
-            <h3>GOULLART Peças</h3>
-            <p>Rodante, roda-guia, roda motriz, bomba hidráulica, pinhão e motor de translação para linha amarela.</p>
-            <span class="link-seta">Consultar peças →</span>
-          </a>
-          <a class="area" href="https://wa.me/5562999427276?text=Gostaria%20de%20alugar%20uma%20m%C3%A1quina.%20Equipamento%3A%20%20Servi%C3%A7o%3A%20%20Cidade%3A%20%20In%C3%ADcio%3A%20%20Dura%C3%A7%C3%A3o%3A" target="_blank" rel="noopener">
-            <span class="area-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg></span>
-            <h3>Locação</h3>
-            <p>Equipamentos para obra, fazenda, mineração e terraplanagem, pelo período que o seu serviço precisa.</p>
-            <span class="link-seta">Pedir cotação →</span>
-          </a>
-          <a class="area" href="https://wa.me/5562999427276?text=Gostaria%20de%20cotar%20o%20transporte%20de%20uma%20m%C3%A1quina." target="_blank" rel="noopener">
-            <span class="area-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 16V7h11v9M13 10h4l4 4v2h-8"/><circle cx="6" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg></span>
-            <h3>GOULLART Transportes</h3>
-            <p>Transporte e logística de máquinas e equipamentos, com cotação conforme origem, destino e peso.</p>
-            <span class="link-seta">Cotar transporte →</span>
-          </a>
-          <a class="area" href="https://wa.me/5562999427276?text=Gostaria%20de%20falar%20sobre%20licita%C3%A7%C3%B5es." target="_blank" rel="noopener">
-            <span class="area-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></span>
-            <h3>Licitações</h3>
-            <p>Acompanhamento e suporte comercial para oportunidades e editais de máquinas e equipamentos.</p>
-            <span class="link-seta">Falar com a equipe →</span>
-          </a>
-          <a class="area" href="https://wa.me/5562999427276?text=Gostaria%20de%20falar%20sobre%20a%20GOULLART%20Texas." target="_blank" rel="noopener">
-            <span class="area-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18"/></svg></span>
-            <h3>GOULLART Texas</h3>
-            <p>Conexões comerciais e oportunidades internacionais em desenvolvimento.</p>
-            <span class="link-seta">Saber mais →</span>
-          </a>
+        <div class="servicos">
+          <a class="servico" href="maquinas.html" style="--foto: url('assets/area-maquinas.jpg')"><span>Máquinas pesadas</span><small>Compra, venda e intermediação</small></a>
+          <a class="servico" href="pecas.html" style="--foto: url('assets/area-pecas.jpg')"><span>Peças</span><small>Rodante, bombas e motores de translação</small></a>
+          <a class="servico" href="#pedido" style="--foto: url('assets/area-locacao.jpg')"><span>Locações</span><small>Para obra, agro e mineração</small></a>
+          <a class="servico" href="https://wa.me/5562999427276?text=Gostaria%20de%20cotar%20o%20transporte%20de%20uma%20m%C3%A1quina." target="_blank" rel="noopener" style="--foto: url('assets/area-transporte.jpg')"><span>Transportes</span><small>Logística de máquinas sob cotação</small></a>
+        </div>
+        <p class="servicos-extra">Também atendemos <a href="https://wa.me/5562999427276?text=Gostaria%20de%20falar%20sobre%20licita%C3%A7%C3%B5es." target="_blank" rel="noopener">licitações e editais</a> e oportunidades internacionais pela <a href="https://wa.me/5562999427276?text=Gostaria%20de%20falar%20sobre%20a%20GOULLART%20Texas." target="_blank" rel="noopener">GOULLART Texas</a>.</p>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="depoimentos-titulo">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <h2 id="depoimentos-titulo">Quem já comprou com a GOULLART</h2>
+          </div>
+        </div>
+        <div class="depoimentos">
+          <figure class="depoimento"><blockquote>Top demais. Já tava ficando doido sem poder usar minha pá. E o Jr me atendeu de rapido, gente boa demais. Pode confiar. Ele é 10!</blockquote><figcaption><strong>Ednaldo Lacerda</strong><span>Jacareacanga - PA · abril de 2026</span></figcaption></figure>
+          <figure class="depoimento"><blockquote>Atendimento muito Prestativo e atencioso super Indico nota 10</blockquote><figcaption><strong>Dalton Silva Nascimento</strong><span>Cumaru do Norte - PA · outubro de 2025</span></figcaption></figure>
+          <figure class="depoimento"><blockquote>Atendimento super rápido. Super seguro. Entrega perfeita. Recomendo.</blockquote><figcaption><strong>Jose Carlos Teixeira</strong><span>Redenção - PA · setembro de 2025</span></figcaption></figure>
         </div>
       </div>
     </section>
 
-    <section class="section section-dark" aria-labelledby="como-titulo">
-      <div class="wrap">
-        <div class="section-head">
-          <div>
-            <span class="eyebrow">Como funciona</span>
-            <h2 id="como-titulo">Do pedido à máquina trabalhando</h2>
-          </div>
+    <section id="pedido" class="section section-dark" aria-labelledby="pedido-titulo">
+      <div class="wrap pedido">
+        <div>
+          <h2 id="pedido-titulo">Seu pedido. Nosso próximo negócio.</h2>
+          <p class="pedido-texto">Não encontrou o que precisa? Conte para a GOULLART. A gente procura a máquina, a peça ou a locação certa e retorna pelo WhatsApp.</p>
+          <ul class="pedido-lista"><li>Máquinas e implementos</li><li>Peças e componentes</li><li>Locação para sua operação</li><li>Transporte de máquinas</li></ul>
         </div>
-        <ol class="steps">
-          <li class="step"><h3>Conte o que você precisa</h3><p>Tipo de máquina, modelo, aplicação, cidade e orçamento. Para peças, marca, modelo e código ou foto da plaqueta.</p></li>
-          <li class="step"><h3>A gente encontra e confirma</h3><p>Buscamos as opções compatíveis e confirmamos disponibilidade, estado, documentação e preço antes de oferecer.</p></li>
-          <li class="step"><h3>Negociação e entrega</h3><p>Fechamos as condições com você e, se precisar, organizamos o transporte até o local do serviço.</p></li>
-        </ol>
+        <form id="form-pedido" class="pedido-form">
+          <label>O que você procura?
+            <select name="tipo"><option>Máquina</option><option>Peça</option><option>Locação</option><option>Transporte</option></select>
+          </label>
+          <label>Descreva o pedido
+            <textarea name="descricao" rows="3" required placeholder="Ex.: escavadeira 20 t, até 6.000 horas, até R$ 400 mil"></textarea>
+          </label>
+          <div class="pedido-linha">
+            <label>Seu nome <input name="nome" autocomplete="name"></label>
+            <label>Cidade / UF <input name="cidade" autocomplete="address-level2" placeholder="Ex.: Goiânia - GO"></label>
+          </div>
+          <button class="btn btn-primary" type="submit">Enviar pedido pelo WhatsApp</button>
+          <small>Abre o WhatsApp com o pedido escrito. Você confere e toca em enviar.</small>
+        </form>
       </div>
     </section>
 
     <section id="sobre" class="section" aria-labelledby="sobre-titulo">
       <div class="wrap about">
         <div>
-          <span class="eyebrow">Quem somos</span>
           <h2 id="sobre-titulo">GOULLART. Soluções que movimentam negócios.</h2>
-          <p class="about-lead">Conectamos oportunidades, equipamentos e soluções para quem produz, constrói e movimenta o Brasil. Reunimos em uma só operação a compra e venda de máquinas pesadas, peças e componentes, locação, intermediação e transporte.</p>
-          <p class="about-lead">Atendemos construção civil, agronegócio, mineração e terraplanagem com atendimento direto e informações claras sobre cada oportunidade.</p>
+          <p class="about-lead">Conectamos oportunidades, equipamentos e soluções para quem produz, constrói e movimenta o Brasil. Compra e venda de máquinas pesadas, peças e componentes, locação, intermediação e transporte em uma só operação.</p>
+          <p class="about-lead">Atendemos construção civil, agronegócio, mineração e terraplanagem, com atendimento direto e condições confirmadas antes de cada negociação.</p>
         </div>
         <div class="values">
-          <div class="value"><h3>Nossa visão</h3><p>Ser referência nacional em soluções comerciais para máquinas e equipamentos pesados, unindo tecnologia, relacionamento e transparência.</p></div>
-          <div class="value"><h3>Nossa trajetória</h3><p>Construída no dia a dia do mercado: ouvindo compradores, identificando equipamentos, pesquisando peças e acompanhando cada etapa até a solução.</p></div>
-          <div class="value"><h3>Como trabalhamos</h3><p>Atendimento humano, condições confirmadas antes da negociação e respeito à disponibilidade real de cada máquina.</p></div>
+          <div class="value"><h3>Atendimento direto</h3><p>Você fala com quem resolve, pelo WhatsApp, do primeiro contato à entrega.</p></div>
+          <div class="value"><h3>Peça e máquina certas</h3><p>Identificação pelo modelo, série e aplicação antes de qualquer proposta.</p></div>
+          <div class="value"><h3>Condições claras</h3><p>Preço, disponibilidade, estado e frete confirmados antes de fechar.</p></div>
         </div>
-      </div>
-    </section>
-
-    <section id="contato" class="cta" aria-labelledby="contato-titulo">
-      <div class="cta-inner wrap">
-        <div>
-          <h2 id="contato-titulo">Não encontrou a máquina que precisa?</h2>
-          <p>Mande o modelo, a aplicação e a cidade. A gente procura para você.</p>
-        </div>
-        <a class="btn btn-dark" href="https://wa.me/5562999427276?text=Ol%C3%A1!%20N%C3%A3o%20encontrei%20a%20m%C3%A1quina%20que%20preciso%20no%20site." target="_blank" rel="noopener">Falar no WhatsApp</a>
       </div>
     </section>
   </main>

@@ -17,7 +17,13 @@
   const ORDEM = ["Escavadeiras", "Pás-carregadeiras", "Retroescavadeiras", "Tratores", "Motoniveladoras", "Caminhões", "Outros"];
   const posicao = (c) => (ORDEM.includes(c) ? ORDEM.indexOf(c) : ORDEM.length);
   let maquinas = [];
-  let categoria = new URLSearchParams(location.search).get("tipo") || "Todas";
+  const params = new URLSearchParams(location.search);
+  let categoria = params.get("tipo") || "Todas";
+  const ordem = document.getElementById("maquinas-ordem");
+  const maximo = document.getElementById("maquinas-max");
+  // "R$ 520.000", "R$ 355.000 cada", "R$ 180.000 ou R$ 195.000" → primeiro valor em reais.
+  const precoNum = (p) => { const m = String(p || "").match(/\d{1,3}(?:\.\d{3})+|\d{4,}/); return m ? Number(m[0].replace(/\./g, "")) : null; };
+  const valorDigitado = (v) => { const n = Number(String(v || "").replace(/\D/g, "")); return n > 0 ? n : null; };
 
   function el(tag, cls, texto) {
     const e = document.createElement(tag);
@@ -111,9 +117,13 @@
 
   function render() {
     const termos = normalizar(busca.value).split(/\s+/).filter(Boolean);
+    const limite = valorDigitado(maximo?.value);
     const filtradas = maquinas.filter(
-      (m) => (categoria === "Todas" || m.categoria === categoria) && termos.every((t) => m.indice.includes(t))
+      (m) => (categoria === "Todas" || m.categoria === categoria) && termos.every((t) => m.indice.includes(t)) &&
+        (!limite || (m.valor != null && m.valor <= limite))
     );
+    if (ordem?.value === "menor") filtradas.sort((a, b) => (a.valor ?? Infinity) - (b.valor ?? Infinity));
+    if (ordem?.value === "maior") filtradas.sort((a, b) => (b.valor ?? -Infinity) - (a.valor ?? -Infinity));
     lista.replaceChildren(...filtradas.map(card));
     info.textContent = filtradas.length
       ? `${filtradas.length} máquina(s)`
@@ -140,14 +150,18 @@
     .then((r) => { if (!r.ok) throw new Error("Catálogo indisponível"); return r.json(); })
     .then((dados) => {
       maquinas = dados
-        .map((m) => ({ ...m, indice: normalizar([m.titulo, m.categoria, m.ano, m.referencia].join(" ")) }))
+        .map((m) => ({ ...m, valor: precoNum(m.preco), indice: normalizar([m.titulo, m.categoria, m.ano, m.referencia].join(" ")) }))
         .sort((a, b) => Number(Boolean(b.patio)) - Number(Boolean(a.patio)) || posicao(a.categoria) - posicao(b.categoria));
       if (qtd) qtd.textContent = String(maquinas.length);
       if (filtros) {
         if (!["Todas", ...ORDEM].includes(categoria)) categoria = "Todas";
+        busca.value = params.get("q") || "";
+        if (maximo) maximo.value = params.get("max") || "";
         renderFiltros();
         render();
         busca.addEventListener("input", render);
+        maximo?.addEventListener("input", render);
+        ordem?.addEventListener("change", render);
       } else if (lista) renderDestaques();
       const doPatio = maquinas.filter((m) => m.patio);
       if (patioLista && doPatio.length) {
