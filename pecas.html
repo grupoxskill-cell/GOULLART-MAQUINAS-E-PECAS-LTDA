@@ -1,24 +1,89 @@
 <!doctype html>
-<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>GOULLART Peças | Catálogo de peças para máquinas pesadas</title>
-<meta name="description" content="Peças para escavadeiras e máquinas pesadas. Consulte as referências e solicite orçamento com a GOULLART.">
-<link rel="stylesheet" href="style.css"></head>
-<body><nav class="topbar"><div class="wrap topbar-inner">
-<a class="logo" href="index.html" aria-label="Voltar para GOULLART"><img src="assets/logo-oficial.png" width="472" height="290" alt="GOULLART Pesados"></a>
-<div class="topbar-links"><a href="index.html">Início</a><a href="index.html#maquinas">Máquinas</a><a href="index.html#patios">Pátios</a><a href="pecas.html" aria-current="page">Peças</a><a href="index.html#contato">Contato</a></div></div></nav>
-<main><section class="section section-dark"><div class="wrap"><h1>GOULLART PEÇAS</h1><p>Seu catálogo de peças para linha amarela, separado das máquinas.</p><a class="btn btn-primary" href="index.html">Voltar ao site principal</a></div></section>
-    <section id="pecas" class="section section-alt">
-      <div class="wrap">
-        <h2>Peças</h2>
-        <p>Procure pelo nome da peça, código ou modelo da máquina. Não achou? Consulte nossa equipe pelo WhatsApp.</p>
-        <p class="muted">Referências para cotação. Confirme aplicação, disponibilidade, preço e prazo com a equipe antes da compra.</p>
-        <input id="busca" class="search" type="search" placeholder="Ex.: rolete, PC200, 320D, roda guia…" aria-label="Buscar peça">
-        <p id="catalogo-info" class="muted" role="status" aria-live="polite">Carregando referências…</p>
-        <noscript>Ative o JavaScript para pesquisar peças ou <a href="https://wa.me/5562999427276" rel="noopener" target="_blank">peça uma cotação pelo WhatsApp</a>.</noscript>
-        <ul id="catalogo-lista" class="catalog"></ul>
-      </div>
-    </section>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Peças para máquinas pesadas | GOULLART Peças</title>
+  <meta name="description" content="Peças para linha amarela: rodante, roda-guia, roda motriz, bomba hidráulica, pinhão e motor de translação. Consulte e peça orçamento.">
+  <meta name="theme-color" content="#061e42">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
 
-</main><footer class="footer"><div class="wrap"><p>GOULLART · CNPJ 29.759.621/0001-35</p><p>© <span id="ano">2026</span> GOULLART. Todos os direitos reservados.</p></div></footer>
-<a class="whatsapp-float" href="https://wa.me/5562999427276" target="_blank" rel="noopener">Falar com a equipe</a>
-<script src="catalogo.js"></script></body></html>
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <a class="logo" href="index.html" aria-label="GOULLART — início"><img src="assets/logo-oficial.png" width="472" height="290" alt="GOULLART Pesados — Força que move o seu negócio"></a>
+      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu" aria-label="Abrir menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <nav id="menu" class="nav" aria-label="Navegação principal">
+        <a href="maquinas.html">Máquinas</a>
+        <a href="pecas.html" aria-current="page">Peças</a>
+        <a href="index.html#areas">Serviços</a>
+        <a href="index.html#sobre">Sobre</a>
+        <a href="index.html#contato">Contato</a>
+        <a class="nav-adm" href="https://catalogo-goullart-pesados-brasil.fitbun9.chatgpt.site/admin/central" target="_blank" rel="noopener noreferrer" aria-label="Entrar na área administrativa protegida">ADM</a>
+        <a class="btn btn-primary" href="https://wa.me/5562999427276?text=Ol%C3%A1!%20Vim%20pelo%20site%20da%20GOULLART." target="_blank" rel="noopener">WhatsApp</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="page-hero">
+    <div class="wrap">
+      <span class="eyebrow">GOULLART Peças</span>
+      <h1>Peças para linha amarela</h1>
+      <p>Rodante, roda-guia, roda motriz, bomba hidráulica, pinhão e motor de translação. Procure pelo nome da peça, código ou modelo da máquina.</p>
+    </div>
+  </section>
+
+  <main id="conteudo" class="section section-alt">
+    <div class="wrap">
+      <input id="busca" class="search" type="search" placeholder="Ex.: rolete, PC200, 320D, roda guia…" aria-label="Buscar peça">
+      <p class="muted" style="margin-top:10px">Referências para cotação. Confirme aplicação, disponibilidade, preço e prazo com a equipe antes da compra.</p>
+      <p id="catalogo-info" class="contagem" role="status" aria-live="polite">Carregando referências…</p>
+      <noscript><p>Ative o JavaScript para pesquisar peças ou <a href="https://wa.me/5562999427276" rel="noopener" target="_blank">peça uma cotação pelo WhatsApp</a>.</p></noscript>
+      <ul id="catalogo-lista" class="catalog"></ul>
+    </div>
+  </main>
+
+  <section class="cta" aria-labelledby="cta-titulo">
+    <div class="cta-inner wrap">
+      <div>
+        <h2 id="cta-titulo">Não achou a peça?</h2>
+        <p>Mande a marca, o modelo da máquina e o código ou uma foto da plaqueta.</p>
+      </div>
+      <a class="btn btn-dark" href="https://wa.me/5562999427276?text=Ol%C3%A1!%20Preciso%20de%20uma%20pe%C3%A7a." target="_blank" rel="noopener">Falar no WhatsApp</a>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="wrap footer-grid">
+      <div>
+        <img src="assets/logo-oficial.png" width="472" height="290" alt="GOULLART Pesados">
+        <p>Máquinas pesadas, peças, locação e transporte para quem movimenta o Brasil.</p>
+      </div>
+      <div>
+        <h3>Navegação</h3>
+        <ul><li><a href="maquinas.html">Máquinas</a></li><li><a href="pecas.html" aria-current="page">Peças</a></li><li><a href="index.html#areas">Serviços</a></li><li><a href="index.html#sobre">Sobre</a></li></ul>
+      </div>
+      <div>
+        <h3>Atendimento</h3>
+        <ul><li><a href="https://wa.me/5562999427276" target="_blank" rel="noopener">WhatsApp (62) 99942-7276</a></li><li><a href="tel:+5562998531936">Telefone (62) 99853-1936</a></li></ul>
+      </div>
+      <div>
+        <h3>Empresa</h3>
+        <ul><li>GOULLART</li><li>CNPJ 29.759.621/0001-35</li></ul>
+      </div>
+    </div>
+    <div class="wrap footer-base"><span>© <span id="ano">2026</span> GOULLART. Todos os direitos reservados.</span><span>Preços e disponibilidade sujeitos a confirmação.</span></div>
+  </footer>
+
+  <a class="whatsapp-float" href="https://wa.me/5562999427276" target="_blank" rel="noopener" aria-label="Falar com a equipe GOULLART no WhatsApp">
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm0 18.2a8.2 8.2 0 01-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1112 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 01-3.3-2.9c-.3-.4.3-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 00-.7.3 3 3 0 00-.9 2.2 5.2 5.2 0 001.1 2.7 11.8 11.8 0 004.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 001.8-1.2 2.2 2.2 0 00.1-1.2c0-.1-.2-.2-.5-.3z"/></svg>
+    <span>Falar com a equipe</span>
+  </a>
+  <script src="site.js"></script>
+  <script src="catalogo.js"></script>
+</body>
+</html>
