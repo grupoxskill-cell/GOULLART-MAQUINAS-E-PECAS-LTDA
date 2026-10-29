@@ -22,7 +22,7 @@
         <a href="pecas.html">Peças</a>
         <a href="index.html#areas">Serviços</a>
         <a href="index.html#sobre">Sobre</a>
-        <a href="index.html#contato">Contato</a>
+        <a href="index.html#pedido">Contato</a>
         <a class="nav-adm" href="https://catalogo-goullart-pesados-brasil.fitbun9.chatgpt.site/admin/central" target="_blank" rel="noopener noreferrer" aria-label="Entrar na área administrativa protegida">ADM</a>
         <a class="btn btn-primary" href="https://wa.me/5562999427276?text=Ol%C3%A1!%20Vim%20pelo%20site%20da%20GOULLART." target="_blank" rel="noopener">WhatsApp</a>
       </nav>
@@ -41,7 +41,13 @@
     <div class="wrap">
       <div class="filtros">
         <div id="maquinas-filtros" class="chips" role="group" aria-label="Filtrar por tipo de máquina"></div>
-        <input id="maquinas-busca" class="search" type="search" placeholder="Buscar por marca, modelo ou ano: Volvo, D6, 966, 2020…" aria-label="Buscar máquina">
+        <div class="filtros-linha">
+          <input id="maquinas-busca" class="search" type="search" placeholder="Buscar por marca, modelo ou ano: Volvo, D6, 966, 2020…" aria-label="Buscar máquina">
+          <input id="maquinas-max" class="search" inputmode="numeric" placeholder="Até R$ (opcional)" aria-label="Valor máximo em reais">
+          <select id="maquinas-ordem" class="search" aria-label="Ordenar">
+            <option value="">Ordenar: por tipo</option><option value="menor">Menor preço</option><option value="maior">Maior preço</option>
+          </select>
+        </div>
       </div>
       <p class="muted">Preços anunciados. Disponibilidade, estado e condições são confirmados pela equipe antes da negociação.</p>
       <p id="maquinas-info" class="contagem" role="status" aria-live="polite">Carregando máquinas…</p>
