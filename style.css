@@ -130,3 +130,46 @@ h2 { font-size: clamp(1.4rem, 3vw, 2rem); margin: 0 0 12px; }
   [id] { scroll-margin-top: 110px; }
 }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+/* GOULLART mobile compact: iPhone 320–600px */
+@media (max-width: 600px) {
+  html, body { width: 100%; overflow-x: clip; }
+  .wrap { padding-inline: 12px; }
+  .topbar-inner { min-height: 64px; padding-block: 6px; flex-wrap: wrap; gap: 4px; }
+  .logo img { width: 96px; max-height: 58px; object-fit: contain; }
+  .topbar-links { display: flex; width: 100%; gap: 2px; justify-content: space-between; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+  .topbar-links::-webkit-scrollbar { display: none; }
+  .topbar-links a { white-space: nowrap; padding: 6px 5px; font-size: 0.75rem; min-height: 32px; }
+  .hero { padding: 22px 0 20px; }
+  .hero h1 { font-size: clamp(1.35rem, 6.3vw, 1.85rem); line-height: 1.14; margin-bottom: 8px; }
+  .hero-sub { font-size: 0.88rem; margin-bottom: 16px; }
+  .hero-motd { font-size: 0.7rem; }
+  .tiles { gap: 7px; }
+  .tile { padding: 10px 6px; font-size: 0.82rem; border-radius: 8px; }
+  .tile span { font-size: 1.2rem; }
+  .perks-grid { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; padding-block: 12px; }
+  .perk { font-size: 0.8rem; }
+  .perk span { font-size: 0.73rem; }
+  .section { padding: 26px 0; }
+  h2 { font-size: 1.35rem; }
+  .chips { gap: 5px; }
+  .chip { font-size: 0.8rem; padding: 7px 10px; min-height: 36px; }
+  .search { padding: 11px; font-size: 16px; }
+  .machines { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; }
+  .machine-body { padding: 9px; gap: 3px; }
+  .machine-body h3 { font-size: 0.86rem; line-height: 1.25; }
+  .machine-dados, .machine-status { font-size: 0.73rem; }
+  .machine-preco { font-size: 0.97rem; }
+  .machine img, .machine-nofoto { aspect-ratio: 4 / 3; }
+  .machine-btn { font-size: 0.78rem; padding: 9px 5px; }
+  .catalog { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; }
+  .catalog-item { padding: 9px; font-size: 0.82rem; }
+  .catalog-item span { font-size: 0.72rem; }
+  .btn { font-size: 0.85rem; padding: 10px 13px; }
+  .whatsapp-float { bottom: max(10px, env(safe-area-inset-bottom)); right: 10px; font-size: 0.8rem; padding: 11px 13px; }
+  [id] { scroll-margin-top: 110px; }
+}
+@media (max-width: 360px) {
+  .machines, .catalog { grid-template-columns: 1fr; }
+  .topbar-links a { font-size: 0.71rem; padding-inline: 3px; }
+}
