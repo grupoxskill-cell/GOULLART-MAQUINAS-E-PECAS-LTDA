@@ -18,6 +18,8 @@
 })();
 
 // O banner conserva o texto e a estrutura aprovados; só as fotografias alternam.
+// Troca sempre sozinho (inclusive com "Reduzir movimento" no celular, pois é só um esmaecimento);
+// quem quiser parar usa o botão Pausar.
 (() => {
   const banner = document.querySelector('.banner-carousel');
   if (!banner) return;
@@ -25,8 +27,7 @@
   const dots = [...banner.querySelectorAll('[data-banner-go]')];
   const pause = banner.querySelector('[data-banner-pause]');
   const position = banner.querySelector('.banner-position');
-  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-  let current = 0, timer = null, userPaused = reduced.matches, hover = false, touching = false, touchStart = null;
+  let current = 0, timer = null, userPaused = false, hover = false, touching = false, touchStart = null;
   const show = n => {
     current = (n + photos.length) % photos.length;
     photos.forEach((photo, i) => { photo.classList.toggle('is-active', i === current); photo.setAttribute('aria-hidden', String(i !== current)); });
@@ -55,7 +56,6 @@
   }, {passive:true});
   banner.addEventListener('touchcancel', () => { touching = false; touchStart = null; schedule(); }, {passive:true});
   document.addEventListener('visibilitychange', schedule);
-  reduced.addEventListener('change', () => { userPaused = reduced.matches; schedule(); });
   show(0); schedule();
 })();
 
@@ -63,15 +63,14 @@
   const ribbon = document.querySelector('.brand-ribbon');
   if (!ribbon) return;
   const button = ribbon.querySelector('[data-brands-pause]');
-  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-  let paused = reduced.matches;
+  // As logos passam sempre; o botão "Pausar logos" para o movimento.
+  let paused = false;
   const update = () => {
     ribbon.classList.toggle('is-paused', paused);
     button.setAttribute('aria-pressed', String(paused));
     button.textContent = paused ? 'Movimentar logos' : 'Pausar logos';
-    ribbon.querySelector('.brand-track').style.animationPlayState = paused ? 'paused' : (reduced.matches ? 'running' : '');
+    ribbon.querySelector('.brand-track').style.animationPlayState = paused ? 'paused' : 'running';
   };
   button.addEventListener('click', () => { paused = !paused; update(); });
-  reduced.addEventListener('change', () => { paused = reduced.matches; update(); });
   update();
 })();
