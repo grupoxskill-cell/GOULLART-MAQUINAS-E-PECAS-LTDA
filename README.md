@@ -4,7 +4,7 @@ Site da GOULLART (Goullart Peças para Escavadeiras Ltda) com catálogo pesquis�
 
 O site funciona de dois jeitos:
 
-- **Estático (GitHub Pages, gratuito):** catálogo e botões que abrem o WhatsApp (62) 99942-7276, onde a Sophia já atende. Publicado automaticamente pelo workflow `.github/workflows/pages.yml` a cada push no `master`.
+- **Estático (GitHub Pages, gratuito):** catálogo e botões que abrem o WhatsApp (62) 99942-7276, onde a Sophia já atende. Publicado automaticamente pelo workflow `.github/workflows/pages.yml` a cada push no `master`, no endereço https://www.goullartmaquinaspesadas.com.br
 - **Com servidor (Render + OpenAI):** a Sophia também conversa direto no site, usando o ChatGPT. Veja abaixo.
 
 ## Dados do site
