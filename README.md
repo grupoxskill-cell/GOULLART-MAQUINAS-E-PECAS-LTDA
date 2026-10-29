@@ -24,7 +24,19 @@ Em 29/10/2026, o domínio oficial respondeu por HTTPS com uma aplicação Larave
 
 ## Instalação existente no Azure / aaPanel
 
-O script `scripts/instalar-no-servidor.sh`, adicionado em paralelo na atualização `1c83d49`, foi preservado sem execução. Ele troca a raiz do nginx para o site estático; não migra catálogo de máquinas, login, pedidos ou banco de dados do aplicativo atual. Exige revisão da configuração e backup integral antes de uso neste domínio. A referência existente de hospedagem é a VM `goullart1`, IP `20.69.167.61`; a origem não foi confirmada no painel nesta revisão.
+A VM `goullart1` (IP `20.69.167.61`, aaPanel) é a origem de www.goullartmaquinaspesadas.com.br. Em 29/10/2026 (09:11 UTC) o script `scripts/instalar-no-servidor.sh` foi executado pelo portal da Azure (Executar comando → RunShellScript) e trocou a raiz do nginx de `/www/wwwroot/goullartmaquinaspesadas.com.br/public` (aplicação Laravel) para `/www/wwwroot/goullart-site` (este site estático). A aplicação Laravel, seus arquivos e o banco de dados não foram apagados, mas deixaram de responder nesse domínio.
+
+Para voltar à aplicação Laravel, rode como root:
+
+```sh
+cp /www/server/panel/vhost/nginx/goullartmaquinaspesadas.com.br.conf.bak-20261029-091156 /www/server/panel/vhost/nginx/goullartmaquinaspesadas.com.br.conf && /usr/bin/nginx -s reload
+```
+
+Rodar o script de novo atualiza o site e liga a atualização automática: o cron (`/etc/cron.d/goullart-site`) confere o branch `gh-pages` a cada 10 minutos e publica a versão nova. O registro fica em `/var/log/goullart-site.log`.
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/grupoxskill-cell/GOULLART-MAQUINAS-E-PECAS-LTDA/master/scripts/instalar-no-servidor.sh | bash
+```
 
 ## Render
 
