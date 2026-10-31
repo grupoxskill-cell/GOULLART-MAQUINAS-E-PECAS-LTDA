@@ -1,0 +1,24 @@
+# Copia o site do ChatGPT para a pasta espelho/ nesta branch. Não publica nada.
+name: Importar site do ChatGPT
+on:
+  push:
+    branches: [importar-chatgpt]
+    paths: [".github/workflows/importar-chatgpt.yml", "scripts/espelhar-chatgpt.mjs"]
+permissions:
+  contents: write
+jobs:
+  importar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/espelhar-chatgpt.mjs https://catalogo-goullart-pesados-brasil.fitbun9.chatgpt.site
+      - name: Salvar cópia na branch
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add espelho
+          git commit -m "Cópia do site do ChatGPT" || echo "sem mudanças"
+          git push
