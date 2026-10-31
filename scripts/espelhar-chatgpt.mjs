@@ -10,8 +10,13 @@ const fila = ["/", "/texas.html", "/curso", "/cursos", "/central", "/cliente"];
 const vistos = new Set();
 const relatorio = [];
 
-function caminhosEm(texto) {
+function caminhosEm(texto, base) {
   const achados = new Set();
+  // Caminhos relativos ("./x.mjs", "../y.js", "z.js?v=1") em import(), src= e href=.
+  const rel = /["'`](\.{0,2}\/?[A-Za-z0-9_\-./]+\.(?:m?js|css|json|png|jpe?g|webp|svg|mp4|vtt|otf|woff2?)(?:\?[^"'`\s]*)?)["'`]/g;
+  for (const m of texto.matchAll(rel)) {
+    try { const u = new URL(m[1], ORIGEM + base); if (u.origin === ORIGEM) achados.add(u.pathname + u.search); } catch {}
+  }
   const re = /(?:["'`(]|url\()\s*((?:https?:\/\/[^"'`)\s]+)|(?:\/[A-Za-z0-9_\-./%~@]+(?:\?[^"'`)\s]*)?))/g;
   for (const m of texto.matchAll(re)) {
     let p = m[1];
@@ -44,7 +49,7 @@ while (fila.length && vistos.size < LIMITE) {
   await mkdir(dirname(destino), { recursive: true });
   await writeFile(destino, buf);
   if (/html|css|javascript|json|text/.test(tipo)) {
-    for (const novo of caminhosEm(buf.toString("utf-8"))) if (!vistos.has(novo.split("#")[0])) fila.push(novo);
+    for (const novo of caminhosEm(buf.toString("utf-8"), chave)) if (!vistos.has(novo.split("#")[0])) fila.push(novo);
   }
 }
 await writeFile(join(SAIDA, "_relatorio.txt"), relatorio.join("\n") + "\n");
