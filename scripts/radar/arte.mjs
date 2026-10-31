@@ -1,6 +1,6 @@
 // Gera a arte (1080x1350, PNG) de uma máquina do Radar para aprovação no WhatsApp.
 // Uso: node scripts/radar/arte.mjs dados.json saida.png
-// dados.json: { codigo, titulo, ano, horas, precoSite (número), local (estado/região, opcional), foto (caminho local, opcional) }
+// dados.json: { codigo, titulo, ano, horas, precoSite (número), local ("Cidade - UF"), foto (caminho local, opcional) }
 import { readFile, writeFile } from "node:fs/promises";
 import { extname } from "node:path";
 import { createRequire } from "node:module";

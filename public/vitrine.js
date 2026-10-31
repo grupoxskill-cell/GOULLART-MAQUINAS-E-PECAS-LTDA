@@ -57,7 +57,7 @@
     titulo.id = "detalhe-titulo";
     const ficha = el("dl", "detalhe-ficha");
     for (const [rotulo, valor] of [["Tipo", m.categoria], ["Ano", m.ano], ["Horas / km", m.horas],
-      ["Local", m.patio ? m.local : ""], ["Referência", m.referencia]]) {
+      ["Local", m.local || ""], ["Referência", m.referencia]]) {
       if (valor) ficha.append(el("dt", "", rotulo), el("dd", "", valor));
     }
     detalheConteudo.replaceChildren(galeria, el("span", "machine-cat", m.patio ? "No pátio GOULLART" : m.categoria), titulo, ficha,
@@ -87,7 +87,7 @@
     const dados = [m.ano && `Ano ${m.ano}`, m.horas].filter(Boolean).join(" · ");
     if (dados) corpo.append(el("p", "machine-dados", dados));
     corpo.append(el("p", "machine-preco", m.preco || "Preço sob consulta"));
-    if (m.patio && m.local) corpo.append(el("p", "machine-dados", `Local: ${m.local}`));
+    if (m.local) corpo.append(el("p", "machine-dados", `Local: ${m.local}`));
     corpo.append(el("p", "machine-status", "Disponibilidade a confirmar"));
     const ver = el("button", "btn btn-ghost-dark", "Ver detalhes");
     ver.type = "button";
