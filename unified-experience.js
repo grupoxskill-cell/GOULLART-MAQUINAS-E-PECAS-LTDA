@@ -6,9 +6,9 @@
  try{const ids=JSON.parse(sessionStorage.getItem('goullart-favorites')||'[]');if(Array.isArray(ids))ids.filter(x=>typeof x==='string').forEach(x=>favorites.add(x));}catch{}
  function toast(message){$('unified-toast').textContent=message;$('unified-toast').hidden=false;clearTimeout(timer);timer=setTimeout(()=>$('unified-toast').hidden=true,4000);}
  function rerender(){window.GoullartCatalog?.render();}
- window.GoullartRefine={matches(item){const limit=Number($('catalog-budget').value);return (!limit||(Number.isFinite(item.price)&&item.price<=limit))&&(!favoritesOnly||favorites.has(item.id));}};
+ window.GoullartRefine={matches(item){const limit=Number($('catalog-budget')?.value);return (!limit||(Number.isFinite(item.price)&&item.price<=limit))&&(!favoritesOnly||favorites.has(item.id));}};
  function syncActions(){
-  $('favorite-count').textContent=favorites.size;
+  if($('favorite-count'))$('favorite-count').textContent=favorites.size;
   document.querySelectorAll('#products .product').forEach(card=>{
    const id=card.id.slice(5),item=window.GoullartCatalog?.getItems().find(i=>i.id===id);if(!item||item.opportunitySummary)return;
    let actions=card.querySelector('.product-actions');if(!actions){actions=document.createElement('div');actions.className='product-actions';card.querySelector('.product-body').append(actions);}
@@ -23,9 +23,8 @@
   if(compare){const id=compare.dataset.compare;if(selected.has(id))selected.delete(id);else if(selected.size<3)selected.add(id);else toast('Compare até 3 máquinas por vez. Remova uma para escolher outra.');syncActions();}
  });
  new MutationObserver(()=>syncActions()).observe($('products'),{childList:true});
- $('catalog-budget').addEventListener('input',()=>{$('budget-note').hidden=!Number($('catalog-budget').value);rerender();});
- $('catalog-favorites').onclick=()=>{favoritesOnly=!favoritesOnly;$('catalog-favorites').setAttribute('aria-pressed',String(favoritesOnly));rerender();};
- $('catalog-clear').onclick=()=>{window.GoullartCatalog?.clearType();$('search').value='';$('catalog-budget').value='';$('catalog-state').value='';favoritesOnly=false;$('catalog-favorites').setAttribute('aria-pressed','false');$('budget-note').hidden=true;rerender();};
+ $('catalog-budget')?.addEventListener('input',()=>{$('budget-note').hidden=!Number($('catalog-budget')?.value);rerender();});
+ if($('catalog-favorites'))$('catalog-favorites').onclick=()=>{favoritesOnly=!favoritesOnly;$('catalog-favorites').setAttribute('aria-pressed',String(favoritesOnly));rerender();};
  $('clear-comparison').onclick=()=>{selected.clear();syncActions();};
  const dialog=$('comparison-dialog');
  $('open-comparison').onclick=()=>{

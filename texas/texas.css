@@ -4,3 +4,14 @@
 @media(max-width:900px){main{padding:0 28px}.hero{gap:30px}h1{letter-spacing:-1.5px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:38px 24px}.product:first-child .product-copy{padding-top:60px}footer{padding-inline:28px;flex-wrap:wrap}}
 @media(max-width:600px){header{padding:16px 20px;grid-template-columns:1fr auto;gap:12px}header>a:first-child{font-size:10px}header>a:last-child{display:none}.brand{font-size:22px}.brand b{font-size:9px;letter-spacing:5px}main{padding:0 22px}.hero{grid-template-columns:1fr;gap:28px;padding:34px 0 42px}.hero h1{font-size:42px;line-height:1.13;letter-spacing:-2px;max-width:360px;margin-bottom:18px}.hero p:not(.eyebrow){font-size:14px;max-width:320px}.hero .eyebrow{font-size:9px;margin-bottom:18px}.hero .button{margin-top:0}.sound{margin-top:16px;gap:3px}.hero img{aspect-ratio:1}.section-heading{display:block;padding-top:28px;margin-bottom:24px}.section-heading>p{margin-top:16px;font-size:12px}.grid{grid-template-columns:1fr;gap:34px}.product video,.product img{aspect-ratio:4/5;max-height:520px}.product-copy,.product:first-child .product-copy{padding-top:18px}.product h2{font-size:31px;margin-bottom:8px}.product .button{min-height:48px}.video-music-toggle{min-height:42px}.closing{margin-top:44px;padding:28px 0}footer{display:grid;grid-template-columns:1fr 1fr;padding:16px 22px 30px;gap:8px 16px}footer p{margin:0}footer strong{font-size:14px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+body,button,input,select,textarea{text-transform:uppercase}
+
+/* Marca original e arte completa, sem recorte. */
+.goullart-texas header .brand{display:block;line-height:0;min-width:0}
+.goullart-texas header .brand img{display:block;width:190px;max-width:100%;height:auto}
+.goullart-texas .texas-footer-brand{display:block;line-height:0}
+.goullart-texas .texas-footer-brand img{display:block;width:150px;max-width:100%;height:auto}
+.goullart-texas .product-tall-boots>a img{aspect-ratio:9/16;height:auto;max-height:none;object-fit:contain}
+.goullart-texas .product-tall-boots .product-copy{padding-top:22px}
+@media(max-width:600px){.goullart-texas header .brand img{width:150px}.goullart-texas .product-tall-boots .product-copy{padding-top:18px}}
