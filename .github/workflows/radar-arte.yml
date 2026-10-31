@@ -1,0 +1,68 @@
+# Radar GOULLART: baixa a foto original do anúncio e gera a arte com ela.
+# A conversa do Radar não consegue baixar fotos (rede bloqueada); o GitHub consegue.
+# Entrada: fila/RADAR-AAMMDD-NN.json na branch radar-fila, com
+#   { codigo, titulo, ano, horas, precoSite, local, fotoUrl }   (só dados públicos)
+# Saída: RADAR-AAMMDD-NN.png (arte) e RADAR-AAMMDD-NN-foto.<ext> (foto original) na branch radar-artes.
+name: Radar - arte com foto original
+
+on:
+  push:
+    branches: [radar-fila]
+    paths: ["fila/*.json"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: radar-arte
+  cancel-in-progress: false
+
+jobs:
+  arte:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Instalar navegador para a arte
+        run: |
+          npm install --no-save playwright@1.49.1
+          npx playwright install --with-deps chromium
+      - name: Baixar fotos e gerar artes
+        run: |
+          set -euo pipefail
+          git config user.name "Radar GOULLART"
+          git config user.email "radar@goullart.invalid"
+          mkdir -p /tmp/saida
+          shopt -s nullglob
+          for pedido in fila/RADAR-*.json; do
+            codigo=$(basename "$pedido" .json)
+            url=$(node -e 'const d=require(process.argv[1]);process.stdout.write(d.fotoUrl||"")' "$PWD/$pedido")
+            dados=/tmp/$codigo.json
+            cp "$pedido" "$dados"
+            if [ -n "$url" ]; then
+              ext=$(printf '%s' "$url" | sed -E 's/[?#].*//; s/.*\.([A-Za-z0-9]{3,4})$/\1/' | tr 'A-Z' 'a-z')
+              case "$ext" in jpg|jpeg|png|webp) ;; *) ext=jpg ;; esac
+              foto=/tmp/saida/$codigo-foto.$ext
+              if curl -fsSL --max-time 60 -A "Mozilla/5.0" -o "$foto" "$url"; then
+                node -e 'const f=require("fs"),[p,foto]=process.argv.slice(1);const d=JSON.parse(f.readFileSync(p));delete d.fotoUrl;d.foto=foto;f.writeFileSync(p,JSON.stringify(d))' "$dados" "$foto"
+              else
+                echo "::warning::$codigo: foto não baixou; arte sai sem foto"
+                rm -f "$foto"
+              fi
+            fi
+            node -e 'const f=require("fs"),p=process.argv[1];const d=JSON.parse(f.readFileSync(p));delete d.fotoUrl;f.writeFileSync(p,JSON.stringify(d))' "$dados"
+            node scripts/radar/arte.mjs "$dados" "/tmp/saida/$codigo.png"
+            git rm -q "$pedido"
+          done
+          if [ -z "$(ls /tmp/saida)" ]; then echo "Fila vazia"; exit 0; fi
+          git commit -q -m "Radar: fila processada" && git push -q origin HEAD:radar-fila
+          if git fetch -q origin radar-artes; then git switch -q -c radar-artes origin/radar-artes; else git switch -q --orphan radar-artes; git rm -rq --cached . >/dev/null 2>&1 || true; git clean -fdxq -e node_modules; fi
+          cp /tmp/saida/* .
+          git add RADAR-*
+          git commit -q -m "Radar: artes $(ls /tmp/saida | grep -c png)"
+          git push -q origin radar-artes
