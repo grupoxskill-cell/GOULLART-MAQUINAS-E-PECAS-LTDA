@@ -1,0 +1,44 @@
+/* GOULLART: typography based on the owner's "Máquina boa tem história" reference.
+ * The important layer supersedes historical component font shorthands without
+ * changing their colors, spacing, geometry or SVG logos. */
+@font-face{
+ font-family:"Montserrat GOULLART";
+ src:url('/assets/fonts/montserrat-latin-variable.woff2') format('woff2');
+ font-style:normal;
+ font-weight:100 900;
+ font-display:swap;
+}
+:root{--goullart-font:"Montserrat GOULLART",Montserrat,Arial,sans-serif}
+@layer goullart-typography{
+ html,body,body *:not(svg,svg *){
+  font-family:var(--goullart-font)!important;
+ }
+ body{font-weight:500!important}
+ :is(h1,h2,h3,h4,h5,h6),:is(h1,h2,h3,h4,h5,h6) :is(a,span,strong,em){
+  font-weight:800!important;
+  letter-spacing:-.025em!important;
+ }
+ h1,h1 :is(a,span,strong,em){font-weight:900!important}
+ :is(button,summary,label,.button,.btn,.channel-invite-cta,.catalog-page-contact){font-weight:700!important}
+ :is(strong,b,.price,.catalog-page-price,.course-price,.sidebar-offers,.sidebar-group>summary,.machine-type-card strong){font-weight:800!important}
+ :is(.sidebar-offers,.sidebar-group>summary,.machine-type-card strong){letter-spacing:-.02em!important}
+ :is(.sidebar-group a,.sidebar-secondary a,.central-navigation a){font-weight:700!important}
+ :is(input,select,textarea){font-weight:500!important}
+ :is(input,textarea)::placeholder{font-family:var(--goullart-font)!important;font-weight:400!important}
+ /* Broader lettering needs room inside existing compact controls and cards. */
+ .channel-invite-cta{font-size:14px!important}
+ .mobile-menu-toggle{letter-spacing:0!important;font-size:14px!important}
+ #goullart-sidebar .sidebar-group>summary{font-size:21px!important;line-height:1.25!important}
+ #goullart-sidebar .sidebar-offers{font-size:24px!important}
+ #goullart-sidebar :is(.sidebar-group>div>a,.sidebar-secondary>a){font-size:16px!important;line-height:1.4!important}
+ .catalog-page-card h2{font-size:21px!important;line-height:1.25!important;overflow-wrap:break-word}
+ .catalog-page h1{font-size:clamp(28px,5vw,48px)!important;line-height:1.12!important;overflow-wrap:break-word}
+ .goullart-contact-chat-head h2{font-size:14px!important;letter-spacing:-.025em!important}
+ @media(max-width:600px){
+  .machine-type-card strong{font-size:clamp(13px,3.5vw,16px)!important;line-height:1.3!important;overflow-wrap:normal;hyphens:auto}
+  .catalog-page-card h2{font-size:17px!important}
+  .catalog-page-price{font-size:clamp(16px,4.8vw,21px)!important;line-height:1.3!important}
+  .catalog-page-contact{font-size:12px!important;line-height:1.4!important}
+  :is(input,select,textarea){font-size:16px!important}
+ }
+}
