@@ -11,15 +11,42 @@ permissions:
 
 jobs:
   publicar:
+    if: github.ref == 'refs/heads/master'
+    # Um único escritor em gh-pages; não interromper um push em andamento.
+    concurrency:
+      group: goullart-gh-pages
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # A fila pode receber eventos fora de ordem ou reexecuções antigas.
+          ref: master
       - uses: actions/setup-node@v4
         with:
           node-version: 22
       - name: Montar site estático
         run: node scripts/build.mjs
-      - uses: peaceiris/actions-gh-pages@v4
+      - name: Conferir versão antes de publicar
+        id: versao
+        shell: bash
+        run: |
+          set -euo pipefail
+          local_sha=$(git rev-parse HEAD)
+          remote_ref=$(git ls-remote --exit-code origin refs/heads/master)
+          remote_sha=${remote_ref%%$'\t'*}
+          echo "sha=$local_sha" >> "$GITHUB_OUTPUT"
+          if [[ "$local_sha" == "$remote_sha" ]]; then
+            echo "atual=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "atual=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::master foi atualizado durante o build; envio antigo ignorado."
+          fi
+      - name: Publicar versão atual
+        if: steps.versao.outputs.atual == 'true'
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./_site
+          publish_branch: gh-pages
+          full_commit_message: 'deploy: ${{ steps.versao.outputs.sha }}'
