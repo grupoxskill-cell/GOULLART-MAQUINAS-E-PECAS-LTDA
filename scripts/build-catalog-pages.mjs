@@ -1,22 +1,24 @@
 import {readFile,writeFile,readdir} from 'node:fs/promises';
 import vm from 'node:vm';
 import '../espelho/catalog-data.js';
+import '../espelho/listing-policy.js';
 const dataTools=globalThis.GoullartCatalogData;
 const context={window:{}};vm.createContext(context);vm.runInContext(await readFile('espelho/catalog-types.js','utf8'),context);
 const types=context.window.GoullartMachineTypes;
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money=n=>Number(n).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 const empty='No momento sem unidades. Fale com a equipe que buscamos para você';
-export async function prepareCatalogue(directory){
+export async function prepareCatalogue(directory,now=Date.now()){
  const data=dataTools.feed(JSON.parse(await readFile(directory+'/api/catalog.json','utf8')));
  await writeFile(directory+'/api/catalog.json',JSON.stringify(data));
- const counts=types.counts(data.items);
+ const eligibleItems=data.items.filter(i=>globalThis.GoullartListingPolicy.eligibleListing(i,now));
+ const counts=types.counts(eligibleItems);
  const files=['index.html','ofertas.html',...(await readdir(directory+'/maquinas')).filter(n=>n.endsWith('.html')).map(n=>'maquinas/'+n)];
  for(const filename of files){
   const path=directory+'/'+filename;let html=await readFile(path,'utf8');
   if(filename!=='index.html'){
    const type=filename.startsWith('maquinas/')?filename.slice(9,-5):'',offers=filename==='ofertas.html';
-   const items=data.items.filter(i=>i.category==='maquinas'&&(!type||types.matches(i,type))&&(!offers||i.offer?.verified===true&&i.offer.price===i.price&&i.offer.discountPercent>=20)).sort((a,b)=>(a.price??Infinity)-(b.price??Infinity));
+   const items=eligibleItems.filter(i=>i.category==='maquinas'&&(!type||types.matches(i,type))&&(!offers||i.offer?.verified===true&&i.offer.price===i.price&&i.offer.discountPercent>=20)).sort((a,b)=>(a.price??Infinity)-(b.price??Infinity));
    const nav=types.entries.filter(([id])=>counts[id]>0).map(([id,label])=>`<a href="/maquinas/${id}"${id===type?' aria-current="page"':''}><span>${esc(label)}</span><strong>${counts[id]}</strong></a>`).join('');
    html=html.replace(/(<div id="catalog-page-categories">)[\s\S]*?(<\/div><\/nav>)/,'$1'+nav+'$2');
    html=html.replace(/(<p id="catalog-page-count">)[\s\S]*?(<\/p>)/,'$1'+items.length+' anúncios encontrados$2');
