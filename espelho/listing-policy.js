@@ -9,5 +9,5 @@ function recentListingDate(value,now=Date.now()){
  return day>=cutoff&&day<=today;
 }
 function listingHasPhoto(item){return typeof item?.image==='string'&&!!item.image.trim()||Array.isArray(item?.media)&&item.media.some(m=>m?.kind==='image'&&typeof m.url==='string'&&!!m.url.trim())}
-function eligibleListing(item,now=Date.now()){return !!item&&(item.opportunitySummary===true&&item.category==='locacao'||item.category==='pecas'&&item.catalogItem===true||listingHasPhoto(item)&&(item.retentionPolicy==='owner_confirmation'?!!listingDay(item.publishedAt||item.date):recentListingDate(item.publishedAt||item.date,now)))}
+function eligibleListing(item,now=Date.now()){return !!item&&((item.opportunitySummary===true&&item.category==='locacao')?recentListingDate(item.receivedAt||item.publishedAt||item.date,now):(item.category==='pecas'&&item.catalogItem===true||listingHasPhoto(item)&&(item.retentionPolicy==='owner_confirmation'?!!listingDay(item.publishedAt||item.date):recentListingDate(item.publishedAt||item.date,now))))}
 globalThis.GoullartListingPolicy={listingDay,recentListingDate,listingHasPhoto,eligibleListing};
