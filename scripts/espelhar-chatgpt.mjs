@@ -8,7 +8,7 @@ const LIMITE = 3000;
 const obrigatorios = ["/", "/texas", "/texas.html", "/curso", "/cursos", "/central", "/ofertas", "/maquinas/escavadeira", "/maquinas/pa-carregadeira", "/api/catalog"];
 const fila = [...obrigatorios];
 const vistos = new Set(), baixados = new Set(), relatorio = [];
-const tipos = new Set(["pa-carregadeira","retroescavadeira","escavadeira","motoniveladora","trator-agricola","rolo-compactador","mini-carregadeira","tesoura","articulada","telescopica","elevador-pessoal","pipa","basculante","comboio","munck"]);
+const tipos = new Set(["pa-carregadeira","retroescavadeira","escavadeira","motoniveladora","trator-agricola","rolo-compactador","mini-carregadeira","tesoura","articulada","telescopica","elevador-pessoal","pipa","basculante","comboio","munck","trator-esteira","cavalo-mecanico"]);
 for (const t of tipos) fila.push("/maquinas/" + t);
 
 function publico(caminho) {
