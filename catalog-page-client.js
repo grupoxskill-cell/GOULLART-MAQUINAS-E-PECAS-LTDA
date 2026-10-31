@@ -1,15 +1,16 @@
 (() => {
- const types=window.GoullartMachineTypes,root=document.querySelector('[data-catalog-page]');
- if(!types||!root)return;
+ const types=window.GoullartMachineTypes,policy=window.GoullartListingPolicy,root=document.querySelector('[data-catalog-page]');
+ if(!types||!policy||!root)return;
  const type=root.dataset.catalogType,offers=root.dataset.catalogOffers==='true',grid=document.getElementById('catalog-page-list'),count=document.getElementById('catalog-page-count'),nav=document.getElementById('catalog-page-categories'),form=document.getElementById('catalog-page-sort'),select=document.getElementById('page-order');
  const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const money=value=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:2}).format(value);
  let items=null,fingerprint='',busy=false;
  function render(){
   if(!items)return;
-  const counts=types.counts(items);
+  const eligibleItems=items.filter(i=>policy.eligibleListing(i));
+  const counts=types.counts(eligibleItems);
   nav.innerHTML=types.entries.filter(([id])=>counts[id]>0).map(([id,label])=>'<a href="/maquinas/'+id+'"'+(id===type?' aria-current="page"':'')+'><span>'+esc(label)+'</span><strong>'+counts[id]+'</strong></a>').join('');
-  const list=items.filter(i=>i.category==='maquinas'&&(!type||types.matches(i,type))&&(!offers||i.offer?.verified===true&&i.offer.price===i.price&&i.offer.discountPercent>=20));
+  const list=eligibleItems.filter(i=>i.category==='maquinas'&&(!type||types.matches(i,type))&&(!offers||i.offer?.verified===true&&i.offer.price===i.price&&i.offer.discountPercent>=20));
   const order=select.value;
   list.sort((a,b)=>order==='recent'?String(b.publishedAt||'').localeCompare(String(a.publishedAt||'')):a.price==null?b.price==null?0:1:b.price==null?-1:order==='high'?b.price-a.price:a.price-b.price);
   count.textContent=list.length+' anúncio'+(list.length===1?' encontrado':'s encontrados');

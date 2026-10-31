@@ -43,7 +43,7 @@
   const area = new URLSearchParams(location.search).get('area');
   let category = categoryNames.includes(area) ? area : categoryNames.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'maquinas';
   const markCurrent = value => links.forEach(link => {
-    if (link.hash === '#' + value) link.setAttribute('aria-current', 'location');
+    if (link.getAttribute('href') === '/' ? value === 'inicio' : link.hash === '#' + value) link.setAttribute('aria-current', 'location');
     else link.removeAttribute('aria-current');
   });
   const update = () => {
