@@ -152,3 +152,39 @@ test('catálogo público do ADM sem dados privados', async () => {
   assert.ok(Array.isArray(c.items) && c.items.length > 0);
   assert.ok(!/privateNotes|notasPrivadas|sourceKey/.test(JSON.stringify(c)));
 });
+
+test('entrada do Radar: token, ficha interna, repetição e foto com marca d\'água fora do site', async () => {
+  const cookie = await entrar();
+  const oferta = (corpo, token) => fetch(base + '/adm/entrada/radar', { method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) }, body: JSON.stringify(corpo) });
+  assert.equal((await oferta({ titulo: 'x' }, 'qualquer')).status, 503);
+  const { token } = await (await enviar(cookie, '/adm/api/entrada/token', 'POST')).json();
+  assert.equal((await oferta({ titulo: 'x' }, 'errado')).status, 401);
+
+  // JPEG mínimo válido (1x1) em base64 para não depender de internet.
+  const jpeg = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=';
+  const corpo = { titulo: 'Escavadeira Volvo EC220D teste radar', ano: '2019', horas: '6.000 h', precoOrigem: 300000, precoMercado: 400000,
+    fonte: 'Marketplace X', link: 'https://exemplo.com/anuncio/123', contato: '62 90000-0000',
+    fotos: [{ dados: jpeg }, { dados: jpeg, marcaDagua: true }] };
+  const r = await oferta(corpo, token);
+  assert.equal(r.status, 201);
+  const criada = await r.json();
+  assert.equal(criada.descontoPct, 25);
+  assert.equal(criada.classificacao, 'Quente');
+  const repetida = await (await oferta(corpo, token)).json();
+  assert.equal(repetida.repetida, true);
+
+  const radar = await (await enviar(cookie, '/adm/api/radar', 'GET')).json();
+  const item = radar.find((x) => x.id === criada.id);
+  assert.equal(item.status, 'novo');
+  assert.equal(item.fotos.length, 2);
+  assert.equal(item.fotosMarca.length, 1);
+  assert.equal((await fetch(`${base}/${item.fotosMarca[0]}`)).status, 200);
+
+  assert.equal((await enviar(cookie, `/adm/api/radar/${item.id}/publicar`, 'POST')).status, 200);
+  const publica = (await (await fetch(base + '/maquinas.json')).json()).find((m) => m.titulo === corpo.titulo);
+  assert.equal(publica.preco, 'R$ 320.000');
+  assert.deepEqual(publica.fotos, item.fotos.filter((f) => !item.fotosMarca.includes(f)));
+  for (const campo of ['fonte', 'link', 'contato', 'precoMercado', 'descontoPct', 'precoOrigem']) assert.equal(publica[campo], undefined);
+  assert.equal((await fetch(base + '/adm/fontes/InterDisplay-Black.otf')).status, 200);
+});

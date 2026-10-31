@@ -84,8 +84,10 @@ async function iniciar() {
   try { resumo = await api("/resumo"); } catch { return; }
   document.getElementById("tela-login").hidden = true;
   document.getElementById("app").hidden = false;
-  abrir("inicio");
+  abrir(location.hash === "#radar" ? "radar" : "inicio");
 }
+// Link do aviso de nova oferta (/adm/#radar) também funciona com o ADM já aberto.
+addEventListener("hashchange", () => { if (location.hash === "#radar" && !document.getElementById("app").hidden) abrir("radar"); });
 
 // ---------- Início ----------
 async function inicio() {
@@ -95,7 +97,7 @@ async function inicio() {
   conteudo.replaceChildren(
     resumo.encontrosRadarNovo ? h("div", { class: "alerta" },
       h("strong", {}, `${resumo.encontrosRadarNovo} pedido(s) de clientes combinam com máquinas do Radar ainda não publicadas.`),
-      " ", h("button", { class: "btn", onclick: () => abrir("encontros") }, "Ver encontros")) : null,
+      " ", h("button", { class: "btn", onclick: () => abrir("encontros") }, "Ver encontros")) : "",
     h("div", { class: "numeros" },
       n("Publicações no site", resumo.publicacoesImportadasEm ? resumo.publicacoesNoSite : "—", "publicacoes"),
       n("Novas no Radar (aguardando você)", resumo.radarNovos, "radar"),
@@ -203,7 +205,7 @@ async function telaMaquinas(tipo) {
         radar ? h("span", {}, `Origem ${reais(m.precoOrigem)} → `, h("span", { class: "preco" }, `site ${reais(m.precoSiteCalculado)}`))
               : h("span", { class: "preco" }, reais(m.preco)),
         pedidos.length ? h("span", { class: "selo novo" }, `${pedidos.length} pedido(s) de clientes combinam`) : null,
-        m.fonte ? h("span", { class: "muted" }, `Fonte: ${m.fonte}`) : null,
+        radar ? fichaInterna(m, recarregar) : null,
         h("div", { class: "acoes" }, botoes)));
   }
   function desenhar() {
@@ -241,63 +243,178 @@ function quebrarTexto(ctx, texto, largura, maxLinhas) {
   if (linhas.length > maxLinhas) { linhas.length = maxLinhas; linhas[maxLinhas - 1] = linhas[maxLinhas - 1].replace(/\s*\S*$/, "…"); }
   return linhas;
 }
-async function desenharArte(m, preco, fotoIdx, enquadre) {
-  const W = 1080, H = 1350, FOTO_H = 780;
+// Arte no padrão aprovado por Júnior (docs/RADAR-REGRAS.md): fundo branco, curvas azul/amarelo nos cantos,
+// MARCA em azul, MODELO em amarelo, foto, dados, caixa "PREÇO GOULLART" e faixa do WhatsApp.
+const MARCAS_ARTE = ["Caterpillar", "CAT", "Komatsu", "Volvo", "Hyundai", "John Deere", "Case", "JCB", "Doosan", "Develon", "LiuGong",
+  "XCMG", "Sany", "New Holland", "Scania", "Mercedes-Benz", "Volkswagen", "VW", "Ford", "Valtra", "Randon", "Bobcat", "Link-Belt", "Fiat"];
+function separarTitulo(m) {
+  const t = String(m.titulo || "").replace(/\s+/g, " ").trim();
+  let achado = null;
+  for (const marca of MARCAS_ARTE) {
+    const r = new RegExp(`(^|\\s)(${marca.replace(/[-]/g, "\\-")})(?=\\s|$)`, "i").exec(t);
+    if (r && (!achado || r.index < achado.index)) achado = { index: r.index + r[1].length, texto: r[2] };
+  }
+  if (!achado) { const p = t.split(" "); return { tipo: m.categoria || "", marca: p.slice(0, -1).join(" ") || t, modelo: p.length > 1 ? p.at(-1) : "" }; }
+  return { tipo: t.slice(0, achado.index).trim() || m.categoria || "", marca: achado.texto, modelo: t.slice(achado.index + achado.texto.length).trim() };
+}
+let fontesArte;
+function carregarFontesArte() {
+  fontesArte ||= Promise.all([["Black", 900], ["ExtraBold", 800], ["SemiBold", 600]].map(async ([nome, peso]) => {
+    const f = new FontFace("ArteGoullart", `url(/adm/fontes/InterDisplay-${nome}.otf)`, { weight: String(peso) });
+    document.fonts.add(await f.load());
+  })).catch(() => {});
+  return fontesArte;
+}
+function caixa(ctx, x, y, w, h, r, cor) { ctx.fillStyle = cor; ctx.beginPath(); ctx.roundRect(x, y, w, h, r); ctx.fill(); }
+function caberTexto(ctx, txt, peso, tamanho, largura) {
+  let px = tamanho;
+  do { ctx.font = `${peso} ${px}px ArteGoullart, Inter, Arial, sans-serif`; px -= 4; } while (ctx.measureText(txt).width > largura && px > 20);
+}
+async function desenharArte(m, preco, fotoIdx, enquadre, formato = "feed") {
+  await carregarFontesArte();
+  const story = formato === "story";
+  const W = 1080, H = story ? 1920 : 1350, k = story ? 1 : 0.72, M = story ? 80 : 72;
   const c = h("canvas"); c.width = W; c.height = H;
   const ctx = c.getContext("2d");
-  ctx.fillStyle = "#061e42"; ctx.fillRect(0, 0, W, H);
-  const foto = await carregarImagem(`/${m.fotos[fotoIdx]}`);
-  const escala = Math.max(W / foto.width, FOTO_H / foto.height);
-  const fw = foto.width * escala, fh = foto.height * escala;
-  ctx.drawImage(foto, (W - fw) / 2, (FOTO_H - fh) * enquadre, fw, fh);
-  const g = ctx.createLinearGradient(0, FOTO_H - 260, 0, FOTO_H + 2);
-  g.addColorStop(0, "rgba(6,30,66,0)"); g.addColorStop(1, "rgba(6,30,66,1)");
-  ctx.fillStyle = g; ctx.fillRect(0, FOTO_H - 260, W, 262);
+  ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, W, H);
+  // Curvas dos cantos (mesmo desenho da arte aprovada).
+  const curvas = (escala) => {
+    ctx.save(); ctx.scale(escala, escala);
+    ctx.fillStyle = "#061e42"; ctx.fill(new Path2D("M0 0H330C190 40 70 150 0 330Z"));
+    ctx.fillStyle = "#f5b301"; ctx.fill(new Path2D("M0 372C66 190 200 70 380 0H404C222 74 92 196 22 380L0 430Z"));
+    ctx.restore();
+  };
+  curvas(1);
+  ctx.save(); ctx.translate(W, H); ctx.rotate(Math.PI); curvas(340 / 520); ctx.restore();
+  const centro = (txt, y) => { ctx.textAlign = "center"; ctx.fillText(txt, W / 2, y); };
+  let y = story ? 110 : 64;
   try {
-    const logo = await carregarImagem("/assets/brands/goullart-pesados-original.svg");
-    const lw = 300, lh = lw * (logo.height / logo.width || 0.45);
-    ctx.fillStyle = "#ffffff"; ctx.beginPath(); ctx.roundRect(40, 40, lw + 40, lh + 32, 18); ctx.fill();
-    ctx.drawImage(logo, 60, 56, lw, lh);
+    const logo = await carregarImagem("/adm/logo.png");
+    const lw = story ? 380 : 260, lh = lw * logo.height / logo.width;
+    ctx.save(); ctx.shadowColor = "rgba(6,30,66,.25)"; ctx.shadowBlur = 30; ctx.shadowOffsetY = 10;
+    ctx.beginPath(); ctx.roundRect((W - lw) / 2, y, lw, lh, 18); ctx.clip(); ctx.drawImage(logo, (W - lw) / 2, y, lw, lh); ctx.restore();
+    y += lh;
   } catch {}
-  const fonte = (peso, px) => `${peso} ${px}px Inter, "Segoe UI", Roboto, Arial, sans-serif`;
-  let y = FOTO_H + 10;
-  ctx.fillStyle = "#f5b301"; ctx.font = fonte(800, 34); ctx.fillText(String(m.categoria || "Máquina").toUpperCase(), 60, y + 30);
-  ctx.fillStyle = "#ffffff"; ctx.font = fonte(800, 68);
-  for (const l of quebrarTexto(ctx, m.titulo, W - 120, 2)) { y += 78; ctx.fillText(l, 60, y + 40); }
-  const detalhes = [m.ano && `Ano ${m.ano}`, m.horas].filter(Boolean).join("  •  ");
-  if (detalhes) { y += 64; ctx.fillStyle = "#cfd8e3"; ctx.font = fonte(600, 40); ctx.fillText(detalhes, 60, y + 40); }
-  if (Number.isFinite(preco)) { y += 96; ctx.fillStyle = "#f5b301"; ctx.font = fonte(900, 84); ctx.fillText(`R$ ${Math.round(preco).toLocaleString("pt-BR")}`, 60, y + 50); }
-  ctx.fillStyle = "#f5b301"; ctx.fillRect(0, H - 110, W, 110);
-  ctx.fillStyle = "#061e42"; ctx.font = fonte(800, 40); ctx.fillText("Fale com a GOULLART  •  (62) 99942-7276", 60, H - 62);
-  ctx.font = fonte(600, 28); ctx.fillText("goullartmaquinaspesadas.com.br", 60, H - 24);
+  const { tipo, marca, modelo } = separarTitulo(m);
+  // Selo
+  y += 38 * k + 10;
+  ctx.font = `800 ${Math.round(28 * k + 4)}px ArteGoullart, Inter, Arial, sans-serif`;
+  const selo = "OFERTA GOULLART", sw = ctx.measureText(selo).width + 70 * k + 20, sh = 64 * k + 8;
+  caixa(ctx, (W - sw) / 2, y, sw, sh, sh / 2, "#f5b301");
+  ctx.fillStyle = "#061e42"; ctx.textBaseline = "middle"; centro(selo, y + sh / 2 + 2); ctx.textBaseline = "alphabetic";
+  y += sh;
+  // Marca / modelo / tipo
+  ctx.fillStyle = "#061e42"; caberTexto(ctx, marca.toUpperCase(), 900, Math.round(140 * k), W - 2 * M);
+  y += 140 * k + 10; centro(marca.toUpperCase(), y);
+  if (modelo) { ctx.fillStyle = "#f5b301"; caberTexto(ctx, modelo.toUpperCase(), 900, Math.round(170 * k), W - 2 * M); y += 150 * k; centro(modelo.toUpperCase(), y); }
+  if (tipo) { ctx.fillStyle = "#5b6675"; caberTexto(ctx, tipo.toUpperCase(), 600, Math.round(34 * k + 4), W - 2 * M); y += 56 * k + 6; centro(tipo.toUpperCase(), y); }
+  // Rodapé de baixo para cima: aviso, faixa WhatsApp, preço, dados.
+  let b = H - (story ? 96 : 56);
+  ctx.fillStyle = "#5b6675"; ctx.font = `600 ${Math.round(21 * k + 3)}px ArteGoullart, Inter, Arial, sans-serif`;
+  centro("Disponibilidade e condições a confirmar • goullartmaquinaspesadas.com.br", b);
+  const ch = story ? 104 : 76; b -= 24 * k + 18 + ch;
+  caixa(ctx, M, b, W - 2 * M, ch, 20, "#f5b301");
+  ctx.fillStyle = "#061e42"; ctx.font = `800 ${Math.round(38 * k + 2)}px ArteGoullart, Inter, Arial, sans-serif`;
+  ctx.textBaseline = "middle"; centro("Fale com a GOULLART • (62) 99942-7276", b + ch / 2 + 2); ctx.textBaseline = "alphabetic";
+  const ph = story ? 210 : 150; b -= 20 + ph;
+  caixa(ctx, M, b, W - 2 * M, ph, 24, "#061e42");
+  ctx.fillStyle = "#c9d4e3"; ctx.font = `800 ${Math.round(26 * k + 2)}px ArteGoullart, Inter, Arial, sans-serif`; centro("PREÇO GOULLART", b + ph * 0.3);
+  ctx.fillStyle = "#f5b301"; caberTexto(ctx, Number.isFinite(preco) ? `R$ ${Math.round(preco).toLocaleString("pt-BR")}` : "SOB CONSULTA", 900, Math.round(110 * k), W - 2 * M - 40);
+  centro(Number.isFinite(preco) ? `R$ ${Math.round(preco).toLocaleString("pt-BR")}` : "SOB CONSULTA", b + ph * 0.82);
+  const specs = [["ANO", m.ano], ["HORAS", m.horas]].filter(([, v]) => v);
+  const sh2 = story ? 110 : 80;
+  if (specs.length) {
+    b -= 40 * k + sh2;
+    const cw = (W - 2 * M) / specs.length;
+    specs.forEach(([rot, val], i) => {
+      const cx = M + cw * i + cw / 2;
+      if (i) { ctx.fillStyle = "#dfe4ea"; ctx.fillRect(M + cw * i - 1, b, 3, sh2); }
+      ctx.textAlign = "center";
+      ctx.fillStyle = "#5b6675"; ctx.font = `700 ${Math.round(24 * k + 2)}px ArteGoullart, Inter, Arial, sans-serif`; ctx.fillText(rot, cx, b + sh2 * 0.32);
+      ctx.fillStyle = "#061e42"; caberTexto(ctx, String(val), 800, Math.round(54 * k), cw - 30); ctx.fillText(String(val), cx, b + sh2 * 0.9);
+    });
+  }
+  // Foto no espaço que sobrou, com cantos arredondados e sombra.
+  const topo = y + 40 * k, base = b - 40 * k, fh = base - topo;
+  ctx.save(); ctx.shadowColor = "rgba(6,30,66,.22)"; ctx.shadowBlur = 50; ctx.shadowOffsetY = 24;
+  caixa(ctx, M, topo, W - 2 * M, fh, 28, "#e9edf2"); ctx.restore();
+  ctx.save(); ctx.beginPath(); ctx.roundRect(M, topo, W - 2 * M, fh, 28); ctx.clip();
+  if (fotoIdx >= 0 && m.fotos?.[fotoIdx]) {
+    const foto = await carregarImagem(`/${m.fotos[fotoIdx]}`);
+    const fw = W - 2 * M, escala = Math.max(fw / foto.width, fh / foto.height);
+    const dw = foto.width * escala, dh = foto.height * escala;
+    ctx.drawImage(foto, M + (fw - dw) / 2, topo + (fh - dh) * enquadre, dw, dh);
+  } else {
+    ctx.fillStyle = "#061e42"; ctx.font = `800 ${Math.round(46 * k)}px ArteGoullart, Inter, Arial, sans-serif`;
+    ctx.textAlign = "center"; ctx.fillText("Fotos e vídeo pelo WhatsApp", W / 2, topo + fh / 2);
+  }
+  ctx.restore();
   return c;
 }
+
+// Ficha interna do Radar: só no ADM, nunca no site (docs/RADAR-REGRAS.md).
+function fichaInterna(m, recarregar) {
+  const linhas = [];
+  const classe = { Quente: "publicado", Boa: "novo" }[m.classificacao] || "descartado";
+  if (m.classificacao) linhas.push(h("span", {}, h("span", { class: `selo ${classe}` }, m.classificacao),
+    m.descontoPct != null ? ` ${m.descontoPct}% abaixo do mercado (${reais(m.precoMercado)})` : " • preço de mercado a informar"));
+  if (m.fonte || m.link) linhas.push(h("span", { class: "muted" }, "Fonte: ", m.fonte || "", " ",
+    m.link ? h("a", { href: m.link, target: "_blank", rel: "noopener noreferrer" }, "abrir anúncio") : ""));
+  if (m.contato) linhas.push(h("span", { class: "muted" }, `Vendedor: ${m.contato}`));
+  for (const aviso of m.avisos || []) linhas.push(h("span", { class: "erro" }, aviso));
+  if (m.fotos?.length) {
+    const marcadas = new Set(m.fotosMarca || []);
+    linhas.push(h("div", { class: "fotos-prev" }, m.fotos.map((f) => {
+      const caixaMarca = h("input", { type: "checkbox", checked: marcadas.has(f) });
+      caixaMarca.addEventListener("change", () => acao(caixaMarca, async () => {
+        caixaMarca.checked ? marcadas.add(f) : marcadas.delete(f);
+        await api(`/radar/${m.id}`, { method: "PUT", body: { fotosMarca: [...marcadas] } });
+        recarregar();
+      }, caixaMarca.checked ? "Foto fora do site (marca d'água)." : "Foto liberada para o site."));
+      return h("label", { class: "foto-marca" }, h("img", { src: `/${f}`, alt: "" }), h("span", {}, caixaMarca, " marca d'água"));
+    })));
+    if (marcadas.size) {
+      const msg = `Olá! Vi o anúncio da ${m.titulo}${m.ano ? ` ${m.ano}` : ""}. Tenho comprador interessado. Consegue me mandar fotos sem marca d'água e um vídeo da máquina funcionando?`;
+      const tel = String(m.contato || "").replace(/\D/g, "");
+      linhas.push(h("a", { class: "btn sec", target: "_blank", rel: "noopener",
+        href: `https://wa.me/${tel.length >= 10 ? tel.replace(/^(?!55)/, "55") : ""}?text=${encodeURIComponent(msg)}` }, "Pedir fotos limpas ao vendedor"));
+    }
+  }
+  return linhas.length ? h("div", { class: "ficha-interna" }, h("small", { class: "muted" }, "FICHA INTERNA — não vai para o site"), ...linhas) : null;
+}
+
 async function telaArte(tipo, m, voltar) {
   const preco = tipo === "radar" ? (m.precoSite ?? m.precoSiteCalculado) : m.preco;
-  let fotoIdx = 0, enquadre = 0.5, canvas;
+  const marcadas = new Set(m.fotosMarca || []);
+  let fotoIdx = m.fotos.findIndex((f) => !marcadas.has(f)), enquadre = 0.5, formato = "feed", canvas;
   const prev = h("div", { class: "arte-prev" });
-  const escolhaFoto = h("select", {}, m.fotos.map((f, i) => h("option", { value: i }, `Foto ${i + 1}`)));
+  const escolhaFoto = h("select", {}, [h("option", { value: -1, selected: fotoIdx < 0 }, "Sem foto (fotos pelo WhatsApp)"),
+    ...m.fotos.map((f, i) => h("option", { value: i, disabled: marcadas.has(f), selected: i === fotoIdx }, marcadas.has(f) ? `Foto ${i + 1} (marca d'água, não usar)` : `Foto ${i + 1}`))]);
+  const escolhaFormato = h("select", {}, h("option", { value: "feed" }, "Feed 1080x1350"), h("option", { value: "story" }, "Story 1080x1920"));
+  escolhaFormato.addEventListener("change", () => { formato = escolhaFormato.value; redesenhar(); });
   const posicao = h("input", { type: "range", min: 0, max: 1, step: 0.05, value: 0.5 });
   async function redesenhar() {
-    try { canvas = await desenharArte(m, preco, fotoIdx, enquadre); canvas.className = "arte-canvas"; prev.replaceChildren(canvas); }
+    try { canvas = await desenharArte(m, preco, fotoIdx, enquadre, formato); canvas.className = "arte-canvas"; prev.replaceChildren(canvas); }
     catch (e) { prev.replaceChildren(h("p", { class: "erro" }, e.message)); }
   }
   escolhaFoto.addEventListener("change", () => { fotoIdx = +escolhaFoto.value; redesenhar(); });
   posicao.addEventListener("input", () => { enquadre = +posicao.value; redesenhar(); });
   const usar = h("button", { class: "btn ok" }, "Usar no site");
   usar.addEventListener("click", () => acao(usar, async () => {
-    const { foto } = await api("/fotos", { method: "POST", body: { dados: canvas.toDataURL("image/jpeg", 0.88) } });
+    // O site usa sempre o formato feed.
+    const feed = formato === "feed" ? canvas : await desenharArte(m, preco, fotoIdx, enquadre, "feed");
+    const { foto } = await api("/fotos", { method: "POST", body: { dados: feed.toDataURL("image/jpeg", 0.88) } });
     await api(`/${tipo}/${m.id}`, { method: "PUT", body: { arte: foto } });
     voltar();
   }, "Arte salva. Ela aparece no site quando a máquina estiver publicada."));
   const baixar = h("button", { class: "btn sec" }, "Baixar para WhatsApp/Instagram");
   baixar.addEventListener("click", () => {
-    const a = h("a", { href: canvas.toDataURL("image/jpeg", 0.92), download: `goullart-${String(m.titulo).toLowerCase().replace(/[^a-z0-9]+/g, "-")}.jpg` });
+    const a = h("a", { href: canvas.toDataURL("image/jpeg", 0.92), download: `goullart-${String(m.titulo).toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${formato}.jpg` });
     document.body.append(a); a.click(); a.remove();
   });
   conteudo.replaceChildren(h("div", { class: "painel" }, h("h2", {}, "Arte da máquina"),
-    h("p", { class: "muted" }, "A arte mostra só foto, nome, ano, horas e preço. Fonte, local e observações nunca entram. Confira se a foto não tem marca d'água ou telefone de outra empresa; se tiver, escolha outra foto ou mude o enquadramento."),
-    h("div", { class: "grade" }, h("label", {}, "Foto", escolhaFoto), h("label", {}, "Enquadramento (cima ↔ baixo)", posicao)),
+    h("p", { class: "muted" }, "A arte mostra só foto, marca, modelo, ano, horas e preço. Fonte, local e observações nunca entram. Fotos marcadas com marca d'água de outra revenda não podem ser usadas: peça fotos limpas ao vendedor ou use \"Sem foto\"."),
+    h("div", { class: "grade" }, h("label", {}, "Formato", escolhaFormato), h("label", {}, "Foto", escolhaFoto), h("label", {}, "Enquadramento (cima ↔ baixo)", posicao)),
     prev, h("div", { class: "acoes" }, usar, baixar, h("button", { class: "btn sec", onclick: voltar }, "Voltar"))));
   redesenhar();
 }
@@ -502,12 +619,27 @@ async function config() {
   const nova = h("input", { type: "password", autocomplete: "new-password", minlength: 8 });
   const trocar = h("button", { class: "btn" }, "Trocar senha");
   trocar.addEventListener("click", () => acao(trocar, async () => { await api("/senha", { method: "POST", body: { atual: atual.value, nova: nova.value } }); atual.value = nova.value = ""; }, "Senha trocada."));
+  const entrada = await api("/entrada");
+  const urlEntrada = h("input", { readonly: true, value: entrada.url });
+  const token = h("input", { readonly: true, value: entrada.token || "(desligada: gere o token)" });
+  const gerar = h("button", { class: "btn sec" }, entrada.token ? "Gerar novo token" : "Ligar entrada do Radar");
+  gerar.addEventListener("click", () => (!entrada.token || confirm("O token antigo deixa de funcionar. Continuar?")) &&
+    acao(gerar, async () => { entrada.token = (await api("/entrada/token", { method: "POST" })).token; token.value = entrada.token; }, "Token gerado."));
+  const aviso = h("input", { value: entrada.avisoWebhook, placeholder: "https://... (Zapier, Make ou iZap)" });
+  const salvarAviso = h("button", { class: "btn" }, "Salvar aviso");
+  salvarAviso.addEventListener("click", () => acao(salvarAviso, async () => { await api("/config", { method: "PUT", body: { avisoWebhook: aviso.value } }); }, "Aviso salvo."));
   const sair = h("button", { class: "btn perigo" }, "Sair do ADM");
   sair.addEventListener("click", async () => { await api("/sair", { method: "POST" }).catch(() => {}); mostrarLogin(); });
   conteudo.replaceChildren(
     h("div", { class: "painel" }, h("h2", {}, "Margem do Radar"),
       h("p", { class: "muted" }, "Valor somado ao preço de origem para calcular o preço do site. Vale para as próximas publicações; as já publicadas mantêm o preço."),
       h("label", {}, "Margem (R$)", margem), salvarMargem),
+    h("div", { class: "painel" }, h("h2", {}, "Entrada do Radar"),
+      h("p", { class: "muted" }, "Endereço para o Radar (ChatGPT ou automação) mandar cada oferta. Ela entra como \"Aguardando você\" com a ficha interna. Envie POST em JSON com o token no cabeçalho Authorization: Bearer. Campos: titulo, categoria, ano, horas, local, precoOrigem, precoMercado, fonte, link, contato, obs e fotos ([{url, marcaDagua}], até 3)."),
+      h("label", {}, "Endereço", urlEntrada), h("label", {}, "Token (guarde em segredo)", token), gerar),
+    h("div", { class: "painel" }, h("h2", {}, "Aviso de nova oferta"),
+      h("p", { class: "muted" }, "Quando entra uma oferta, o ADM manda os dados (com o link para aprovar) para este endereço. Ligue-o a uma automação que mande para o seu WhatsApp."),
+      h("label", {}, "Endereço do aviso", aviso), salvarAviso),
     h("div", { class: "painel" }, h("h2", {}, "Trocar senha"), h("label", {}, "Senha atual", atual), h("label", {}, "Nova senha (8+ caracteres)", nova), trocar),
     h("div", { class: "painel" }, sair));
 }

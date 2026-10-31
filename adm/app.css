@@ -53,3 +53,6 @@ a { color: var(--ink); }
 details summary { cursor: pointer; font-weight: 600; font-size: 0.9rem; }
 .arte-prev { display: grid; place-items: center; }
 .arte-canvas { width: min(100%, 432px); height: auto; border-radius: 12px; box-shadow: 0 4px 18px rgba(0,0,0,.18); }
+.ficha-interna { display: grid; gap: 6px; margin-top: 6px; padding: 10px; border: 1px dashed #c9a227; border-radius: 10px; background: #fffbea; }
+.foto-marca { display: grid; gap: 4px; font-size: 0.75rem; font-weight: 600; }
+.foto-marca img { width: 88px; height: 66px; object-fit: cover; border-radius: 6px; }
