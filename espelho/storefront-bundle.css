@@ -1215,6 +1215,10 @@ body.approved-layout .machine-type-card{gap:8px;padding:14px 16px;align-items:ce
 body.goullart-storefront .machine-type-card{background:#fff;gap:12px;padding:14px;overflow:hidden}
 body.goullart-storefront .machine-type-card strong{font-size:clamp(13px,1.6vw,19px);line-height:1.2;text-align:center}
 
+body.approved-layout .machine-type-count{display:block;width:100%;text-align:center;font:700 12px/1.4 Montserrat,Arial,sans-serif;color:#53677b;padding-top:4px}
+body.approved-layout .machine-category-symbol{display:flex;align-items:center;justify-content:center;width:100%;aspect-ratio:1.6;background:#f4f6f8;color:#ba8416}
+body.approved-layout .machine-category-symbol svg{width:85%;height:auto;max-height:135px}
+
 /* SOURCE: /responsive-final.css */
 /* Final responsive contract: keep this after component styles. */
 html{overflow-wrap:break-word;-webkit-text-size-adjust:100%;text-size-adjust:100%}

@@ -5,3 +5,11 @@ body.catalog-page{margin:0;background:#f7f9fc;color:#0a2342;font:400 16px/1.5 "S
 @media(max-width:430px){.catalog-page-header{padding:12px 16px}.catalog-page-header img{width:170px}.catalog-page main{padding-inline:12px}.catalog-page-card>div{padding:12px}.catalog-page-card img{height:145px}.catalog-page-card h2{font-size:23px}.catalog-page-price{font-size:21px}.catalog-page-contact{font-size:14px}.catalog-page-heading form{gap:6px}.catalog-page-heading label{width:100%}}
 body.catalog-page>.catalog-page-header{height:auto;min-height:118px}
 body.catalog-page .catalog-page-heading form{display:flex;flex-direction:row;align-items:center;gap:8px;flex-wrap:wrap;width:auto;min-width:0;max-width:100%;padding:0;margin:0 0 12px;background:transparent;border:0;border-radius:0;box-shadow:none}
+
+.catalog-page-categories{margin:24px 0;background:#fff;border:1px solid #dce4ed;border-radius:12px;padding:16px}
+.catalog-page-categories h2{font:800 16px/1.3 Montserrat,Arial,sans-serif;margin:0 0 12px}
+.catalog-page-categories>div{display:flex;gap:8px;flex-wrap:wrap}
+.catalog-page-categories a{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;padding:8px 12px;background:#eef3f8;border:1px solid #d7e1eb;border-radius:8px;text-decoration:none;font-size:13px;font-weight:700;max-width:100%}
+.catalog-page-categories a strong{display:grid;place-items:center;min-width:26px;min-height:26px;border-radius:6px;background:#f5c32b;color:#092b49;font-size:13px}
+.catalog-page-categories a[aria-current=page]{background:#092b49;color:#fff;border-color:#092b49}
+@media(max-width:430px){.catalog-page-categories{padding:12px}.catalog-page-categories a{flex:1 1 46%;font-size:12px;gap:6px;padding:8px}.catalog-page-categories a span{overflow-wrap:anywhere}}
