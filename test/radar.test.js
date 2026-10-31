@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { avaliar, entradaPublica, marcaDe, modeloDe, precoEmReais, precoSite } from '../lib/radar.js';
+import { anuncioAprovado, avaliar, entradaPublica, localValido, marcaDe, modeloDe, precoEmReais, precoSite } from '../lib/radar.js';
 
 const catalogo = JSON.parse(await readFile('public/maquinas.json', 'utf8'));
 
@@ -26,9 +26,21 @@ test('barata = pelo menos 15% abaixo das parecidas do catálogo', () => {
   assert.equal(avaliar({ titulo: 'Guindaste Marca Desconhecida X1', categoria: 'Outros', precoOrigem: '100.000' }, catalogo).motivo, 'sem parecidas no catálogo');
 });
 test('entrada do site só tem dados públicos, com preço já com a margem', () => {
-  const e = entradaPublica({ codigo: 'RADAR-261031-01', titulo: 'Escavadeira Komatsu PC200', categoria: 'Escavadeiras', ano: 2018, horas: '9.000 h', precoSite: precoSite(200000), fonte: 'grupo X' });
-  assert.deepEqual(Object.keys(e).sort(), ['ano', 'categoria', 'ficha', 'fotos', 'horas', 'preco', 'referencia', 'titulo']);
+  const e = entradaPublica({ codigo: 'RADAR-261031-01', titulo: 'Escavadeira Komatsu PC200', categoria: 'Escavadeiras', ano: 2018, horas: '9.000 h', local: 'Itaúna, MG', precoSite: precoSite(200000), fonte: 'grupo X' });
+  assert.deepEqual(Object.keys(e).sort(), ['ano', 'categoria', 'ficha', 'fotos', 'horas', 'local', 'preco', 'referencia', 'titulo']);
   assert.equal(e.preco, 'R$ 220.000');
   assert.equal(e.ficha, 'radar-2026-10-31');
+  assert.equal(e.local, 'Itaúna - MG');
+  assert.throws(() => entradaPublica({ codigo: 'RADAR-261031-02', titulo: 'a', categoria: 'Outros', local: 'MG', precoSite: 1 }));
   assert.throws(() => entradaPublica({ codigo: 'X', titulo: 'a', precoSite: 1 }));
+});
+test('só passa anúncio real, recente e com cidade e estado', () => {
+  const hoje = new Date('2026-10-31T21:00:00-03:00');
+  const bom = { dataAnuncio: '2026-10-28', local: 'Itaúna - MG', temFotoOriginal: true, preco: 'R$ 250.000', ativo: true };
+  assert.deepEqual(anuncioAprovado(bom, hoje), { ok: true, motivos: [] });
+  assert.deepEqual(anuncioAprovado({ ...bom, dataAnuncio: '2026-10-21' }, hoje).motivos, ['anúncio com mais de 7 dias']);
+  assert.deepEqual(anuncioAprovado({ ...bom, local: 'MG' }, hoje).motivos, ['sem cidade e estado']);
+  assert.deepEqual(anuncioAprovado({ ...bom, ativo: false, temFotoOriginal: false }, hoje).motivos, ['sem foto real da máquina', 'anúncio fora do ar']);
+  assert.equal(localValido('Capital SP'), null);
+  assert.equal(localValido('São Paulo/sp'), 'São Paulo - SP');
 });

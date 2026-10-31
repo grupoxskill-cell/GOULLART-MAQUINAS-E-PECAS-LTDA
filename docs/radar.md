@@ -3,7 +3,11 @@
 O fluxo foi combinado com Júnior em 31/10/2026:
 
 1. Júnior (ou a equipe) **encaminha para o WhatsApp oficial (62) 99942-7276** os anúncios de máquinas dos grupos e do canal, a partir do número **(62) 99853-1936**.
-2. A cada 3 horas, a rotina lê o que chegou e separa **só as baratas**, ou seja, as que estão **pelo menos 15% abaixo** das máquinas parecidas do catálogo (`lib/radar.js`).
+2. A cada 3 horas, a rotina lê o que chegou e só segue com **ofertas de verdade**:
+   - **anúncio real:** o link abre, o anúncio está no ar e tem foto da própria máquina;
+   - **recente:** publicado há no máximo 7 dias;
+   - **com localização:** cidade e estado;
+   - **abaixo do mercado:** pelo menos 15% abaixo das máquinas parecidas do catálogo (`lib/radar.js`).
 3. Para cada barata, a rotina faz uma **arte** e manda para o 1936 com um código `RADAR-AAMMDD-NN`.
 4. Júnior responde **`SIM RADAR-AAMMDD-NN`** para publicar, ou **`NÃO RADAR-AAMMDD-NN`** para descartar.
 5. Na rodada seguinte, cada SIM vai para o site, em `public/maquinas.json` na `master`. O GitHub publica, e o servidor puxa em até 10 minutos.
@@ -26,7 +30,7 @@ O iZap é usado pelas ferramentas `mcp__Izap__*`. O negócio é `API AGRO GOULLA
 
 1. `list_chats` com `phone="62998531936"`. Leia as conversas com `get_chat_messages`, até 100 mensagens.
 2. Para cada mensagem recebida do 1936 com `SIM RADAR-…` ou `NÃO RADAR-…`, procure a arte que a rotina enviou com esse código. A legenda dela tem uma linha `#dados {…}`.
-3. **SIM:** salve o JSON do `#dados` em um arquivo. Se existir a foto original `RADAR-AAMMDD-NN-foto.*` na branch `radar-artes` (`git fetch origin radar-artes` e `git show origin/radar-artes:<arquivo> > foto.<ext>`), ponha o caminho dela em `foto`. A arte não vai para o site como foto. Depois publique na `master`:
+3. **SIM:** salve o JSON do `#dados` em um arquivo. Se existir a foto original `RADAR-AAMMDD-NN-foto.*` na branch `radar-artes` (`git fetch origin radar-artes` e `git show origin/radar-artes:<arquivo> > foto.<ext>`), ponha o caminho dela em `foto`. A foto original é obrigatória, e a arte não serve como foto do site. Sem foto, não publique e avise Júnior. Depois publique na `master`:
    ```sh
    git fetch origin master && git worktree add /tmp/master origin/master
    cd /tmp/master && node "$REPO/scripts/radar/publicar.mjs" /caminho/dados.json
@@ -38,17 +42,25 @@ O iZap é usado pelas ferramentas `mcp__Izap__*`. O negócio é `API AGRO GOULLA
 ### B. Depois, os anúncios novos
 
 1. Use as mensagens recebidas do 1936 nas **últimas 3 horas e 10 minutos**. Ignore as que não são anúncio de máquina, como "bom dia", SIM e NÃO.
-2. Para cada anúncio, tire do texto, das fotos (`download_media` com `inline=true`) e do link (`mcp__TinyFish__fetch_content`, se for OLX ou outro site): **tipo, marca, modelo, ano, horas, preço pedido e estado/região**. Se não houver preço, pule e anote no resumo.
-3. Não repita anúncios. Se uma arte com o mesmo título e preço já foi enviada nos últimos 7 dias, pule.
-4. Calcule:
+2. Para cada anúncio, tire do texto, das fotos (`download_media` com `inline=true`) e do link (`mcp__TinyFish__fetch_content`, se for OLX ou outro site): **tipo, marca, modelo, ano, horas, preço pedido, cidade e estado, data de publicação**.
+   - **Anúncio com link:** abra o link. A data é a que aparece no anúncio (na OLX, "21/10 às 12:44"). O anúncio está `ativo` se a página abriu com o anúncio, e não com "anúncio removido", página de busca ou página inicial.
+   - **Post encaminhado de grupo ou canal, sem link:** a data é a que aparecer no post. Se não houver data, use a do encaminhamento, desde que o post traga foto da máquina, preço e cidade. `ativo` = true.
+   - `temFotoOriginal` só vale para foto da máquina anunciada. Não vale logo, arte, imagem de catálogo de fábrica nem foto de outra máquina.
+3. **Filtro de oferta real** (regra de Júnior):
+   ```sh
+   node -e 'import("./lib/radar.js").then(r=>console.log(JSON.stringify(r.anuncioAprovado({dataAnuncio:"2026-10-28",local:"Itaúna - MG",temFotoOriginal:true,preco:"R$ 250.000",ativo:true}))))'
+   ```
+   Se der `"ok": false`, pule e conte no resumo com o motivo.
+4. Não repita anúncios. Se uma arte com o mesmo título e preço já foi enviada nos últimos 7 dias, pule.
+5. Calcule:
    ```sh
    node -e 'import("./lib/radar.js").then(async r=>{const c=JSON.parse(require("fs").readFileSync("public/maquinas.json"));console.log(JSON.stringify(r.avaliar({titulo:"…",categoria:"Escavadeiras",ano:"2015",precoOrigem:"…"},c)))})'
    ```
    A categoria tem que ser uma de `CATEGORIAS` em `lib/radar.js`. Só segue quem der `"barata": true`.
-5. Para cada barata, crie o código `RADAR-AAMMDD-NN` com a data de hoje, sem repetir códigos já usados no histórico.
-6. **Arte com a foto original.** Esta conversa não consegue baixar fotos, então quem baixa é o GitHub (`.github/workflows/radar-arte.yml`):
+6. Para cada barata, crie o código `RADAR-AAMMDD-NN` com a data de hoje, sem repetir códigos já usados no histórico.
+7. **Arte com a foto original.** Esta conversa não consegue baixar fotos, então quem baixa é o GitHub (`.github/workflows/radar-arte.yml`):
    - Pegue o link da **foto original**. Num anúncio de site (OLX etc.), use `mcp__TinyFish__fetch_content` com `image_links=true` e escolha a foto principal em tamanho grande, `.jpg`; na OLX é a de `og.image`, `img.olx.com.br/images/...jpg`. Numa foto encaminhada no WhatsApp, use o `download_url` de `download_media`, que vale 1 hora.
-   - Na branch `radar-fila`, crie `fila/RADAR-AAMMDD-NN.json` com `{codigo, titulo, ano, horas, precoSite, local, fotoUrl}`. Só dados públicos: o `local` é o estado ou a região. Faça commit e push:
+   - Na branch `radar-fila`, crie `fila/RADAR-AAMMDD-NN.json` com `{codigo, titulo, ano, horas, precoSite, local, fotoUrl}`. Só dados públicos: o `local` é "Cidade - UF". Faça commit e push:
      ```sh
      git fetch origin radar-fila && git worktree add /tmp/fila origin/radar-fila
      # escreva os arquivos em /tmp/fila/fila/, depois:
@@ -57,18 +69,19 @@ O iZap é usado pelas ferramentas `mcp__Izap__*`. O negócio é `API AGRO GOULLA
    - Em 2 a 4 minutos, o GitHub baixa a foto, gera a arte, apaga o pedido da fila e grava `RADAR-AAMMDD-NN.png` (a arte) e `RADAR-AAMMDD-NN-foto.<ext>` (a foto original) na branch `radar-artes`. Para conferir: `git fetch origin radar-artes && git ls-tree --name-only origin/radar-artes`. Tente a cada 30 segundos, por até 8 minutos.
    - Se não aparecer, ou se a foto não baixou (o GitHub registra um aviso e a arte sai sem foto), gere a arte aqui sem foto com `node scripts/radar/arte.mjs arte.json RADAR-AAMMDD-NN.png`. Depois faça commit dela na `radar-artes` e diga na legenda que foi sem foto.
    - Link da arte: `https://raw.githubusercontent.com/grupoxskill-cell/GOULLART-MAQUINAS-E-PECAS-LTDA/radar-artes/RADAR-AAMMDD-NN.png`
-7. Envie para `+5562998531936` com `send_whatsapp_message`, usando `media_url` = o link acima, `client_request_id` = o código, e esta legenda:
+8. Envie para `+5562998531936` com `send_whatsapp_message`, usando `media_url` = o link acima, `client_request_id` = o código, e esta legenda:
    ```
-   RADAR-AAMMDD-NN · <título> <ano>
+   RADAR-AAMMDD-NN · <título> <ano> · <Cidade - UF>
+   Anúncio de <data> · <link do anúncio ou "post do grupo X">
    Origem R$ X · Site R$ X+20 mil · <N>% abaixo de <K> parecidas
    Fonte: <grupo/canal/link> · Vendedor: <contato>
    Responda SIM RADAR-AAMMDD-NN para publicar ou NÃO RADAR-AAMMDD-NN.
-   #dados {"codigo":"…","titulo":"…","categoria":"…","ano":"…","horas":"…","precoSite":000000}
+   #dados {"codigo":"…","titulo":"…","categoria":"…","ano":"…","horas":"…","local":"Cidade - UF","precoSite":000000}
    ```
-8. No fim, mande ao 1936 **um** resumo curto, só se houve anúncio na rodada: "Radar 14h: 6 anúncios, 2 baratas enviadas, 3 acima do mercado, 1 sem preço." Se não chegou nada, não mande mensagem.
+9. No fim, mande ao 1936 **um** resumo curto, só se houve anúncio na rodada: "Radar 14h: 6 anúncios, 2 ofertas enviadas, 2 acima do mercado, 1 antigo, 1 sem cidade." Se não chegou nada, não mande mensagem.
 
 ### Se algo falhar
 
 - **WhatsApp recusar o envio porque passou de 24 horas sem mensagem do 1936:** não insista. A próxima mensagem que Júnior encaminhar reabre a janela, e a rodada seguinte reenvia o que ficou pendente.
-- **Foto que não baixa:** gere a arte sem foto e diga isso na legenda (veja o passo B6).
+- **Foto que não baixa:** gere a arte sem foto e diga isso na legenda. Esse anúncio não pode ir ao site enquanto não houver a foto original (veja o passo B7).
 - **Push recusado:** não force. Relate no resumo.
