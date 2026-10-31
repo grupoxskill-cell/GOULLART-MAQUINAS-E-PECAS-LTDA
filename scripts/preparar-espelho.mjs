@@ -24,6 +24,8 @@ for await (const f of arquivos(SAIDA)) {
   let t = await readFile(f, "utf-8");
   const antes = t;
   t = t.split(ORIGEM).join(DOMINIO);
+  // A revisão multimídia do curso é uma página dinâmica pública; conservar os cinco módulos na origem.
+  if (f.endsWith(".html")) t = t.replace(/href="\/curso\/midia(?=[?"])/g, 'href="' + ORIGEM + '/curso/midia');
   // Script de verificação da Cloudflare do servidor do ChatGPT: não existe no domínio próprio.
   t = t.replace(/<script>\(function\(\)\{function c\(\)\{var b=a\.contentDocument[\s\S]*?<\/script>/g, "");
   // Catálogo vira arquivo estático.
