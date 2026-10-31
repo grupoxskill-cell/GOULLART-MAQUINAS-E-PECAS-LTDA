@@ -1,24 +1,42 @@
-# Copia o site do ChatGPT para a pasta espelho/ nesta branch. Não publica nada.
+# Atualiza a cópia pública em uma branch; a publicação acontece somente após juntar no master.
 name: Importar site do ChatGPT
 on:
   push:
-    branches: [importar-chatgpt]
-    paths: [".github/workflows/importar-chatgpt.yml", "scripts/espelhar-chatgpt.mjs"]
+    branches: ["importar-chatgpt", "importar-chatgpt-*"]
+    paths: [".github/workflows/importar-chatgpt.yml", "scripts/espelhar-chatgpt.mjs", "scripts/preparar-espelho.mjs"]
+  workflow_dispatch:
 permissions:
   contents: write
+concurrency:
+  group: importar-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   importar:
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
       - run: node scripts/espelhar-chatgpt.mjs https://catalogo-goullart-pesados-brasil.fitbun9.chatgpt.site
+      - run: npm test
+      - run: npm run build
+      - name: Verificar páginas exportadas
+        run: |
+          test -s _site/index.html
+          test -s _site/ofertas/index.html
+          test -s _site/maquinas/escavadeira/index.html
+          test -s _site/maquinas/pa-carregadeira/index.html
+          test -s _site/texas/index.html
+          test -s _site/texas/botas-cano-alto-texas.jpg
+          test -s _site/assets/fonts/montserrat-latin-variable.woff2
       - name: Salvar cópia na branch
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@users.noreply.github.com"
           git add espelho
-          git commit -m "Cópia do site do ChatGPT" || echo "sem mudanças"
-          git push
+          if ! git diff --cached --quiet; then
+            git commit -m "Atualiza catálogo público para o domínio GOULLART"
+            git push
+          fi

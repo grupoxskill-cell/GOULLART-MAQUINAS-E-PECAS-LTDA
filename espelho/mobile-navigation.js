@@ -28,8 +28,7 @@
     close();
     if(link.hasAttribute('data-sidebar-route')) {
       event.preventDefault();
-      document.getElementById('search').value='';
-      document.getElementById('catalog-clear')?.click();
+      window.GoullartCatalog?.clearSearch();
       history.pushState(null,'',link.hash);
       window.GoullartCatalog?.route();
     }

@@ -2,7 +2,7 @@
  const root=document.getElementById('approved-banner');if(!root)return;
  const slides=[...root.querySelectorAll('[data-slide]')],dots=[...root.querySelectorAll('[data-banner-to]')],pause=root.querySelector('[data-banner-pause]');
  if(!slides.length||!pause)return;
- const interval=Number(root.dataset.bannerInterval)||2500;
+ const interval=Number(root.dataset.bannerInterval)||2000;
  const reduced=matchMedia('(prefers-reduced-motion: reduce)');let current=0,paused=reduced.matches,timer,inView=true;
  function schedule(){clearTimeout(timer);if(slides.length>1&&!paused&&!reduced.matches&&!document.hidden&&inView&&!root.matches(':focus-within'))timer=setTimeout(()=>show(current+1),interval);}
  function preloadNext(){const image=slides[(current+1)%slides.length]?.querySelector('img');if(image)image.loading='eager';}

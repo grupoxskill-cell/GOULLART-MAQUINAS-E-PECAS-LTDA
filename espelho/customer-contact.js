@@ -46,7 +46,7 @@
  if (!greeted) window.setTimeout(() => {
   const busy = document.activeElement?.matches('input,textarea,select,[contenteditable=true]') || document.querySelector('dialog[open],[aria-modal="true"]:not([hidden])');
   if (!interacted && !busy && !document.hidden) setOpen(true);
- }, 7000);
+ }, 5000);
  let walking = false;
  window.addEventListener('scroll', () => {
   if (walking || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;

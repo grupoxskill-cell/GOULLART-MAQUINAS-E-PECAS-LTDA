@@ -1083,67 +1083,53 @@ body[data-unified] .floating-contact{background:#082344;color:#fff}body[data-uni
 footer.goullart-watermark-footer{position:relative;isolation:isolate;overflow:hidden;background:#0a1b31}
 footer.goullart-watermark-footer>.goullart-footer-watermark{position:absolute;inset:0 0 0 auto;width:52%;height:100%;max-height:none;object-fit:contain;object-position:right center;opacity:.23;z-index:-1;pointer-events:none;filter:grayscale(15%)}
 footer.goullart-watermark-footer:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#0a1b31 30%,transparent 100%);z-index:-1;pointer-events:none}
+/* Conversa compacta: a foto fica livre de selos e sobreposições. */
 .goullart-contact,.goullart-contact *{box-sizing:border-box}
-.goullart-contact{position:fixed;right:max(20px,env(safe-area-inset-right,0px));bottom:calc(24px + env(safe-area-inset-bottom,0px));z-index:80;width:408px;max-width:calc(100vw - 24px);font:400 14px/1.5 Arial,sans-serif;color:#082344;pointer-events:none}
-.goullart-contact-panel{width:100%;background:transparent;border:0;border-radius:0;overflow-y:auto;max-height:calc(100dvh - 120px);padding:4px 4px 8px;margin-bottom:8px;pointer-events:auto;animation:goullart-contact-rise .25s ease-out}
+body .goullart-contact,body .goullart-contact :is(button,textarea,a,p,h2,label){text-transform:none}
+.goullart-contact{position:fixed;right:max(12px,env(safe-area-inset-right,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px));width:280px;max-width:calc(100vw - 24px);z-index:80;font:400 13px/1.4 Arial,sans-serif;color:#172b35;pointer-events:none}
+.goullart-contact-panel{width:100%;max-height:calc(100dvh - 100px);overflow:auto;margin-bottom:8px;background:#efeae2;border:1px solid #d5ded8;border-radius:14px;box-shadow:0 5px 22px #102b3426;pointer-events:auto;animation:goullart-contact-rise .2s ease-out}
 .goullart-contact-panel[hidden]{display:none!important}
-.goullart-contact button{cursor:pointer;font-family:Arial,sans-serif}
-.goullart-contact-body{padding:0;background:transparent}
-.goullart-contact-bubble{position:relative;background:#fff;border:1px solid #e8edf0;border-radius:24px;padding:22px 38px 22px 18px;margin-bottom:23px;box-shadow:0 8px 24px #04182724}
-.goullart-contact-bubble:after{content:"";position:absolute;bottom:-10px;left:42px;width:20px;height:20px;background:#fff;transform:rotate(45deg);border-radius:0 0 4px 0}
-.goullart-contact-close{position:absolute;right:3px;top:3px;display:grid;place-items:center;width:44px;height:44px;min-width:44px;border:0;border-radius:50%;background:transparent;color:#778395;font-size:29px;line-height:1;padding:0;z-index:1}
-.goullart-contact-close:hover{background:#f2f5f7;color:#082344}
-.goullart-contact-person{display:flex;align-items:center;gap:15px;margin:0}
-.goullart-contact-portrait{position:relative;flex:0 0 76px;width:76px;height:76px}
-.goullart-contact .goullart-contact-avatar{display:block;width:100%;height:100%;max-width:none;object-fit:cover;object-position:center;border-radius:50%;border:0}
-.goullart-contact-copy{min-width:0;flex:1}
-.goullart-contact-person h2{margin:0;font:800 21px/1.2 Arial,sans-serif;letter-spacing:-.4px;color:#082344}
-.goullart-contact-brand{margin:6px 0 8px;color:#667085;font:700 9px/1.4 Arial,sans-serif;letter-spacing:1.9px}
-.goullart-contact-greeting{margin:0;padding:0;font:400 14px/1.5 Arial,sans-serif;color:#4b5565}
-.goullart-contact-direct,.goullart-contact .goullart-contact-send{display:flex;align-items:center;justify-content:center;gap:10px;width:calc(100% - 24px);min-height:54px;margin:0 auto;border:0;border-radius:999px;padding:12px 17px;background:#00854e;color:#fff;text-decoration:none;font:700 14px/1.4 Arial,sans-serif;box-shadow:0 5px 14px #005c3420;transition:background .18s}
-.goullart-contact-direct:hover,.goullart-contact .goullart-contact-send:hover{background:#006e41;color:#fff;text-decoration:none}
-.goullart-contact-direct svg{width:27px;height:27px;flex-shrink:0}
-.goullart-contact-direct>span:not(.goullart-contact-arrow){flex:1;text-align:center}
-.goullart-contact-arrow{font:400 29px/1 Arial,sans-serif}
-.goullart-contact-compose{margin:10px 12px 0;padding:0 14px;border:0;border-radius:16px;background:#fff;box-shadow:0 2px 10px #04182710}
-.goullart-contact-compose>summary{padding:10px 0;min-height:44px;cursor:pointer;color:#536479;font:500 12px/1.5 Arial,sans-serif;text-align:center;align-content:center}
-.goullart-contact form{display:block;margin:0;padding:4px 0 14px;background:none;border:0}
-.goullart-contact label{display:block;font:700 12px/1.4 Arial,sans-serif;margin:0 0 8px;color:#082344}
-.goullart-contact textarea{display:block;width:100%;min-height:80px;max-height:160px;resize:vertical;padding:10px;border:1px solid #bac7d5;border-radius:8px;background:#fff;color:#082344;font:400 16px/1.5 Arial,sans-serif;margin:0 0 10px;box-shadow:none}
-.goullart-contact .goullart-contact-send{width:100%;min-height:48px;font-size:13px}
-.goullart-contact-note{margin:8px 0 0;font:400 11px/1.5 Arial,sans-serif;color:#536479}
-.goullart-contact-launcher{position:relative;display:block;width:68px;height:68px;margin-left:auto;pointer-events:auto;border:3px solid #fff;border-radius:50%;background:#00854e;box-shadow:0 4px 24px #061c3a40;text-decoration:none;color:#fff;transition:transform .2s}
+.goullart-contact-chat-head{position:relative;display:flex;align-items:center;gap:9px;padding:10px 44px 10px 12px;margin:0;min-height:60px;background:#075e54;color:#fff;border:0;width:100%;box-shadow:none}
+.goullart-contact .goullart-contact-avatar{display:block;flex:0 0 38px;width:38px;height:38px;object-fit:cover;object-position:center;border:0;border-radius:50%;max-width:none}
+.goullart-contact-chat-head>div{min-width:0}
+.goullart-contact-chat-head h2{margin:0;font:700 15px/1.25 Arial,sans-serif;color:#fff;letter-spacing:0}
+.goullart-contact-brand{margin:3px 0 0;font:400 9px/1.3 Arial,sans-serif;color:#e0eeea;letter-spacing:.5px}
+.goullart-contact .goullart-contact-close{position:absolute;right:0;top:8px;width:44px;height:44px;min-width:44px;display:grid;place-items:center;border:0;padding:0;border-radius:8px;background:transparent;color:#fff;font:400 26px/1 Arial,sans-serif;cursor:pointer}
+.goullart-contact-close:hover{background:#ffffff1c}
+.goullart-contact-body{padding:12px;background:#efeae2}
+.goullart-contact-greeting{position:relative;margin:0 18px 12px 0;padding:10px 12px;border-radius:0 9px 9px 9px;background:#fff;box-shadow:0 1px 2px #102b3414;font:400 13px/1.45 Arial,sans-serif;color:#263438}
+.goullart-contact-greeting:before{content:"";position:absolute;left:-6px;top:0;border-top:7px solid #fff;border-left:7px solid transparent}
+.goullart-contact form{display:block;margin:0;padding:0;border:0;background:none}
+.goullart-contact form>label{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.goullart-contact-input-row{display:flex;align-items:center;gap:6px}
+.goullart-contact textarea{flex:1;display:block;width:0;min-width:0;height:44px;min-height:44px;max-height:88px;resize:vertical;padding:11px 10px;margin:0;background:#fff;color:#263438;border:1px solid #d3dcd6;border-radius:12px;font:400 16px/20px Arial,sans-serif;box-shadow:none}
+.goullart-contact .goullart-contact-send{display:grid;place-items:center;flex:0 0 44px;width:44px;min-width:44px;height:44px;min-height:44px;padding:10px;margin:0;border:0;border-radius:50%;background:#128c7e;color:#fff;cursor:pointer}
+.goullart-contact-send svg{width:22px;height:22px}
+.goullart-contact-note{margin:5px 0 9px;color:#5a6867;font:400 10px/1.3 Arial,sans-serif}
+.goullart-contact-direct{display:flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:9px 12px;margin:0;background:#128c7e;color:#fff;border:0;border-radius:9px;font:700 13px/1.3 Arial,sans-serif;text-decoration:none;box-shadow:none}
+.goullart-contact-direct svg{width:21px;height:21px;flex-shrink:0}
+.goullart-contact-direct:hover,.goullart-contact .goullart-contact-send:hover{background:#075e54;color:#fff;text-decoration:none}
+.goullart-contact-launcher{position:relative;display:block;width:48px;height:48px;margin-left:auto;pointer-events:auto;border:2px solid #fff;border-radius:50%;background:#075e54;box-shadow:0 3px 15px #102b3433;text-decoration:none;color:#fff}
 .goullart-contact-launcher>img{display:block;width:100%;height:100%;max-width:none;object-fit:cover;object-position:center;border-radius:50%}
-.goullart-contact-badge{position:absolute;right:-4px;bottom:-3px;display:grid;place-items:center;width:29px;height:29px;padding:5px;border:2px solid #fff;border-radius:50%;background:#00854e;color:#fff}
-.goullart-contact-badge svg{width:100%;height:100%}
-.goullart-contact-label{position:absolute;right:calc(100% + 10px);top:50%;transform:translateY(-50%);display:inline-flex;align-items:center;gap:8px;white-space:nowrap;background:#00854e;color:#fff;border:1px solid #fff;border-radius:999px;padding:11px 14px;min-height:44px;font-size:12px;font-weight:700;box-shadow:0 3px 15px #10274b22}
-.goullart-contact-label svg{width:22px;height:22px;flex-shrink:0}
+.goullart-contact-label{position:absolute;right:calc(100% + 8px);top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:6px;white-space:nowrap;background:#128c7e;color:#fff;border:1px solid #fff;border-radius:24px;padding:9px 12px;min-height:44px;font:700 11px/1.3 Arial,sans-serif}
+.goullart-contact-label svg{width:19px;height:19px;flex-shrink:0}
 .goullart-contact-launcher[aria-expanded=true] .goullart-contact-label{display:none}
-.goullart-contact :focus-visible{outline:3px solid #d59d00;outline-offset:3px}
-.goullart-contact-launcher.is-scrolling{animation:goullart-contact-walk .65s ease-in-out}
+.goullart-contact :focus-visible{outline:3px solid #f5c334;outline-offset:2px}
 .goullart-contact-open .course-corner{visibility:hidden;pointer-events:none}
-@keyframes goullart-contact-walk{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
-@keyframes goullart-contact-rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-@media(max-width:900px){
- .goullart-contact{right:max(12px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px))}
- .goullart-storefront .goullart-contact{bottom:calc(var(--goullart-dock-height,80px) + 12px)}
- .goullart-storefront .goullart-contact-panel{max-height:calc(100dvh - var(--goullart-dock-height,80px) - 112px)}
- .goullart-contact-launcher{width:60px;height:60px}
- .goullart-contact-label{font-size:11px;padding:10px 12px;gap:6px}
- .goullart-faq{padding:44px 20px}
- .goullart-faq h2{letter-spacing:-.7px;margin-bottom:24px}
- .goullart-faq summary{padding:20px 0;font-size:17px;gap:16px}
- footer.goullart-watermark-footer>.goullart-footer-watermark{width:100%;object-position:center bottom;opacity:.18}
- footer.goullart-watermark-footer:before{background:linear-gradient(180deg,#0a1b31cc,transparent)}
- .goullart-contact-keyboard .goullart-contact{bottom:calc(var(--goullart-keyboard-inset,0px) + 12px)}
- .goullart-contact-keyboard .goullart-contact-launcher{display:none}
- .goullart-contact-keyboard .goullart-contact-panel{max-height:calc(var(--goullart-visual-height,100dvh) - 24px);margin-bottom:0}
- .is-editing-field:not(.goullart-contact-open) .goullart-contact{visibility:hidden;pointer-events:none}
-}
-@media(max-height:520px){.goullart-contact-panel{max-height:calc(100dvh - 108px)}.goullart-contact-bubble{padding-block:14px}}
-@media(prefers-reduced-motion:reduce){.goullart-contact-panel,.goullart-contact-launcher.is-scrolling{animation:none}.goullart-contact-launcher{transition:none}}
+@keyframes goullart-contact-rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:900px){.goullart-storefront .goullart-contact{bottom:calc(var(--goullart-dock-height,80px) + 6px)}.goullart-storefront .goullart-contact-panel{max-height:calc(100dvh - var(--goullart-dock-height,80px) - 74px)}.goullart-contact-keyboard .goullart-contact{bottom:calc(var(--goullart-keyboard-inset,0px) + 8px)}.goullart-contact-keyboard .goullart-contact-launcher{display:none}.goullart-contact-keyboard .goullart-contact-panel{max-height:calc(var(--goullart-visual-height,100dvh) - 16px);margin:0}.is-editing-field:not(.goullart-contact-open) .goullart-contact{visibility:hidden;pointer-events:none}}
+@media(prefers-reduced-motion:reduce){.goullart-contact-panel{animation:none}}
 
-@media(max-width:400px){.goullart-contact-bubble{padding:18px 32px 18px 13px;border-radius:21px}.goullart-contact-person{gap:10px}.goullart-contact-portrait{flex-basis:60px;width:60px;height:60px}.goullart-contact-person h2{font-size:18px;letter-spacing:-.3px}.goullart-contact-brand{font-size:8px;letter-spacing:1.2px;margin-block:5px 7px}.goullart-contact-greeting{font-size:13px}.goullart-contact-direct{font-size:12px;gap:8px;padding-inline:12px}.goullart-contact-direct svg{width:24px;height:24px}}
+.goullart-contact-label{display:none}
+/* Isolar o chat das regras gerais de cabeçalho e formulário da vitrine. */
+#goullart-contact .goullart-contact-chat-head{position:relative;display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:9px;padding:10px 44px 10px 12px;margin:0;height:auto;min-height:60px;max-height:none;background:#075e54;color:#fff;border:0;width:100%;box-shadow:none}
+#goullart-contact .goullart-contact-chat-head>img{width:38px;height:38px;max-width:38px;flex:0 0 38px;margin:0;border-radius:50%;object-fit:cover}
+#goullart-contact .goullart-contact-chat-head>div{min-width:0;margin:0;padding:0}
+#goullart-contact .goullart-contact-chat-head h2{font:700 15px/1.25 Arial,sans-serif;margin:0;color:white;letter-spacing:0;text-transform:none}
+#goullart-contact .goullart-contact-chat-head p{font:400 9px/1.4 Arial,sans-serif;margin:3px 0 0;color:#d4ebe5}
+#goullart-contact :is(button,textarea,a,p,h2,label),#goullart-contact textarea::placeholder{text-transform:none;letter-spacing:normal}
+#goullart-contact #goullart-contact-form{display:block;margin:0;padding:0;width:100%;min-width:0;border:0;border-radius:0;box-shadow:none;background:transparent}
+#goullart-contact #goullart-contact-message{appearance:none;background:#fff;background-image:none;resize:vertical;padding:11px 12px;font:400 16px/1.3 Arial,sans-serif;min-height:44px;height:44px;margin:0}
 
 /* SOURCE: /sidebar-navigation.css */
 /* Menu da referência: cabeçalho azul, conteúdo branco e Ofertas em destaque. */
@@ -1187,6 +1173,51 @@ body.sidebar-is-open{overflow:hidden}
 #goullart-sidebar .sidebar-more>summary{display:flex;justify-content:space-between;align-items:center;min-height:44px;padding:8px 4px;font-size:15px;font-weight:600;color:#536f9a;cursor:pointer;list-style:none}
 #goullart-sidebar .sidebar-more>summary::-webkit-details-marker{display:none}
 #goullart-sidebar .sidebar-more[open]>summary span{transform:rotate(180deg)}
+
+/* Tipografia de destaque, alinhada aos títulos dos cards GOULLART. */
+#goullart-sidebar .sidebar-head strong{font-family:"Barlow Condensed","Arial Narrow",Arial,sans-serif;font-size:42px;font-weight:600;letter-spacing:.8px}
+#goullart-sidebar .sidebar-head span{font-family:"Source Sans 3",Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:1.4px}
+#goullart-sidebar #main-menu .sidebar-offers{font-family:"Barlow Condensed","Arial Narrow",Arial,sans-serif;font-size:30px;font-weight:600;line-height:1.15;letter-spacing:.6px}
+#goullart-sidebar .sidebar-label{font-family:"Source Sans 3",Arial,sans-serif;font-size:12px;font-weight:700;letter-spacing:1.8px;color:#526b84}
+#goullart-sidebar .sidebar-group summary{font-family:"Barlow Condensed","Arial Narrow",Arial,sans-serif;font-size:26px;font-weight:600;line-height:1.15;letter-spacing:.4px;text-align:left;padding:10px 4px}
+#goullart-sidebar .sidebar-group>div{display:grid;gap:7px;padding:8px 0 0}
+#goullart-sidebar #main-menu .sidebar-group>div>a{font-family:"Source Sans 3",Arial,sans-serif;font-size:19px;font-weight:700;line-height:1.25;letter-spacing:.1px;min-height:48px;padding:12px 13px;background:#f2f5f9;color:#082344;border-left:4px solid #ffc928;border-radius:0 7px 7px 0;overflow-wrap:break-word}
+#goullart-sidebar #main-menu .sidebar-group>div>a:hover{background:#e6eef8;color:#064baa}
+#goullart-sidebar #main-menu .sidebar-secondary>a{font-family:"Source Sans 3",Arial,sans-serif;font-size:18px;font-weight:700;letter-spacing:.1px}
+#goullart-sidebar .sidebar-more>summary{font:700 17px/1.3 "Source Sans 3",Arial,sans-serif;color:#294a6b}
+@media(max-width:360px){#goullart-sidebar .sidebar-group summary{font-size:24px}#goullart-sidebar #main-menu .sidebar-group>div>a{font-size:18px}}
+
+#goullart-sidebar .sidebar-head{background:#eaf0f7;color:#082344}
+#goullart-sidebar .sidebar-original-logo{display:block;width:min(75%,270px);background:transparent;padding:0}
+#goullart-sidebar .sidebar-original-logo img{display:block;width:100%;height:auto;max-height:125px;object-fit:contain;background:transparent}
+#goullart-sidebar .sidebar-close{color:#082344}
+
+/* SOURCE: /machine-category-cards.css */
+body.approved-layout .machine-categories{box-sizing:border-box;width:92%;max-width:1280px;margin:28px auto;padding:0;background:none;color:#092b49;scroll-margin-top:100px}
+body.approved-layout .machine-categories h2{margin:0 0 18px;font:700 clamp(24px,3vw,32px)/1.2 "Source Sans 3",Arial,sans-serif;letter-spacing:0}
+body.approved-layout .machine-type-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+body.approved-layout .machine-type-card{position:relative;display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;gap:22px;min-height:158px;min-width:0;padding:22px;box-sizing:border-box;border:1px solid #d5dfe7;border-radius:12px;background:#fff;color:#092b49;text-decoration:none;box-shadow:0 3px 12px #092b4907;transition:background .15s,border-color .15s}
+body.approved-layout .machine-type-card svg{width:64px;height:55px;color:#092b49;flex-shrink:0}
+body.approved-layout .machine-type-card strong{font:700 19px/1.2 "Source Sans 3",Arial,sans-serif;letter-spacing:0;overflow-wrap:anywhere}
+body.approved-layout .machine-type-arrow{position:absolute;top:18px;right:18px;color:#7e92a3;font-size:22px}
+body.approved-layout .machine-type-card:hover,body.approved-layout .machine-type-card[aria-current=true]{border-color:#f4c32e;background:#f4c32e}
+body.approved-layout .machine-type-card:focus-visible{outline:3px solid #155be3;outline-offset:4px}
+body.approved-layout #catalog-results{scroll-margin-top:100px}
+body.approved-layout .machine-catalog-order{display:flex;gap:10px;justify-content:flex-end;align-items:center;margin-bottom:18px;font:400 14px/1.4 "Source Sans 3",Arial,sans-serif;color:#52677c}
+body.approved-layout .machine-catalog-order select{width:auto;max-width:75%;min-height:44px;border:1px solid #d5dfe7;border-radius:6px;background:#fff;color:#092b49;font:400 16px "Source Sans 3",Arial,sans-serif;padding:8px 12px}
+@media(max-width:1000px){body.approved-layout .machine-type-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:700px){body.approved-layout .machine-categories{margin:22px auto}body.approved-layout .machine-type-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}body.approved-layout .machine-type-card{min-height:148px;padding:16px;gap:20px}body.approved-layout .machine-type-card strong{font-size:17px}body.approved-layout .machine-type-card svg{width:57px;height:49px}body.approved-layout .machine-type-arrow{right:14px;top:12px}}
+@media(prefers-reduced-motion:reduce){body.approved-layout .machine-type-card{transition:none}}
+
+body.approved-layout .machine-type-card{gap:8px;padding:14px 16px;align-items:center;justify-content:flex-start;background:linear-gradient(145deg,#fff,#f0f4f7);box-shadow:0 4px 14px #0823440a}body.approved-layout .machine-type-card .machine-type-3d{display:block;width:100%;max-width:210px;height:130px;object-fit:contain}body.approved-layout .machine-type-card strong{width:100%;text-align:center;font-size:18px}body.approved-layout .machine-type-card:hover,body.approved-layout .machine-type-card[aria-current=true]{background:#ffdc60}@media(max-width:700px){body.approved-layout .machine-type-card{padding:10px;min-height:150px}body.approved-layout .machine-type-card .machine-type-3d{height:100px}body.approved-layout .machine-type-card strong{font-size:15px}}
+.machine-art-window{display:block;position:relative;width:100%;overflow:hidden;background:#fff}
+.machine-art-window>img{position:absolute;display:block;max-width:none!important;height:auto!important;margin:0;object-fit:initial}
+body.goullart-storefront .machine-type-card{background:#fff;gap:12px;padding:14px;overflow:hidden}
+body.goullart-storefront .machine-type-card strong{font-size:clamp(13px,1.6vw,19px);line-height:1.2;text-align:center}
+
+body.approved-layout .machine-type-count{display:block;width:100%;text-align:center;font:700 12px/1.4 Montserrat,Arial,sans-serif;color:#53677b;padding-top:4px}
+body.approved-layout .machine-category-symbol{display:flex;align-items:center;justify-content:center;width:100%;aspect-ratio:1.6;background:#f4f6f8;color:#ba8416}
+body.approved-layout .machine-category-symbol svg{width:85%;height:auto;max-height:135px}
 
 /* SOURCE: /responsive-final.css */
 /* Final responsive contract: keep this after component styles. */
@@ -1504,6 +1535,52 @@ body.approved-layout .goullart-channel a.channel-join:hover{background:#143d66}
 }
 @media(prefers-reduced-motion:reduce){body.approved-layout .goullart-header-vip{animation:none}}
 
+/* Nove artes horizontais completas, sem corte das logos. */
+body.goullart-storefront.approved-layout .approved-slide.approved-image-slide{height:auto;aspect-ratio:3/1;min-height:0;width:100%}
+body.goullart-storefront.approved-layout .approved-slide.approved-image-slide>img{width:100%;height:100%;max-height:none;object-fit:contain}
+body.goullart-storefront{text-transform:uppercase}
+body.goullart-storefront :is(button,input,textarea,select){text-transform:uppercase}
+.sidebar-original-logo{display:block;background:#fff;border-radius:8px;padding:9px}.sidebar-original-logo img{display:block;width:150px;height:72px;object-fit:contain}
+.business-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;width:92%;max-width:1200px;margin:24px auto}.business-cards>a{display:flex;flex-direction:column;gap:10px;background:#fff;border:1px solid #dce3eb;border-radius:12px;overflow:hidden;color:#082344;text-decoration:none;padding-bottom:16px}.business-cards img{width:100%;height:auto}.business-cards :is(strong,span,b){margin:0 15px}.business-cards strong{font-size:19px}.business-cards span{font-size:12px;line-height:1.5}.business-cards b{color:#175287;font-size:12px}
+body.area-page main>*:not(.area-page-content){display:none!important}.area-page-content{padding:20px 4%;min-height:60vh}.area-page-content h1{font-size:clamp(22px,4vw,36px);color:#082344}.area-back{display:inline-block;padding:12px 0;color:#164b7a;font-weight:800}.texas-info{max-width:1000px;margin:auto}.texas-info>img{width:100%;height:auto}.texas-info p{line-height:1.6}.area-page-content .magazine-panel{width:100%}
+@media(max-width:450px){.business-cards{grid-template-columns:1fr 1fr;gap:10px}.business-cards strong{font-size:15px}}
+
+/* Banner mais alto preservando a arte completa e as logos. */
+body.goullart-storefront.approved-layout .approved-slide.approved-image-slide{aspect-ratio:2.4/1;background:#082344}
+body.goullart-storefront.approved-layout .approved-slide.approved-image-slide>img{width:100%;height:100%;object-fit:contain}
+
+/* Títulos das cinco áreas com presença e contraste. */
+body.goullart-storefront .business-cards>a{gap:14px;padding-bottom:18px;box-shadow:0 5px 18px #0823440c}
+body.goullart-storefront .business-cards>a>strong{font-family:"Barlow Condensed","Arial Narrow",sans-serif!important;font-size:clamp(24px,2.5vw,32px);font-weight:700;line-height:1.08;letter-spacing:.5px;color:#082344;border-left:5px solid #ffc928;padding:3px 0 3px 10px;margin:3px 15px 0;text-transform:uppercase}
+body.goullart-storefront .business-cards>a>span{font-family:"Source Sans 3",sans-serif!important;font-weight:600;font-size:13px;line-height:1.45;color:#40536a}
+body.goullart-storefront .business-cards>a>b{display:block;margin-top:auto;padding:10px 12px;border-radius:6px;background:#082344;color:#ffd326;font-family:"Source Sans 3",sans-serif!important;font-size:13px;font-weight:700;letter-spacing:.6px;text-align:center}
+@media(max-width:450px){body.goullart-storefront .business-cards>a>strong{font-size:25px;margin-inline:12px;padding-left:8px}body.goullart-storefront .business-cards>a>span{font-size:12px;margin-inline:12px}body.goullart-storefront .business-cards>a>b{margin-inline:12px}}
+
+/* Página inicial sem os dois cabeçalhos destacados pelo proprietário. */
+body.goullart-storefront:not(.area-page) #catalog-results>.machine-catalog-order,
+body.goullart-storefront:not(.area-page) #catalog-results>.section-head,
+body.goullart-storefront:not(.area-page) #catalog-results>#count{display:none!important}
+
+/* Apenas as artes, sem moldura azul, botão ou painel inferior. */
+body.goullart-storefront.approved-layout #approved-banner{width:100%;max-width:none;margin:0;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none}
+body.goullart-storefront.approved-layout #approved-banner .approved-image-slide{width:100%;height:auto;min-height:0;aspect-ratio:auto;margin:0;padding:0;background:transparent}
+body.goullart-storefront.approved-layout #approved-banner .approved-image-slide>img{width:100%;height:auto;max-height:none;object-fit:contain;background:transparent}
+body.goullart-storefront.approved-layout #approved-banner .approved-controls{position:absolute;width:1px;height:1px;min-height:0;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+body.goullart-storefront.approved-layout #approved-banner .approved-controls:focus-within{width:auto;height:auto;margin:0;padding:4px;inset:auto 8px 8px;clip-path:none;background:#082344e8;border-radius:8px}
+
+/* Altura ajustada em 15% após a revisão do proprietário; cards separados abaixo. */
+body.goullart-storefront.approved-layout #approved-banner .approved-image-slide{height:clamp(170px,42.5vw,544px);aspect-ratio:auto}
+body.goullart-storefront.approved-layout #approved-banner .approved-image-slide>img{width:100%;height:100%;max-height:none;object-fit:fill}
+body.goullart-storefront.approved-layout .business-cards{margin-top:48px;margin-bottom:32px;clear:both}
+body.goullart-storefront.approved-layout>header .header-contact{display:none!important}
+body.goullart-storefront.approved-layout>header .goullart-header-tools{display:flex;width:100%;max-width:none;align-items:center;justify-content:space-between;gap:12px;padding:6px 0 10px;box-sizing:border-box}
+body.goullart-storefront.approved-layout>header .goullart-header-tools .mobile-menu-toggle{position:static;flex:0 0 auto;margin:0 0 0 auto;min-width:76px;min-height:44px;padding:7px 10px;font-size:16px}
+
+/* Dedicated offers page: only reviewed market comparisons. */
+body.goullart-storefront .offers-intro{max-width:760px;font-weight:700;color:#244762;margin:0 0 24px;line-height:1.5}
+body.goullart-storefront .offer-badge{display:inline-block;padding:8px 12px;border-radius:6px;background:#ffce26;color:#092342;font-weight:900;line-height:1.25}
+body.goullart-storefront.area-page .area-page-content h1{font-family:'Barlow Condensed',sans-serif;font-weight:800;line-height:1.1;font-size:clamp(30px,5vw,48px);overflow-wrap:anywhere}
+
 /* SOURCE: /catalog-search.css */
 /* 30/10: only the catalog search panel and channel invitation typography. */
 @font-face{font-family:"Source Sans 3";font-style:normal;font-weight:400;font-display:swap;src:url('/assets/fonts/source-sans-3-400.woff2') format('woff2')}
@@ -1633,3 +1710,72 @@ body.goullart-storefront.approved-layout :is(.purchase-guide,#maquinas.catalog-c
 body.goullart-storefront.approved-layout .purchase-guide :is(h2,h3,p){color:inherit}
 body.goullart-storefront.approved-layout .purchase-guide article{background:#fff;color:#082c4e}
 @media(max-width:600px){body.goullart-storefront.approved-layout .goullart-header-vip.channel-art{width:min(100%,350px)}.goullart-header-tools{flex-wrap:wrap}}
+
+/* 31/10: convite destacado e Menu compacto com 60% de transparência. */
+body.approved-layout.goullart-storefront>header .mobile-menu-toggle{min-width:74px;min-height:44px;padding:8px 10px;gap:8px;font-size:13px;background:rgb(8 35 68 / 40%);color:#071c34;border:1px solid #08234433;border-radius:7px}
+body.goullart-storefront.approved-layout .goullart-header-tools{display:flex;align-items:center;gap:12px;flex-wrap:nowrap;max-width:100%}
+
+/* Tipografia compacta e entrada Magazine solicitadas em 31/10. */
+body.goullart-storefront.approved-layout .purchase-guide :is(h2,h3,p,strong,span){font-family:"Source Sans 3","Segoe UI",sans-serif!important}
+body.goullart-storefront.approved-layout .purchase-guide{padding-top:28px;padding-bottom:26px}
+body.goullart-storefront.approved-layout .purchase-guide h2{font-size:clamp(23px,3vw,34px);line-height:1.2;font-weight:600;margin-bottom:16px}
+body.goullart-storefront.approved-layout .purchase-guide h2 span{color:#ffd326}
+body.goullart-storefront.approved-layout .purchase-guide .purchase-guide-description{font-size:clamp(15px,1.6vw,18px);line-height:1.5;max-width:650px;margin-bottom:22px}
+.purchase-guide .purchase-guide-brand strong{font-size:28px}.purchase-guide .purchase-guide-brand span{font-size:10px}
+body.goullart-storefront.approved-layout .purchase-guide h3{font-size:19px;font-weight:600}.purchase-guide .purchase-guide-cards li{min-height:145px;padding:20px 14px;gap:12px}.purchase-guide .purchase-guide-cards svg{width:48px;height:48px}
+.goullart-magazine-entry{display:flex;align-items:center;gap:16px;box-sizing:border-box;width:92%;max-width:1000px;margin:24px auto;padding:20px;background:#fff;border:1px solid #dae2e8;border-radius:12px;color:#082c4e;text-decoration:none}
+.magazine-logo{display:flex;align-items:center;flex:0 0 100px}.magazine-logo img{width:100%;height:auto;object-fit:contain}
+.goullart-magazine-entry>span:nth-child(2){display:flex;flex:1;flex-direction:column;gap:7px}.goullart-magazine-entry strong{font-size:18px}.goullart-magazine-entry>span:nth-child(2)>span{font-size:14px;line-height:1.4;color:#53657a}
+@media(max-width:600px){.goullart-magazine-entry{padding:15px;gap:12px}.magazine-logo{flex-basis:70px}.goullart-magazine-entry strong{font-size:15px}.goullart-magazine-entry>span:nth-child(2)>span{font-size:12px}}
+
+/* Logo oficial Magazine e destaque contínuo. */
+body.goullart-storefront.approved-layout .goullart-magazine-entry{background:rgb(8 35 68 / 9%);border-color:#08234440;animation:magazine-pulse 2s ease-in-out infinite}
+body.goullart-storefront.approved-layout .goullart-magazine-entry strong{font-weight:900;color:#082344}
+body.goullart-storefront.approved-layout .goullart-magazine-entry>span:nth-child(2)>span{font-weight:700;color:#183a59}
+.goullart-magazine-entry .magazine-logo{overflow:hidden;border-radius:8px;background:white;flex-basis:110px;aspect-ratio:1.8}
+.goullart-magazine-entry .magazine-logo img{width:100%;height:100%;object-fit:cover;transform:scale(1.25)}
+@keyframes magazine-pulse{0%,100%{background-color:rgb(8 35 68 / 7%);box-shadow:0 0 0 0 #08234400}50%{background-color:rgb(8 35 68 / 16%);box-shadow:0 0 0 4px #08234415}}
+@media(max-width:600px){.goullart-magazine-entry .magazine-logo{flex-basis:82px}}
+@media(prefers-reduced-motion:reduce){body.goullart-storefront.approved-layout .goullart-magazine-entry{animation:none}}
+
+/* Notícias dentro do próprio card Magazine, abertas na chegada. */
+.magazine-panel{width:92%;max-width:1000px;margin:24px auto;border:1px solid #08234430;border-radius:14px;overflow:hidden;background:#f2f5f8;color:#082344}
+.magazine-panel .goullart-magazine-entry{width:100%;max-width:none;margin:0;border:0;border-radius:0;cursor:pointer;list-style:none}
+.magazine-panel summary::-webkit-details-marker{display:none}
+.magazine-panel summary:focus-visible{outline:3px solid #d8ad18;outline-offset:-4px}
+.magazine-toggle{font-size:28px;transition:transform .2s}.magazine-panel[open] .magazine-toggle{transform:rotate(180deg)}
+.magazine-content{padding:22px}.magazine-content h2{margin:0;font-size:23px;color:#082344}.magazine-editions{font-size:13px;color:#53657a;margin:5px 0 18px}
+.magazine-news-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.magazine-news-card{min-width:0;overflow:hidden;border:1px solid #dce3eb;border-radius:12px;background:#fff}
+.magazine-news-card>img{display:block;width:100%;height:auto;object-fit:contain;background:#082344}
+.magazine-news-copy{padding:16px}.magazine-news-copy time{font-size:12px;color:#53657a}.magazine-news-copy h3{font-size:18px;line-height:1.25;margin:9px 0;color:#082344;font-weight:800}.magazine-news-copy p{font-size:14px;line-height:1.55;color:#40536a;margin:0 0 16px}.magazine-news-copy a{display:inline-block;font-size:13px;font-weight:700;color:#084e85;text-underline-offset:3px;padding:8px 0}
+@media(max-width:700px){.magazine-news-grid{grid-template-columns:1fr}.magazine-content{padding:16px}.magazine-news-card>img{max-height:520px}.magazine-news-copy h3{font-size:19px}}
+
+/* Ajustes solicitados: MENU e convite mais compacto. */
+body.approved-layout.goullart-storefront>header .goullart-header-tools .mobile-menu-toggle{background:#082344;color:#ffd326;border:2px solid #ffd326;border-radius:9px;font-family:"Barlow Condensed","Source Sans 3",sans-serif!important;font-size:17px;font-weight:600;letter-spacing:1px;box-shadow:0 3px 10px #08234420}
+body.goullart-storefront.approved-layout .purchase-guide.purchase-guide-art{padding:0;overflow:hidden;background:#082344}
+.purchase-guide.purchase-guide-art>img{display:block;width:100%;height:auto;object-fit:contain}
+
+/* 31/10: convite compacto, tipográfico e sem símbolos decorativos. */
+body.goullart-storefront.approved-layout .goullart-header-vip.channel-invite{
+ display:flex;flex:0 1 auto;align-items:center;justify-content:center;
+ width:auto;min-width:0;min-height:44px;box-sizing:border-box;margin:0;
+ padding:0 20px!important;border:0!important;border-left:3px solid #ffd326!important;
+ border-radius:8px;background:#082344!important;color:#fff;text-decoration:none;
+ box-shadow:none;animation:none;transition:background-color .18s ease;
+}
+body.goullart-storefront.approved-layout .channel-invite .channel-invite-cta{
+ display:block;margin:0;padding:0;min-height:0;border:0;border-radius:0;
+ background:transparent;color:inherit;box-shadow:none;animation:none;
+ font:600 16px/1.3 "Source Sans 3",Arial,sans-serif!important;
+ letter-spacing:0;text-transform:none;white-space:nowrap;
+}
+body.goullart-storefront.approved-layout .goullart-header-vip.channel-invite:hover{background:#123c65!important}
+body.goullart-storefront.approved-layout .goullart-header-vip.channel-invite:focus-visible{outline:3px solid #c49300;outline-offset:4px}
+body.goullart-storefront.approved-layout .goullart-header-tools{gap:10px}
+@media(max-width:600px){
+ body.goullart-storefront.approved-layout .goullart-header-tools{width:100%;justify-content:space-between;gap:12px}
+ body.goullart-storefront.approved-layout .goullart-header-vip.channel-invite{flex:0 1 auto;padding:0 15px!important}
+ body.goullart-storefront.approved-layout .channel-invite .channel-invite-cta{font-size:15px!important}
+}
+@media(prefers-reduced-motion:reduce){body.goullart-storefront.approved-layout .goullart-header-vip.channel-invite{transition:none}}

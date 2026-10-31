@@ -4,6 +4,7 @@ import { cp, readdir, readFile, rm, stat, writeFile, mkdir } from "node:fs/promi
 import { join } from "node:path";
 
 const ORIGEM = "https://catalogo-goullart-pesados-brasil.fitbun9.chatgpt.site";
+const DOMINIO = "https://www.goullartmaquinaspesadas.com.br";
 const SAIDA = "site-novo";
 await rm(SAIDA, { recursive: true, force: true });
 await cp("espelho", SAIDA, { recursive: true });
@@ -22,7 +23,9 @@ for await (const f of arquivos(SAIDA)) {
   if (!/\.(html|css|js|mjs|json)$/.test(f)) continue;
   let t = await readFile(f, "utf-8");
   const antes = t;
-  t = t.split(ORIGEM).join("");
+  t = t.split(ORIGEM).join(DOMINIO);
+  // A revisão multimídia do curso é uma página dinâmica pública; conservar os cinco módulos na origem.
+  if (f.endsWith(".html")) t = t.replace(/href="\/curso\/midia(?=[?"])/g, 'href="' + ORIGEM + '/curso/midia');
   // Script de verificação da Cloudflare do servidor do ChatGPT: não existe no domínio próprio.
   t = t.replace(/<script>\(function\(\)\{function c\(\)\{var b=a\.contentDocument[\s\S]*?<\/script>/g, "");
   // Catálogo vira arquivo estático.
@@ -41,12 +44,14 @@ for await (const f of arquivos(SAIDA)) {
   if (t !== antes) await writeFile(f, t);
 }
 
-// Endereços sem extensão (/curso, /cursos, /central, /cliente) viram pastas com index.html,
-// que o nginx e o GitHub Pages servem sem configuração extra.
-for (const pagina of ["curso", "cursos", "central", "cliente"]) {
-  const html = join(SAIDA, `${pagina}.html`);
-  try { await stat(html); } catch { continue; }
-  await mkdir(join(SAIDA, pagina), { recursive: true });
-  await cp(html, join(SAIDA, pagina, "index.html"));
+// Páginas públicas sem extensão recebem index.html, inclusive ofertas e os 15 tipos.
+const paginas = [];
+for await (const f of arquivos(SAIDA)) if (f.endsWith(".html") && !f.endsWith("/index.html")) paginas.push(f);
+for (const html of paginas) {
+  const pasta = html.slice(0,-5);
+  let texto = await readFile(html,"utf8");
+  if (!/<base\b/i.test(texto)) texto = texto.replace(/<head>/i,'<head><base href="/">');
+  await mkdir(pasta,{recursive:true});
+  await writeFile(join(pasta,"index.html"),texto);
 }
-console.log(`Site novo preparado em ${SAIDA}/`);
+console.log("Site novo preparado em " + SAIDA + "/");
