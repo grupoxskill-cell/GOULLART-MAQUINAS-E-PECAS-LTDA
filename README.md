@@ -55,6 +55,10 @@ O botão "Tenho interesse" e a abertura das páginas são contados em `/api/inte
 
 A senha é criada na instalação e aparece uma única vez na saída do script. Para gerar outra: `runuser -u goullart -- env DATA_DIR=/www/goullart-dados node /opt/goullart-app/scripts/criar-senha.mjs --nova`.
 
+## Radar automático (3 em 3 horas)
+
+Anúncios encaminhados ao 7276 pelo 1936 viram arte para aprovação de Júnior; com "SIM RADAR-…" a máquina entra em `public/maquinas.json`. Passo a passo e regras em `docs/radar.md`; código em `lib/radar.js` e `scripts/radar/`.
+
 ## Render
 
 O `render.yaml` está pronto para Node, `npm run build`, `npm start` e health check `/health`. Nenhuma variável OpenAI é necessária. A existência deste arquivo não comprova que um serviço Render tenha sido criado ou publicado.
