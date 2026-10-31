@@ -16,7 +16,7 @@
   document.body.classList.toggle('goullart-contact-open', open);
   if (open) remember();
   if (!open) document.body.classList.remove('goullart-contact-keyboard');
-  if (focus) (open ? message : launcher).focus({preventScroll:true});
+  if (focus) (open ? close : launcher).focus({preventScroll:true});
  }
  launcher.addEventListener('click', event => {
   if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;

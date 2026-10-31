@@ -16,39 +16,52 @@ footer.goullart-watermark-footer{position:relative;isolation:isolate;overflow:hi
 footer.goullart-watermark-footer>.goullart-footer-watermark{position:absolute;inset:0 0 0 auto;width:52%;height:100%;max-height:none;object-fit:contain;object-position:right center;opacity:.23;z-index:-1;pointer-events:none;filter:grayscale(15%)}
 footer.goullart-watermark-footer:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#0a1b31 30%,transparent 100%);z-index:-1;pointer-events:none}
 .goullart-contact,.goullart-contact *{box-sizing:border-box}
-.goullart-contact{position:fixed;right:max(20px,env(safe-area-inset-right,0px));bottom:calc(24px + env(safe-area-inset-bottom,0px));z-index:80;width:340px;max-width:calc(100vw - 32px);font:400 16px/1.5 Arial,sans-serif;color:#10274b;pointer-events:none}
-.goullart-contact-panel{width:100%;background:#fff;border:1px solid #dce3eb;border-radius:18px;overflow:auto;max-height:calc(100dvh - 124px);box-shadow:0 12px 50px #04182735;margin-bottom:16px;pointer-events:auto;animation:goullart-contact-rise .25s ease-out}
+.goullart-contact{position:fixed;right:max(20px,env(safe-area-inset-right,0px));bottom:calc(24px + env(safe-area-inset-bottom,0px));z-index:80;width:408px;max-width:calc(100vw - 24px);font:400 14px/1.5 Arial,sans-serif;color:#082344;pointer-events:none}
+.goullart-contact-panel{width:100%;background:transparent;border:0;border-radius:0;overflow-y:auto;max-height:calc(100dvh - 120px);padding:4px 4px 8px;margin-bottom:8px;pointer-events:auto;animation:goullart-contact-rise .25s ease-out}
 .goullart-contact-panel[hidden]{display:none!important}
-.goullart-contact-header{display:flex;align-items:center;gap:12px;padding:12px 12px 12px 16px;background:#10274b;color:#fff;border-top:4px solid #ffcb05}
-.goullart-contact-header>div{flex:1;min-width:0}
-.goullart-contact .goullart-contact-avatar{width:52px;height:52px;max-width:none;object-fit:cover;object-position:50% 5%;border-radius:50%;border:2px solid #ffcb05;flex-shrink:0}
-.goullart-contact-header h2{margin:0;font:700 18px/1.25 Arial,sans-serif;letter-spacing:0;color:#fff}
-.goullart-contact-header p{margin:4px 0 0;color:#ffdb48;font:700 10px/1.4 Arial,sans-serif;letter-spacing:1.3px}
 .goullart-contact button{cursor:pointer;font-family:Arial,sans-serif}
-.goullart-contact-close{width:44px;height:44px;min-width:44px;border:0;border-radius:50%;background:#ffffff12;color:#fff;font-size:28px;line-height:1;padding:0}
-.goullart-contact-body{padding:16px;background:#f5f7fa}
-.goullart-contact-greeting{margin:0 0 16px;padding:12px;border-radius:0 12px 12px;background:#fff;box-shadow:0 1px 3px #10274b0d;font:400 17px/1.55 Arial,sans-serif;color:#10274b}
-.goullart-contact form{display:block;margin:0;padding:0;background:none;border:0}
-.goullart-contact label{display:block;font:700 13px/1.4 Arial,sans-serif;margin:0 0 8px;color:#10274b}
-.goullart-contact textarea{display:block;width:100%;min-height:80px;max-height:180px;resize:vertical;padding:12px;border:1px solid #bac7d5;border-radius:8px;background:#fff;color:#10274b;font:400 16px/1.5 Arial,sans-serif;margin:0 0 12px;box-shadow:none}
-.goullart-contact .goullart-contact-send{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;min-height:48px;border:0;border-radius:8px;padding:12px;background:#087941;color:#fff;font:700 14px/1.4 Arial,sans-serif}
-.goullart-contact-send svg{width:20px;height:20px;flex-shrink:0}
-.goullart-contact-note{margin:10px 0 0;font:400 12px/1.5 Arial,sans-serif;color:#536479}
-.goullart-contact-launcher{position:relative;display:block;width:72px;height:72px;margin-left:auto;pointer-events:auto;border:3px solid #fff;border-radius:50%;background:#10274b;box-shadow:0 4px 24px #061c3a40;text-decoration:none;color:#10274b;transition:transform .2s}
-.goullart-contact-launcher>img{display:block;width:100%;height:100%;max-width:none;object-fit:cover;object-position:50% 5%;border-radius:50%}
-.goullart-contact-badge{position:absolute;right:-4px;bottom:-3px;display:grid;place-items:center;width:30px;height:30px;padding:5px;border:2px solid #fff;border-radius:50%;background:#087941;color:#fff}
+.goullart-contact-body{padding:0;background:transparent}
+.goullart-contact-bubble{position:relative;background:#fff;border:1px solid #e8edf0;border-radius:24px;padding:22px 38px 22px 18px;margin-bottom:23px;box-shadow:0 8px 24px #04182724}
+.goullart-contact-bubble:after{content:"";position:absolute;bottom:-10px;left:42px;width:20px;height:20px;background:#fff;transform:rotate(45deg);border-radius:0 0 4px 0}
+.goullart-contact-close{position:absolute;right:3px;top:3px;display:grid;place-items:center;width:44px;height:44px;min-width:44px;border:0;border-radius:50%;background:transparent;color:#778395;font-size:29px;line-height:1;padding:0;z-index:1}
+.goullart-contact-close:hover{background:#f2f5f7;color:#082344}
+.goullart-contact-person{display:flex;align-items:center;gap:15px;margin:0}
+.goullart-contact-portrait{position:relative;flex:0 0 76px;width:76px;height:76px}
+.goullart-contact .goullart-contact-avatar{display:block;width:100%;height:100%;max-width:none;object-fit:cover;object-position:center;border-radius:50%;border:0}
+.goullart-contact-copy{min-width:0;flex:1}
+.goullart-contact-person h2{margin:0;font:800 21px/1.2 Arial,sans-serif;letter-spacing:-.4px;color:#082344}
+.goullart-contact-brand{margin:6px 0 8px;color:#667085;font:700 9px/1.4 Arial,sans-serif;letter-spacing:1.9px}
+.goullart-contact-greeting{margin:0;padding:0;font:400 14px/1.5 Arial,sans-serif;color:#4b5565}
+.goullart-contact-direct,.goullart-contact .goullart-contact-send{display:flex;align-items:center;justify-content:center;gap:10px;width:calc(100% - 24px);min-height:54px;margin:0 auto;border:0;border-radius:999px;padding:12px 17px;background:#00854e;color:#fff;text-decoration:none;font:700 14px/1.4 Arial,sans-serif;box-shadow:0 5px 14px #005c3420;transition:background .18s}
+.goullart-contact-direct:hover,.goullart-contact .goullart-contact-send:hover{background:#006e41;color:#fff;text-decoration:none}
+.goullart-contact-direct svg{width:27px;height:27px;flex-shrink:0}
+.goullart-contact-direct>span:not(.goullart-contact-arrow){flex:1;text-align:center}
+.goullart-contact-arrow{font:400 29px/1 Arial,sans-serif}
+.goullart-contact-compose{margin:10px 12px 0;padding:0 14px;border:0;border-radius:16px;background:#fff;box-shadow:0 2px 10px #04182710}
+.goullart-contact-compose>summary{padding:10px 0;min-height:44px;cursor:pointer;color:#536479;font:500 12px/1.5 Arial,sans-serif;text-align:center;align-content:center}
+.goullart-contact form{display:block;margin:0;padding:4px 0 14px;background:none;border:0}
+.goullart-contact label{display:block;font:700 12px/1.4 Arial,sans-serif;margin:0 0 8px;color:#082344}
+.goullart-contact textarea{display:block;width:100%;min-height:80px;max-height:160px;resize:vertical;padding:10px;border:1px solid #bac7d5;border-radius:8px;background:#fff;color:#082344;font:400 16px/1.5 Arial,sans-serif;margin:0 0 10px;box-shadow:none}
+.goullart-contact .goullart-contact-send{width:100%;min-height:48px;font-size:13px}
+.goullart-contact-note{margin:8px 0 0;font:400 11px/1.5 Arial,sans-serif;color:#536479}
+.goullart-contact-launcher{position:relative;display:block;width:68px;height:68px;margin-left:auto;pointer-events:auto;border:3px solid #fff;border-radius:50%;background:#00854e;box-shadow:0 4px 24px #061c3a40;text-decoration:none;color:#fff;transition:transform .2s}
+.goullart-contact-launcher>img{display:block;width:100%;height:100%;max-width:none;object-fit:cover;object-position:center;border-radius:50%}
+.goullart-contact-badge{position:absolute;right:-4px;bottom:-3px;display:grid;place-items:center;width:29px;height:29px;padding:5px;border:2px solid #fff;border-radius:50%;background:#00854e;color:#fff}
 .goullart-contact-badge svg{width:100%;height:100%}
-.goullart-contact-label{position:absolute;right:calc(100% + 12px);top:50%;transform:translateY(-50%);white-space:nowrap;background:#fff;border:1px solid #dce3eb;border-radius:9px;padding:8px 12px;font-size:13px;font-weight:700;box-shadow:0 3px 15px #10274b0d}
+.goullart-contact-label{position:absolute;right:calc(100% + 10px);top:50%;transform:translateY(-50%);display:inline-flex;align-items:center;gap:8px;white-space:nowrap;background:#00854e;color:#fff;border:1px solid #fff;border-radius:999px;padding:11px 14px;min-height:44px;font-size:12px;font-weight:700;box-shadow:0 3px 15px #10274b22}
+.goullart-contact-label svg{width:22px;height:22px;flex-shrink:0}
 .goullart-contact-launcher[aria-expanded=true] .goullart-contact-label{display:none}
 .goullart-contact :focus-visible{outline:3px solid #d59d00;outline-offset:3px}
-.goullart-contact-header :focus-visible{outline-color:#ffcb05}
 .goullart-contact-launcher.is-scrolling{animation:goullart-contact-walk .65s ease-in-out}
+.goullart-contact-open .course-corner{visibility:hidden;pointer-events:none}
 @keyframes goullart-contact-walk{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
 @keyframes goullart-contact-rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:900px){
- .goullart-contact{right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px))}
- .goullart-contact-launcher{width:64px;height:64px}
- .goullart-contact-launcher .goullart-contact-label{display:none}
+ .goullart-contact{right:max(12px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px))}
+ .goullart-storefront .goullart-contact{bottom:calc(var(--goullart-dock-height,80px) + 12px)}
+ .goullart-storefront .goullart-contact-panel{max-height:calc(100dvh - var(--goullart-dock-height,80px) - 112px)}
+ .goullart-contact-launcher{width:60px;height:60px}
+ .goullart-contact-label{font-size:11px;padding:10px 12px;gap:6px}
  .goullart-faq{padding:44px 20px}
  .goullart-faq h2{letter-spacing:-.7px;margin-bottom:24px}
  .goullart-faq summary{padding:20px 0;font-size:17px;gap:16px}
@@ -57,6 +70,9 @@ footer.goullart-watermark-footer:before{content:"";position:absolute;inset:0;bac
  .goullart-contact-keyboard .goullart-contact{bottom:calc(var(--goullart-keyboard-inset,0px) + 12px)}
  .goullart-contact-keyboard .goullart-contact-launcher{display:none}
  .goullart-contact-keyboard .goullart-contact-panel{max-height:calc(var(--goullart-visual-height,100dvh) - 24px);margin-bottom:0}
+ .is-editing-field:not(.goullart-contact-open) .goullart-contact{visibility:hidden;pointer-events:none}
 }
-@media(max-height:520px){.goullart-contact-panel{max-height:calc(100dvh - 108px)}.goullart-contact-header{padding-block:8px}.goullart-contact-body{padding:12px}.goullart-contact-greeting{margin-bottom:12px;padding:10px}}
-@media(prefers-reduced-motion:reduce){.goullart-contact-panel,.goullart-contact-launcher.is-scrolling{animation:none}.goullart-contact-launcher,.goullart-faq summary>span{transition:none}}
+@media(max-height:520px){.goullart-contact-panel{max-height:calc(100dvh - 108px)}.goullart-contact-bubble{padding-block:14px}}
+@media(prefers-reduced-motion:reduce){.goullart-contact-panel,.goullart-contact-launcher.is-scrolling{animation:none}.goullart-contact-launcher{transition:none}}
+
+@media(max-width:400px){.goullart-contact-bubble{padding:18px 32px 18px 13px;border-radius:21px}.goullart-contact-person{gap:10px}.goullart-contact-portrait{flex-basis:60px;width:60px;height:60px}.goullart-contact-person h2{font-size:18px;letter-spacing:-.3px}.goullart-contact-brand{font-size:8px;letter-spacing:1.2px;margin-block:5px 7px}.goullart-contact-greeting{font-size:13px}.goullart-contact-direct{font-size:12px;gap:8px;padding-inline:12px}.goullart-contact-direct svg{width:24px;height:24px}}
