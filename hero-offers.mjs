@@ -141,7 +141,7 @@ document.getElementById('hero-view-cheapest').addEventListener('click', event =>
   document.getElementById('maquinas').scrollIntoView({block:'start',behavior:reduceMotion.matches ? 'auto' : 'smooth'});
 });
 
-(window.GoullartFeed || fetch('/api/catalog.json', {signal:window.GoullartRuntime.timeout(25000)}).then(response => { if (!response.ok) throw Error(); return response.json(); }))
+(window.GoullartFeed || ((o)=>fetch('/adm/catalogo.json',o).then((r)=>r.ok?r:Promise.reject(r)).catch(()=>fetch('/api/catalog.json',o)))( {signal:window.GoullartRuntime.timeout(25000)}).then(response => { if (!response.ok) throw Error(); return response.json(); }))
   .then(data => { listings = selectCheapestMachines(data.items, window.GoullartListingPolicy.eligibleListing); render(); })
   .catch(() => { root.hidden = true; loading.textContent = 'Abra o catálogo para consultar as máquinas.'; });
 
