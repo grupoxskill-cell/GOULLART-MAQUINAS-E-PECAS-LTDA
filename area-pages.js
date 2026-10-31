@@ -2,9 +2,13 @@
  const entries=[['texas','TEXAS','Botas e informações da marca','horizontal-botas-texas'],['magazine','MAGAZINE','Notícias e informações do Radar','horizontal-magazine-canais'],['pecas','PEÇAS','Componentes e pedidos de orçamento','horizontal-pecas-motores'],['locacao','LOCAÇÃO','Equipamentos e oportunidades de locação','horizontal-protecoes'],['maquinas','VENDAS DE MÁQUINAS','Anúncios organizados por equipamento','horizontal-junior-catalogo']];
  const main=document.querySelector('main');if(!main)return;
  const hub=document.createElement('section');hub.className='business-cards';hub.setAttribute('aria-label','Áreas GOULLART');
- hub.innerHTML=entries.map(([id,title,desc,image])=>`<a href="${id==='texas'?'/texas.html':'/?area='+id}"><img src="/assets/banners/${image}.jpeg" alt="" loading="lazy"><strong>${title}</strong><span>${desc}</span><b>ACESSAR</b></a>`).join('');
+ hub.innerHTML=entries.map(([id,title,desc,image])=>`<a href="${id==='texas'?'/texas.html':'/?area='+id}"><img src="/assets/banners/${image}.jpeg" alt="${title}" loading="lazy"><strong>${title}</strong><span>${desc}</span><b>ACESSAR</b></a>`).join('');
  const banner=document.getElementById('approved-banner');if(banner)banner.after(hub);else main.prepend(hub);
- const params=new URLSearchParams(location.search),area=params.get('area');if(!entries.some(e=>e[0]===area)&&!['ofertas','implementos'].includes(area))return;
+ const params=new URLSearchParams(location.search),route=window.GoullartRoutes.resolve(location.href),area=route.area;
+ document.querySelectorAll('a[href="#inicio"]').forEach(a=>a.setAttribute('href','/'));
+ document.querySelector('.skip-link')?.setAttribute('href','/?area=maquinas');
+ if(!entries.some(e=>e[0]===area)&&!['ofertas','implementos'].includes(area))return;
+ if(!params.get('area')){params.set('area',area);if(route.type)params.set('tipo',route.type);history.replaceState(null,'','/?'+params.toString()+location.hash);}
  document.body.classList.add('area-page');
  const page=document.createElement('div');page.className='area-page-content';main.prepend(page);
  const title=area==='ofertas'?'OFERTAS ABAIXO DO MERCADO':area==='implementos'?'IMPLEMENTOS / OUTROS':window.GoullartMachineTypes?.label(params.get('tipo'))||entries.find(e=>e[0]===area)[1];

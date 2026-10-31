@@ -40,12 +40,14 @@
   if (!dock) return;
   const links = [...dock.querySelectorAll('a')];
   const categoryNames = ['maquinas', 'pecas', 'implementos', 'locacao'];
-  let category = categoryNames.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'maquinas';
+  const area = new URLSearchParams(location.search).get('area');
+  let category = categoryNames.includes(area) ? area : categoryNames.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'maquinas';
   const markCurrent = value => links.forEach(link => {
     if (link.hash === '#' + value) link.setAttribute('aria-current', 'location');
     else link.removeAttribute('aria-current');
   });
   const update = () => {
+    if(document.body.classList.contains('area-page')){markCurrent(category);return;}
     const catalog = document.getElementById('maquinas');
     const end = document.getElementById('canal');
     const top = catalog.getBoundingClientRect().top;
