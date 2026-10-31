@@ -36,7 +36,7 @@ test('catálogo funciona na URL compartilhada com publicação estática', async
 });
 test('site, logo e HEAD disponíveis; sem UI da Sophia', async () => {
   const html = await (await fetch(base)).text();
-  assert.ok(html.includes('assets/logo-oficial.png'));
+  assert.ok(html.includes('Goullart Agro Brasil'));
   assert.ok(!/data-open-chat|chat-toggle|Sophia/.test(html));
   assert.equal((await fetch(base + '/assets/logo-oficial.png')).headers.get('content-type'), 'image/png');
   const h = await fetch(base, { method: 'HEAD' });
@@ -143,4 +143,12 @@ test('contador conta visitas e cliques, ignora repetição e referência desconh
   assert.equal(linha.visitas, 1);
   assert.equal(linha.interesses, 1);
   assert.equal((await fetch(base + '/adm/api/interesse')).status, 401);
+});
+
+test('catálogo público do ADM sem dados privados', async () => {
+  const r = await fetch(base + '/adm/catalogo.json');
+  assert.equal(r.status, 200);
+  const c = await r.json();
+  assert.ok(Array.isArray(c.items) && c.items.length > 0);
+  assert.ok(!/privateNotes|notasPrivadas|sourceKey/.test(JSON.stringify(c)));
 });

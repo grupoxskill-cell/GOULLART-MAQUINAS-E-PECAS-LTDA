@@ -44,7 +44,16 @@ Cada máquina tem página própria em `maquina/<slug>.html`, com título, foto e
 
 O botão "Tenho interesse" e a abertura das páginas são contados em `/api/interesse` (sem dados pessoais; a mesma pessoa conta uma vez a cada 30 minutos). Os números aparecem no início do ADM.
 
-## ADM (Radar, Pátio, CRM e Encontros)
+## Layout do site (cópia do site do ChatGPT)
+
+A página inicial, `/curso`, `/cursos`, `/central` e `/texas.html` vêm de `espelho/`, cópia do site publicado em `catalogo-goullart-pesados-brasil.fitbun9.chatgpt.site`. Para atualizar a cópia, rode a ação "Importar site do ChatGPT" (branch `importar-chatgpt`) e junte no master. `scripts/preparar-espelho.mjs` adapta a cópia no build (tira scripts da Cloudflare do ChatGPT e liga "Administração" ao `/adm`).
+
+O catálogo do site é lido de `/adm/catalogo.json` (ADM, só campos públicos). Se o ADM não responder, o site usa a cópia estática `api/catalog.json`.
+
+## ADM (Publicações, Radares, Radar de preço, Pátio, CRM e Encontros)
+
+- **Publicações:** importe `goullart-agro-brasil-backup.json` (painel do ChatGPT). Fica "No site" o que o site mostrava na importação; o resto entra "Fora do site". Editar título, preço, texto, fotos ou tirar/colocar no site muda o catálogo na hora. Notas privadas e fonte nunca saem do ADM.
+- **Radares:** perfis de busca do backup, com critérios e situação editáveis.
 
 Área privada em `/adm`, com senha. Roda como serviço Node (`goullart-app`) no servidor, ouvindo só em `127.0.0.1:3210`; o nginx encaminha `/adm`, `/fotos/` e `/maquinas.json`. Os dados ficam em `/www/goullart-dados` (variável `DATA_DIR`), nunca no GitHub.
 

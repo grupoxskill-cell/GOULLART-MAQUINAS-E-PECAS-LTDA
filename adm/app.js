@@ -67,7 +67,7 @@ document.getElementById("form-login").addEventListener("submit", async (e) => {
 });
 
 // ---------- Abas ----------
-const telas = { inicio, radar: () => telaMaquinas("radar"), patio: () => telaMaquinas("patio"), encontros, crm, config };
+const telas = { inicio, publicacoes, radares, radar: () => telaMaquinas("radar"), patio: () => telaMaquinas("patio"), encontros, crm, config };
 document.getElementById("abas").addEventListener("click", (e) => {
   const b = e.target.closest("button[data-aba]");
   if (b) abrir(b.dataset.aba);
@@ -97,6 +97,7 @@ async function inicio() {
       h("strong", {}, `${resumo.encontrosRadarNovo} pedido(s) de clientes combinam com máquinas do Radar ainda não publicadas.`),
       " ", h("button", { class: "btn", onclick: () => abrir("encontros") }, "Ver encontros")) : null,
     h("div", { class: "numeros" },
+      n("Publicações no site", resumo.publicacoesImportadasEm ? resumo.publicacoesNoSite : "—", "publicacoes"),
       n("Novas no Radar (aguardando você)", resumo.radarNovos, "radar"),
       n("Publicadas do Radar", resumo.radarPublicados, "radar"),
       n("Máquinas no Pátio", `${resumo.patioPublicados}/${resumo.patio}`, "patio"),
@@ -243,6 +244,129 @@ async function encontros() {
         a.maquina.origem === "Radar" && !a.maquina.publicado
           ? h("button", { class: "btn ok", onclick: (ev) => acao(ev.target, async () => { await api(`/radar/${a.maquina.id}/publicar`, { method: "POST" }); encontros(); }, "Publicado no site.") }, "Publicar")
           : null)))));
+}
+
+// ---------- Publicações (painel do ChatGPT) ----------
+const CATS_PUB = { maquinas: "Máquinas", pecas: "Peças", implementos: "Implementos / Outros", locacao: "Locação", licitacao: "Licitação" };
+
+function importadorBackup(dados, aoImportar) {
+  const arquivo = h("input", { type: "file", accept: "application/json,.json" });
+  arquivo.addEventListener("change", async () => {
+    const f = arquivo.files[0]; if (!f) return;
+    if (dados && !confirm("Importar de novo substitui as publicações e radares do ADM (incluindo o que você editou aqui). Continuar?")) { arquivo.value = ""; return; }
+    try {
+      const r = await api("/publicacoes", { method: "POST", body: await f.text() });
+      aviso(`Importado: ${r.itens} publicações (${r.noSite} no site) e ${r.radares} radares.`); aoImportar();
+    } catch (e) { aviso(e.message); }
+  });
+  return h("div", { class: "painel" }, h("h2", {}, "Backup do painel do ChatGPT"),
+    h("p", { class: "muted" }, dados
+      ? `Importado em ${data(dados.importadoEm)}. Enviar outro backup substitui tudo.`
+      : "Envie o arquivo goullart-agro-brasil-backup.json. Ao importar, fica no site exatamente o que o site mostra hoje; o resto entra como \"fora do site\" para você decidir."),
+    h("label", {}, "Arquivo de backup", arquivo));
+}
+
+function formPublicacao(item, aoSalvar, aoCancelar) {
+  const c = {
+    titulo: h("input", { required: true, value: item.titulo }),
+    categoria: h("select", {}, Object.entries(CATS_PUB).map(([v, n]) => h("option", { value: v, selected: item.categoria === v }, n))),
+    preco: h("input", { value: item.preco ?? "", inputmode: "decimal", placeholder: "Vazio = sob consulta" }),
+    textoPublico: h("textarea", {}, item.textoPublico || ""),
+    notasPrivadas: h("textarea", {}, item.notasPrivadas || ""),
+  };
+  let imagens = [...item.imagens];
+  const prev = h("div", { class: "fotos-prev" });
+  const desenharFotos = () => prev.replaceChildren(...imagens.map((src, i) => h("span", {}, h("img", { src, alt: "" }),
+    h("button", { type: "button", class: "btn sec", onclick: () => { imagens.splice(i, 1); desenharFotos(); } }, "Tirar"))));
+  desenharFotos();
+  const arquivo = h("input", { type: "file", accept: "image/*", multiple: true });
+  arquivo.addEventListener("change", async () => {
+    for (const f of arquivo.files) { try { imagens.push("/" + await enviarFoto(f)); desenharFotos(); } catch (e) { aviso(e.message); } }
+    arquivo.value = "";
+  });
+  const salvar = h("button", { class: "btn" }, "Salvar");
+  salvar.addEventListener("click", () => acao(salvar, async () => {
+    aoSalvar(await api(`/publicacoes/${encodeURIComponent(item.id)}`, { method: "PUT", body: {
+      titulo: c.titulo.value, categoria: c.categoria.value, preco: c.preco.value, textoPublico: c.textoPublico.value,
+      notasPrivadas: c.notasPrivadas.value, imagens } }));
+  }, "Publicação salva."));
+  return h("div", { class: "painel" },
+    h("div", { class: "grade" }, h("label", {}, "Título", c.titulo), h("label", {}, "Categoria", c.categoria), h("label", {}, "Preço (R$)", c.preco)),
+    h("label", {}, "Texto que aparece no site", c.textoPublico),
+    h("label", {}, "Notas privadas (só no ADM, nunca no site)", c.notasPrivadas),
+    h("label", {}, "Adicionar fotos", arquivo), prev,
+    h("div", { class: "acoes" }, salvar, h("button", { class: "btn sec", onclick: aoCancelar }, "Cancelar")));
+}
+
+async function publicacoes() {
+  const dados = await api("/publicacoes");
+  const importar = importadorBackup(dados, publicacoes);
+  if (!dados) { conteudo.replaceChildren(importar); return; }
+  const busca = h("input", { type: "search", placeholder: "Título, código ou texto" });
+  const cat = h("select", {}, h("option", { value: "" }, "Todas"), Object.entries(CATS_PUB).map(([v, n]) => h("option", { value: v }, n)));
+  const situacao = h("select", {}, ["No site", "Fora do site", "Todas"].map((v) => h("option", {}, v)));
+  const lista = h("div", { class: "lista" });
+  const contagem = h("p", { class: "muted" });
+  let limite = 60;
+  function cartao(item) {
+    const caixa = h("article", { class: "item" });
+    const preencher = () => {
+      const alternar = h("button", { class: item.noSite ? "btn perigo" : "btn ok" }, item.noSite ? "Tirar do site" : "Colocar no site");
+      alternar.addEventListener("click", () => acao(alternar, async () => {
+        Object.assign(item, await api(`/publicacoes/${encodeURIComponent(item.id)}`, { method: "PUT", body: { noSite: !item.noSite } }));
+        preencher();
+      }, item.noSite ? "Tirado do site." : "Colocado no site."));
+      caixa.replaceChildren(
+        item.imagens[0] ? h("img", { src: item.imagens[0], alt: "", loading: "lazy" }) : h("div", { class: "semfoto" }, "sem foto"),
+        h("div", { class: "corpo" },
+          h("div", {}, h("span", { class: item.noSite ? "selo publicado" : "selo descartado" }, item.noSite ? "No site" : "Fora do site"), " ",
+            h("span", { class: "selo" }, CATS_PUB[item.categoria] || item.categoria), " ", h("span", { class: "muted" }, item.codigo || item.id)),
+          h("strong", {}, item.titulo),
+          h("span", { class: "preco" }, item.preco != null ? reais(item.preco) : "Sob consulta"),
+          item.textoPublico ? h("span", { class: "muted" }, item.textoPublico.slice(0, 160)) : null,
+          item.notasPrivadas ? h("details", {}, h("summary", {}, "Notas privadas"), h("p", { class: "muted" }, item.notasPrivadas)) : null,
+          h("div", { class: "acoes" }, alternar, h("button", { class: "btn sec", onclick: () => {
+            caixa.replaceChildren(h("div", { style: "grid-column:1/-1" }, formPublicacao(item, (novo) => { Object.assign(item, novo); preencher(); }, preencher)));
+          } }, "Editar"))));
+    };
+    preencher();
+    return caixa;
+  }
+  function desenhar() {
+    const t = busca.value.trim().toLowerCase();
+    const f = dados.itens.filter((i) => (!cat.value || i.categoria === cat.value)
+      && (situacao.value === "Todas" || (situacao.value === "No site") === i.noSite)
+      && (!t || `${i.titulo} ${i.codigo} ${i.id} ${i.textoPublico}`.toLowerCase().includes(t)));
+    contagem.textContent = `${f.length} publicação(ões)`;
+    lista.replaceChildren(...f.slice(0, limite).map(cartao),
+      f.length > limite ? h("button", { class: "btn sec", onclick: () => { limite += 60; desenhar(); } }, "Ver mais") : "");
+  }
+  for (const x of [busca, cat, situacao]) x.addEventListener("input", () => { limite = 60; desenhar(); });
+  conteudo.replaceChildren(
+    h("div", { class: "painel" }, h("h2", {}, "Publicações do site"),
+      h("p", { class: "muted" }, "O que está \"No site\" aparece no catálogo de www.goullartmaquinaspesadas.com.br em poucos segundos. Notas privadas nunca vão para o site."),
+      h("div", { class: "grade" }, h("label", {}, "Buscar", busca), h("label", {}, "Categoria", cat), h("label", {}, "Situação", situacao)), contagem),
+    lista, importar);
+  desenhar();
+}
+
+async function radares() {
+  const [lista, dados] = await Promise.all([api("/radares"), api("/publicacoes")]);
+  if (!dados) { conteudo.replaceChildren(importadorBackup(null, radares)); return; }
+  conteudo.replaceChildren(h("div", { class: "painel" }, h("h2", {}, "Radares"),
+    h("p", { class: "muted" }, "Perfis de busca de máquinas que vieram do painel do ChatGPT. Aqui ficam os critérios de cada radar para a equipe consultar e ajustar.")),
+    ...(lista.length ? lista.map((r) => {
+      const nome = h("input", { value: r.nome });
+      const status = h("select", {}, ["scheduled", "active", "paused", "done"].map((s) => h("option", { value: s, selected: r.status === s },
+        { scheduled: "Agendado", active: "Ativo", paused: "Pausado", done: "Concluído" }[s])));
+      if (![...status.options].some((o) => o.selected)) status.prepend(h("option", { value: r.status, selected: true }, r.status));
+      const criterios = h("textarea", { rows: 8 }, r.criterios);
+      const salvar = h("button", { class: "btn" }, "Salvar radar");
+      salvar.addEventListener("click", () => acao(salvar, () => api(`/radares/${encodeURIComponent(r.id)}`, { method: "PUT",
+        body: { nome: nome.value, status: status.value, criterios: criterios.value } }), "Radar salvo."));
+      return h("div", { class: "painel" }, h("div", { class: "grade" }, h("label", {}, "Nome", nome), h("label", {}, "Situação", status)),
+        h("label", {}, "Critérios", criterios), salvar);
+    }) : [h("p", { class: "muted" }, "Nenhum radar no backup importado.")]));
 }
 
 // ---------- CRM ----------

@@ -26,7 +26,9 @@ for await (const f of arquivos(SAIDA)) {
   // Script de verificação da Cloudflare do servidor do ChatGPT: não existe no domínio próprio.
   t = t.replace(/<script>\(function\(\)\{function c\(\)\{var b=a\.contentDocument[\s\S]*?<\/script>/g, "");
   // Catálogo vira arquivo estático.
-  t = t.replace(/fetch\((['"])\/api\/catalog\1/g, "fetch($1/api/catalog.json$1");
+  // Catálogo: primeiro o do ADM (publicações editadas lá); se o ADM não responder, a cópia estática.
+  t = t.replace(/fetch\((['"])\/api\/catalog\1\s*,/g,
+    "((o)=>fetch('/adm/catalogo.json',o).then((r)=>r.ok?r:Promise.reject(r)).catch(()=>fetch('/api/catalog.json',o)))(");
   // Área administrativa e de cliente do ChatGPT não existem aqui: "Administração" vai para o ADM do servidor.
   t = t.replace(/href="\/admin\/login"/g, 'href="/adm"');
   if (f.endsWith("catalog.json")) {
