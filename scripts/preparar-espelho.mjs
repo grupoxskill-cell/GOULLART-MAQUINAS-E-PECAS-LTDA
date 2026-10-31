@@ -3,7 +3,7 @@
 import { cp, readdir, readFile, rm, stat, writeFile, mkdir } from "node:fs/promises";
 import { join } from "node:path";
 
-const ORIGEM = "https://catalogo-goullart-pesados-brasil.fitbun9.chatgpt.site";
+const ORIGEM = "https://www.goullartmaquinaspesadas.com.br";
 const DOMINIO = "https://www.goullartmaquinaspesadas.com.br";
 const SAIDA = "site-novo";
 await rm(SAIDA, { recursive: true, force: true });
@@ -23,9 +23,10 @@ for await (const f of arquivos(SAIDA)) {
   if (!/\.(html|css|js|mjs|json)$/.test(f)) continue;
   let t = await readFile(f, "utf-8");
   const antes = t;
+  if(f.endsWith(".html") && !t.includes('src="/catalog-data.js')) t=t.replace(/<script(?=[^>]*src="\/(?:app|catalog-page-client)\.js)/,'<script defer src="/catalog-data.js?v=correcoes-20261031-2"></script><script');
+  if(f.endsWith(".html") && /src="\/(?:app|catalog-page-client)\.js/.test(t) && !t.includes('src="/catalog-navigation.js')) t=t.replace('</body>','<script defer src="/catalog-navigation.js?v=correcoes-20261031-2"></script></body>');
+  if(f.endsWith(".html")) t=t.replace(/((?:catalog-data|catalog-navigation|catalog-routes|area-pages|organized-areas|mobile-navigation|catalog-page-client|app)\.js)\?v=[^"'<>\s]+/g, '$1?v=correcoes-20261031-2').replace(/(organized-areas\.css)\?v=[^"'<>\s]+/g, '$1?v=correcoes-20261031-2');
   t = t.split(ORIGEM).join(DOMINIO);
-  // A revisão multimídia do curso é uma página dinâmica pública; conservar os cinco módulos na origem.
-  if (f.endsWith(".html")) t = t.replace(/href="\/curso\/midia(?=[?"])/g, 'href="' + ORIGEM + '/curso/midia');
   // Script de verificação da Cloudflare do servidor do ChatGPT: não existe no domínio próprio.
   t = t.replace(/<script>\(function\(\)\{function c\(\)\{var b=a\.contentDocument[\s\S]*?<\/script>/g, "");
   // Catálogo vira arquivo estático.
@@ -43,6 +44,9 @@ for await (const f of arquivos(SAIDA)) {
   }
   if (t !== antes) await writeFile(f, t);
 }
+
+const {prepareCatalogue}=await import("./build-catalog-pages.mjs");
+await prepareCatalogue(SAIDA);
 
 // Páginas públicas sem extensão recebem index.html, inclusive ofertas e os 15 tipos.
 const paginas = [];

@@ -46,7 +46,7 @@ O botão "Tenho interesse" e a abertura das páginas são contados em `/api/inte
 
 ## Layout do site (cópia do site do ChatGPT)
 
-A página inicial, `/curso`, `/cursos`, `/central` e `/texas.html` vêm de `espelho/`, cópia do site publicado em `catalogo-goullart-pesados-brasil.fitbun9.chatgpt.site`. Para atualizar a cópia, rode a ação "Importar site do ChatGPT" (branch `importar-chatgpt`) e junte no master. `scripts/preparar-espelho.mjs` adapta a cópia no build (tira scripts da Cloudflare do ChatGPT e liga "Administração" ao `/adm`).
+A página inicial, `/curso`, `/cursos`, `/central` e `/texas.html` vêm de `espelho/`, cópia do site publicado em `www.goullartmaquinaspesadas.com.br`. Para atualizar a cópia, rode a ação "Importar site do ChatGPT" (branch `importar-chatgpt`) e junte no master. `scripts/preparar-espelho.mjs` adapta a cópia no build (tira scripts da Cloudflare do ChatGPT e mantém o painel privado em `/adm`, sem link público).
 
 O catálogo do site é lido de `/adm/catalogo.json` (ADM, só campos públicos). Se o ADM não responder, o site usa a cópia estática `api/catalog.json`.
 

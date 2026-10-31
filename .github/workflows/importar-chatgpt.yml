@@ -19,7 +19,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: node scripts/espelhar-chatgpt.mjs https://catalogo-goullart-pesados-brasil.fitbun9.chatgpt.site
+      - run: node scripts/espelhar-chatgpt.mjs https://www.goullartmaquinaspesadas.com.br
       - run: npm test
       - run: npm run build
       - name: Verificar páginas exportadas

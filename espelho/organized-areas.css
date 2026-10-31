@@ -13,3 +13,5 @@ body.goullart-storefront:not(.area-page) :is(#catalog-results,.search-area,#peca
 .area-page-content #catalog-results>.g-reviews{margin-top:36px}
 @media(max-width:900px){.parts-family-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:600px){.parts-family-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.parts-family-tile img{height:140px}.parts-family-tile strong{font-size:16px}.parts-family-browser>p{font-size:12px}}
+
+.machine-type-card[hidden],#main-menu a[hidden],.sidebar-group[hidden]{display:none!important}
