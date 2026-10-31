@@ -19,3 +19,4 @@
 @media(max-width:760px){.brand-ribbon{padding:6px 0 10px}.brand-ribbon-heading p{font-size:8px}.brand-ribbon-heading button{min-height:32px}.brand-group{width:max(100vw,800px);gap:24px;padding-inline:20px}.brand-group li{flex-basis:130px}.brand-group img{width:130px;height:34px}.brand-group img[src$="cat.png"]{width:66px}.brand-group img[src$="jcb.svg"]{width:72px}.banner-controls{padding-inline:11px}.hero-photo .banner-caption{padding-top:12px}}
 
 .brand-group img[src$="cat.png"]{background:var(--ink);padding:5px 9px;border-radius:2px}
+.footer-links{display:flex;flex-wrap:wrap;gap:8px 18px}
