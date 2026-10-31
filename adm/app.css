@@ -51,3 +51,5 @@ a { color: var(--ink); }
 .acoes { display: flex; flex-wrap: wrap; gap: 8px; }
 .fotos-prev span { display: grid; gap: 4px; }
 details summary { cursor: pointer; font-weight: 600; font-size: 0.9rem; }
+.arte-prev { display: grid; place-items: center; }
+.arte-canvas { width: min(100%, 432px); height: auto; border-radius: 12px; box-shadow: 0 4px 18px rgba(0,0,0,.18); }

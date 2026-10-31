@@ -129,6 +129,7 @@ function formulario(tipo, item, aoSalvar) {
     preco: h("input", { value: (radar ? item?.precoOrigem : item?.preco) ?? "", inputmode: "numeric", placeholder: radar ? "Preço de origem, ex.: 259000" : "Preço no site, ex.: 300000" }),
     fonte: radar ? h("input", { value: item?.fonte || "", placeholder: "Link ou contato de onde veio (fica só no ADM)" }) : null,
     obs: h("textarea", { placeholder: "Observações internas" }, item?.obs || ""),
+    textoSite: h("textarea", { placeholder: "Ex.: Revisada, material rodante 70%, ar-condicionado, pronta para trabalhar." }, item?.textoSite || ""),
   };
   let fotos = [...(item?.fotos || [])];
   const prev = h("div", { class: "fotos-prev" });
@@ -148,12 +149,13 @@ function formulario(tipo, item, aoSalvar) {
     h("label", {}, "Máquina", campos.titulo),
     h("div", { class: "grade" }, h("label", {}, "Tipo", campos.categoria), h("label", {}, "Ano", campos.ano), h("label", {}, "Horas / km", campos.horas)),
     h("div", { class: "grade" }, h("label", {}, radar ? "Preço de origem (R$)" : "Preço no site (R$)", campos.preco), h("label", {}, "Local", campos.local)),
-    precoSite, campos.fonte && h("label", {}, "Fonte", campos.fonte), h("label", {}, "Observações", campos.obs),
+    precoSite, h("label", {}, "Texto para o cliente (aparece no site)", campos.textoSite),
+    campos.fonte && h("label", {}, "Fonte (só no ADM)", campos.fonte), h("label", {}, "Observações internas (só no ADM)", campos.obs),
     h("label", {}, "Fotos", arquivo), prev, salvar);
   form.addEventListener("submit", (e) => {
     e.preventDefault();
     const corpo = { titulo: campos.titulo.value, categoria: campos.categoria.value, ano: campos.ano.value, horas: campos.horas.value,
-      local: campos.local.value, obs: campos.obs.value, fotos, [radar ? "precoOrigem" : "preco"]: campos.preco.value };
+      local: campos.local.value, obs: campos.obs.value, textoSite: campos.textoSite.value, fotos, [radar ? "precoOrigem" : "preco"]: campos.preco.value };
     if (radar) corpo.fonte = campos.fonte.value;
     acao(salvar, async () => {
       await api(item ? `/${tipo}/${item.id}` : `/${tipo}`, { method: item ? "PUT" : "POST", body: corpo });
@@ -189,10 +191,11 @@ async function telaMaquinas(tipo) {
     } else {
       botoes.push(h("button", { class: m.publicado ? "btn sec" : "btn ok", onclick: (e) => acao(e.target, async () => { await api(`/patio/${m.id}/${m.publicado ? "despublicar" : "publicar"}`, { method: "POST" }); recarregar(); }, m.publicado ? "Retirada do site." : "Publicada no site.") }, m.publicado ? "Tirar do site" : "Publicar"));
     }
+    if (m.fotos?.length) botoes.push(h("button", { class: "btn sec", onclick: () => telaArte(tipo, m, recarregar) }, m.arte ? "Refazer arte" : "Fazer arte"));
     botoes.push(h("button", { class: "btn sec", onclick: () => conteudo.replaceChildren(formulario(tipo, m, recarregar), h("button", { class: "btn sec", onclick: recarregar }, "Voltar")) }, "Editar"));
     botoes.push(h("button", { class: "btn perigo", onclick: (e) => confirm(`Excluir "${m.titulo}"?`) && acao(e.target, async () => { await api(`/${tipo}/${m.id}`, { method: "DELETE" }); recarregar(); }, "Excluída.") }, "Excluir"));
     return h("article", { class: "item" },
-      m.fotos?.[0] ? h("img", { src: `/${m.fotos[0]}`, alt: "" }) : h("div", { class: "semfoto" }, "Sem foto"),
+      m.arte || m.fotos?.[0] ? h("img", { src: `/${m.arte || m.fotos[0]}`, alt: "" }) : h("div", { class: "semfoto" }, "Sem foto"),
       h("div", { class: "corpo" },
         h("div", {}, h("span", { class: `selo ${estado}` }, rotulo), " ", h("span", { class: "muted" }, m.categoria)),
         h("strong", {}, m.titulo),
@@ -220,6 +223,83 @@ async function telaMaquinas(tipo) {
       h("div", { class: "acoes" }, novo, h("label", {}, "Mostrar", filtro))),
     area, caixa);
   desenhar();
+}
+
+// ---------- Arte da máquina (site, WhatsApp e Instagram) ----------
+// Desenha no navegador uma arte 1080x1350 com a foto, a marca GOULLART e só o que o cliente precisa.
+// Refazer a imagem no canvas também apaga os dados escondidos da foto original (EXIF, GPS, aparelho).
+function carregarImagem(src) {
+  return new Promise((ok, falha) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => falha(new Error("Não consegui abrir a imagem.")); i.src = src; });
+}
+function quebrarTexto(ctx, texto, largura, maxLinhas) {
+  const palavras = String(texto).split(/\s+/); const linhas = []; let atual = "";
+  for (const p of palavras) {
+    const teste = atual ? `${atual} ${p}` : p;
+    if (ctx.measureText(teste).width > largura && atual) { linhas.push(atual); atual = p; } else atual = teste;
+  }
+  if (atual) linhas.push(atual);
+  if (linhas.length > maxLinhas) { linhas.length = maxLinhas; linhas[maxLinhas - 1] = linhas[maxLinhas - 1].replace(/\s*\S*$/, "…"); }
+  return linhas;
+}
+async function desenharArte(m, preco, fotoIdx, enquadre) {
+  const W = 1080, H = 1350, FOTO_H = 780;
+  const c = h("canvas"); c.width = W; c.height = H;
+  const ctx = c.getContext("2d");
+  ctx.fillStyle = "#061e42"; ctx.fillRect(0, 0, W, H);
+  const foto = await carregarImagem(`/${m.fotos[fotoIdx]}`);
+  const escala = Math.max(W / foto.width, FOTO_H / foto.height);
+  const fw = foto.width * escala, fh = foto.height * escala;
+  ctx.drawImage(foto, (W - fw) / 2, (FOTO_H - fh) * enquadre, fw, fh);
+  const g = ctx.createLinearGradient(0, FOTO_H - 260, 0, FOTO_H + 2);
+  g.addColorStop(0, "rgba(6,30,66,0)"); g.addColorStop(1, "rgba(6,30,66,1)");
+  ctx.fillStyle = g; ctx.fillRect(0, FOTO_H - 260, W, 262);
+  try {
+    const logo = await carregarImagem("/assets/brands/goullart-pesados-original.svg");
+    const lw = 300, lh = lw * (logo.height / logo.width || 0.45);
+    ctx.fillStyle = "#ffffff"; ctx.beginPath(); ctx.roundRect(40, 40, lw + 40, lh + 32, 18); ctx.fill();
+    ctx.drawImage(logo, 60, 56, lw, lh);
+  } catch {}
+  const fonte = (peso, px) => `${peso} ${px}px Inter, "Segoe UI", Roboto, Arial, sans-serif`;
+  let y = FOTO_H + 10;
+  ctx.fillStyle = "#f5b301"; ctx.font = fonte(800, 34); ctx.fillText(String(m.categoria || "Máquina").toUpperCase(), 60, y + 30);
+  ctx.fillStyle = "#ffffff"; ctx.font = fonte(800, 68);
+  for (const l of quebrarTexto(ctx, m.titulo, W - 120, 2)) { y += 78; ctx.fillText(l, 60, y + 40); }
+  const detalhes = [m.ano && `Ano ${m.ano}`, m.horas].filter(Boolean).join("  •  ");
+  if (detalhes) { y += 64; ctx.fillStyle = "#cfd8e3"; ctx.font = fonte(600, 40); ctx.fillText(detalhes, 60, y + 40); }
+  if (Number.isFinite(preco)) { y += 96; ctx.fillStyle = "#f5b301"; ctx.font = fonte(900, 84); ctx.fillText(`R$ ${Math.round(preco).toLocaleString("pt-BR")}`, 60, y + 50); }
+  ctx.fillStyle = "#f5b301"; ctx.fillRect(0, H - 110, W, 110);
+  ctx.fillStyle = "#061e42"; ctx.font = fonte(800, 40); ctx.fillText("Fale com a GOULLART  •  (62) 99942-7276", 60, H - 62);
+  ctx.font = fonte(600, 28); ctx.fillText("goullartmaquinaspesadas.com.br", 60, H - 24);
+  return c;
+}
+async function telaArte(tipo, m, voltar) {
+  const preco = tipo === "radar" ? (m.precoSite ?? m.precoSiteCalculado) : m.preco;
+  let fotoIdx = 0, enquadre = 0.5, canvas;
+  const prev = h("div", { class: "arte-prev" });
+  const escolhaFoto = h("select", {}, m.fotos.map((f, i) => h("option", { value: i }, `Foto ${i + 1}`)));
+  const posicao = h("input", { type: "range", min: 0, max: 1, step: 0.05, value: 0.5 });
+  async function redesenhar() {
+    try { canvas = await desenharArte(m, preco, fotoIdx, enquadre); canvas.className = "arte-canvas"; prev.replaceChildren(canvas); }
+    catch (e) { prev.replaceChildren(h("p", { class: "erro" }, e.message)); }
+  }
+  escolhaFoto.addEventListener("change", () => { fotoIdx = +escolhaFoto.value; redesenhar(); });
+  posicao.addEventListener("input", () => { enquadre = +posicao.value; redesenhar(); });
+  const usar = h("button", { class: "btn ok" }, "Usar no site");
+  usar.addEventListener("click", () => acao(usar, async () => {
+    const { foto } = await api("/fotos", { method: "POST", body: { dados: canvas.toDataURL("image/jpeg", 0.88) } });
+    await api(`/${tipo}/${m.id}`, { method: "PUT", body: { arte: foto } });
+    voltar();
+  }, "Arte salva. Ela aparece no site quando a máquina estiver publicada."));
+  const baixar = h("button", { class: "btn sec" }, "Baixar para WhatsApp/Instagram");
+  baixar.addEventListener("click", () => {
+    const a = h("a", { href: canvas.toDataURL("image/jpeg", 0.92), download: `goullart-${String(m.titulo).toLowerCase().replace(/[^a-z0-9]+/g, "-")}.jpg` });
+    document.body.append(a); a.click(); a.remove();
+  });
+  conteudo.replaceChildren(h("div", { class: "painel" }, h("h2", {}, "Arte da máquina"),
+    h("p", { class: "muted" }, "A arte mostra só foto, nome, ano, horas e preço. Fonte, local e observações nunca entram. Confira se a foto não tem marca d'água ou telefone de outra empresa; se tiver, escolha outra foto ou mude o enquadramento."),
+    h("div", { class: "grade" }, h("label", {}, "Foto", escolhaFoto), h("label", {}, "Enquadramento (cima ↔ baixo)", posicao)),
+    prev, h("div", { class: "acoes" }, usar, baixar, h("button", { class: "btn sec", onclick: voltar }, "Voltar"))));
+  redesenhar();
 }
 
 // ---------- Encontros ----------

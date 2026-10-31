@@ -54,6 +54,9 @@ O catálogo do site é lido de `/adm/catalogo.json` (ADM, só campos públicos).
 
 - **Publicações:** importe `goullart-agro-brasil-backup.json` (painel do ChatGPT). Fica "No site" o que o site mostrava na importação; o resto entra "Fora do site". Editar título, preço, texto, fotos ou tirar/colocar no site muda o catálogo na hora. Notas privadas e fonte nunca saem do ADM.
 - **Radares:** perfis de busca do backup, com critérios e situação editáveis.
+- **Radar (preço):** máquina publicada vai para o catálogo do site com nome, ano, horas, preço (origem + margem) e o "texto para o cliente". Fonte, local, observações e preço de origem ficam só no ADM.
+- **Arte:** botão "Fazer arte" no Radar e no Pátio gera uma imagem 1080x1350 com foto, marca e preço, usada como capa no site e baixável para WhatsApp/Instagram. Refazer a imagem apaga os dados escondidos da foto original.
+- O site público não tem link para `/adm` nem para a área de cliente do ChatGPT.
 
 Área privada em `/adm`, com senha. Roda como serviço Node (`goullart-app`) no servidor, ouvindo só em `127.0.0.1:3210`; o nginx encaminha `/adm`, `/fotos/` e `/maquinas.json`. Os dados ficam em `/www/goullart-dados` (variável `DATA_DIR`), nunca no GitHub.
 

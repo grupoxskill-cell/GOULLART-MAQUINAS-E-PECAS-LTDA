@@ -30,6 +30,8 @@ for await (const f of arquivos(SAIDA)) {
   t = t.replace(/fetch\((['"])\/api\/catalog\1\s*,/g,
     "((o)=>fetch('/adm/catalogo.json',o).then((r)=>r.ok?r:Promise.reject(r)).catch(()=>fetch('/api/catalog.json',o)))(");
   // Área administrativa e de cliente do ChatGPT não existem aqui: "Administração" vai para o ADM do servidor.
+  // Links de login do ChatGPT saem do site público. O ADM fica em /adm, sem link visível para visitantes.
+  t = t.replace(/<a href="\/(?:admin\/login|cliente)">[^<]*<\/a>/g, "");
   t = t.replace(/href="\/admin\/login"/g, 'href="/adm"');
   if (f.endsWith("catalog.json")) {
     const d = JSON.parse(t);
