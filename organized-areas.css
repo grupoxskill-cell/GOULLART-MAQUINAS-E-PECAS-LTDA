@@ -1,0 +1,15 @@
+/* The home introduces the areas; inventory lives inside each area. */
+body.goullart-storefront:not(.area-page) :is(#catalog-results,.search-area,#pecas,#locacao,#publicacoes){display:none!important}
+.parts-family-browser{margin:20px 0 32px}
+.parts-family-browser h2{font-size:clamp(23px,4vw,32px);color:#102c50;margin:0 0 8px}
+.parts-family-browser>p{font-size:14px;line-height:1.5;color:#566579}
+.parts-family-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-top:20px}
+.parts-family-tile{display:flex;flex-direction:column;padding:0;background:#fff;border:1px solid #dce3eb;border-radius:12px;overflow:hidden;color:#102c50;cursor:pointer;text-align:left;min-width:0;font:inherit}
+.parts-family-tile img{width:100%;height:170px;object-fit:contain;padding:12px;box-sizing:border-box;background:#fff}
+.parts-family-tile strong{font-size:17px;line-height:1.25;padding:14px 12px 8px;border-top:3px solid #ffd326}
+.parts-family-tile span{font-size:12px;padding:0 12px 15px;color:#536479}
+.parts-family-tile:hover,.parts-family-tile[aria-pressed=true]{border-color:#102c50;box-shadow:0 3px 14px #102c5018}
+.parts-family-tile:focus-visible{outline:3px solid #d59f00;outline-offset:3px}
+.area-page-content #catalog-results>.g-reviews{margin-top:36px}
+@media(max-width:900px){.parts-family-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:600px){.parts-family-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.parts-family-tile img{height:140px}.parts-family-tile strong{font-size:16px}.parts-family-browser>p{font-size:12px}}

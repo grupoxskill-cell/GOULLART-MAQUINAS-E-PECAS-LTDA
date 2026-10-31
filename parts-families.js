@@ -1,6 +1,6 @@
 /* Category navigation, not a declaration of stock or fitment. */
 window.GoullartPartsFamilies=[
- ['coroa','Coroa de giro','coroa|rolamento.*giro'],
+ ['coroa','Coroa de giro','coroa.*giro|rolamento.*giro'],
  ['dentes','Dentes','dente|adaptador'],
  ['correntes','Correntes','corrente|elo|esteira'],
  ['bombas','Bomba hidráulica','bomba.*hidraulica|hidraulica.*bomba'],
