@@ -4,4 +4,16 @@
 .magazine-news-card .magazine-art:focus-visible{outline:3px solid #e8b319;outline-offset:-3px}
 .magazine-news-copy .magazine-source{font-size:12px;margin-bottom:4px;color:#53657a}
 .magazine-editions{line-height:1.5}
-@media(max-width:700px){.area-page-content .magazine-panel{margin:16px auto}.magazine-content{padding:12px}.magazine-news-grid{gap:20px}.magazine-news-card .magazine-art img{max-height:none}}
+.magazine-content .magazine-news-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(max-width:700px){
+ .area-page-content .magazine-panel{margin:16px auto}
+ .magazine-content{padding:8px}
+ .magazine-content .magazine-news-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+ .magazine-news-card{border-radius:7px}
+ .magazine-news-card .magazine-art img{max-height:none}
+ .magazine-news-copy{padding:6px;overflow-wrap:anywhere}
+ .magazine-news-copy h3{font-size:11px;line-height:1.3;margin:6px 0}
+ .magazine-news-copy p,.magazine-news-copy .magazine-source{font-size:10px;line-height:1.35;margin-bottom:6px}
+ .magazine-news-copy time{font-size:9px}
+ .magazine-news-copy a{font-size:10px;line-height:1.35;min-height:32px;padding:6px 0}
+}
