@@ -50,6 +50,27 @@ for await (const f of arquivos(SAIDA)) {
 const {prepareCatalogue}=await import("./build-catalog-pages.mjs");
 await prepareCatalogue(SAIDA);
 
+// Correções de navegação e textos feitas no produto gerado, sem mudar CSS, fotos ou logos.
+for await (const file of arquivos(SAIDA)) {
+ if(!file.endsWith('.html'))continue;
+ let html=await readFile(file,'utf8'),original=html;
+ html=html.replace(/<nav class="central-navigation"[^>]*>[\\s\\S]*?<\\/nav>/g,'');
+ html=html.replace(/href="\\/cliente(?:\\/)?"/g,'href="/?area=maquinas"');
+ html=html.replace(/href="#maquinas"([^>]*>Explorar o catálogo de peças)/g,'href="#pecas"$1');
+ html=html.replace(/href="#maquinas"([^>]*>Ver editais e locações)/g,'href="#locacao"$1');
+ html=html.replace(/Estudo de personalização\\. Consulte modelos e tamanhos\\./g,'Bordado country. Consulte modelos e tamanhos.');
+ html=html.replace(/<a\\b[^>]*>[\\s\\S]*?(?:Solicitar link oficial|Área do administrador)[\\s\\S]*?<\\/a>/gi,match=>match.length<800?'':match);
+ html=html.replace(/Falaa, Júnior!/gi,'Olá, equipe Goullart! Vim pelo site e quero conversar sobre uma máquina.');
+ html=html.replace(/goullartmaquinaspesadas\\.com\\.br/g,'www.goullartmaquinaspesadas.com.br').replace(/www\\.www\\./g,'www.');
+ if(file.includes('/adm/'))html=html.replace(/<head>/i,'<head><meta name="robots" content="noindex,nofollow">');
+ if(html!==original)await writeFile(file,html);
+}
+// Rota direta de cliente envia ao catálogo sem depender de JavaScript.
+await mkdir(join(SAIDA,'cliente'),{recursive:true});
+await writeFile(join(SAIDA,'cliente','index.html'),
+ '<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="robots" content="noindex"><meta http-equiv="refresh" content="0;url=/?area=maquinas"><title>Catálogo GOULLART PESADOS</title></head><body><a href="/?area=maquinas">Abrir catálogo</a></body></html>');
+
+
 // Páginas públicas sem extensão recebem index.html, inclusive ofertas e os 15 tipos.
 const paginas = [];
 for await (const f of arquivos(SAIDA)) if (f.endsWith(".html") && !f.endsWith("/index.html")) paginas.push(f);
