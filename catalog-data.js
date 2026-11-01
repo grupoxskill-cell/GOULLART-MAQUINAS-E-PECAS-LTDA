@@ -1,14 +1,14 @@
 /* Public catalogue corrections approved by GOULLART on 31/10/2026. */
 (() => {
  const corrections={
-  'GOUL-291':{title:'ESCAVADEIRA • HYUNDAI R220 LC-9 • 2022',year:2022,hours:'8.753'},
+  'GOUL-291':{title:'ESCAVADEIRA • HYUNDAI R220 LC-9 • 2022',year:2022,hours:'8.753',publicText:'Hyundai R220 LC-9. Ano: 2022. Horímetro: 8.753 h. Confirme localização, disponibilidade e condições com a equipe.'},
   'GOUL-293':{title:'TRATOR DE ESTEIRA • KOMATSU D51 • 2019',year:2019,hours:'7.900'},
   'GOUL-331':{title:'CAVALO MECÂNICO • MERCEDES-BENZ 2035 S • 2009',year:2009,km:'241.220'},
   'GOUL-330':{title:'CAMINHÃO PIPA • VW 31.330 6X4 • 2022',year:2022,hours:'13.100',km:'61.498'},
   'GOUL-348':{title:'CAMINHÃO BASCULANTE • VW 31.280 • 2022',year:2022,km:'71.020'},
   'GOUL-341':{title:'RETROESCAVADEIRA • CAT 416E • 2015',year:2015},
   'GOUL-333':{title:'TRATOR DE ESTEIRA • KOMATSU D61 EX • 2014',year:2014,hours:'11.400'},
-  'GOUL-334':{title:'ESCAVADEIRA • VOLVO EC220DL • 2022',year:2022,hours:'7.000'},
+  'GOUL-334':{title:'ESCAVADEIRA • VOLVO EC220DL • 2022',year:2022,hours:'7.000',publicText:'Volvo EC220DL. Ano: 2022. Horímetro: 7.000 h. Confirme localização, disponibilidade e condições com a equipe.'},
   'GOUL-328':{title:'MOTONIVELADORA • CASE 845B • 2021',year:2021,hours:'3.200'},
   'GOUL-404':{title:'ESCAVADEIRA • HYUNDAI 210 LC-7 • 2012',year:2012,hours:'14.600',publicText:'Hyundai 210 LC-7. Ano: 2012. Horímetro: 14.600 h. Localização: Goiás. Confirme disponibilidade e condições com a equipe.'}
  };
