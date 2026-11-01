@@ -54,14 +54,14 @@ await prepareCatalogue(SAIDA);
 for await (const file of arquivos(SAIDA)) {
  if(!file.endsWith('.html'))continue;
  let html=await readFile(file,'utf8'),original=html;
- html=html.replace(/<nav class="central-navigation"[^>]*>[\\s\\S]*?<\\/nav>/g,'');
- html=html.replace(/href="\\/cliente(?:\\/)?"/g,'href="/?area=maquinas"');
+ html=html.replace(/<nav class="central-navigation"[^>]*>[\s\S]*?<\/nav>/g,'');
+ html=html.replace(/href="\/cliente(?:\/)?"/g,'href="/?area=maquinas"');
  html=html.replace(/href="#maquinas"([^>]*>Explorar o catálogo de peças)/g,'href="#pecas"$1');
  html=html.replace(/href="#maquinas"([^>]*>Ver editais e locações)/g,'href="#locacao"$1');
- html=html.replace(/Estudo de personalização\\. Consulte modelos e tamanhos\\./g,'Bordado country. Consulte modelos e tamanhos.');
- html=html.replace(/<a\\b[^>]*>[\\s\\S]*?(?:Solicitar link oficial|Área do administrador)[\\s\\S]*?<\\/a>/gi,match=>match.length<800?'':match);
+ html=html.replace(/Estudo de personalização\. Consulte modelos e tamanhos\./g,'Bordado country. Consulte modelos e tamanhos.');
+ html=html.replace(/<a\\b[^>]*>[^<]*(?:Solicitar link oficial|Área do administrador)[^<]*<\\/a>/gi,'');
  html=html.replace(/Falaa, Júnior!/gi,'Olá, equipe Goullart! Vim pelo site e quero conversar sobre uma máquina.');
- html=html.replace(/goullartmaquinaspesadas\\.com\\.br/g,'www.goullartmaquinaspesadas.com.br').replace(/www\\.www\\./g,'www.');
+ html=html.replace(/goullartmaquinaspesadas\.com\.br/g,'www.goullartmaquinaspesadas.com.br').replace(/www\.www\./g,'www.');
  if(file.includes('/adm/'))html=html.replace(/<head>/i,'<head><meta name="robots" content="noindex,nofollow">');
  if(html!==original)await writeFile(file,html);
 }
