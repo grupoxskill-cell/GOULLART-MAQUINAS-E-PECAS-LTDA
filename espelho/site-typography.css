@@ -70,7 +70,9 @@
  z-index:0;
  background:url('/assets/brands/goullart-locacoes-azul-v1.png') center/contain no-repeat;
  opacity:.5;
- filter:brightness(0) invert(1) drop-shadow(0 10px 12px rgba(0,0,0,.22));
+ /* A logo original tem fundo claro opaco: escurecê-la inteira apagava a marca. */
+ filter:grayscale(1) invert(1);
+ mix-blend-mode:screen;
  pointer-events:none;
 }
 .opportunity-heading::after{

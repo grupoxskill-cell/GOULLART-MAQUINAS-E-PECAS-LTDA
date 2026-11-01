@@ -32,9 +32,14 @@ function opportunityCard(i){
  return `<article class="product opportunity-card" id="item-${esc(i.id)}"><div class="opportunity-heading"><span>${edital?'EDITAL DE LOCAÇÃO':demanda?'SOLICITAÇÃO DE LOCAÇÃO':'OFERTA DE LOCAÇÃO'}</span><strong>${esc(i.publicCode||i.id)}</strong><small>${demanda?'Pedido de contratação':'Equipamento para alugar'}</small></div><div class="product-body"><p class="opportunity-status">${esc(i.status)}</p><h3>${esc(i.title)}</h3><p class="opportunity-city">${esc(i.state||'Estado a confirmar')}</p><p class="item-description">${esc(i.publicText)}</p>${date?`<p class="note">Prazo informado: ${esc(date)}</p>`:''}<p class="note">${demanda?'Confirme prazo, requisitos e condições com a equipe.':'Confirme disponibilidade, preço e frete com a equipe.'}</p><a class="button" href="${esc(contact(message))}" target="_blank" rel="noopener">Consultar a equipe</a></div></article>`;
 }
 window.GoullartCatalog={setFilter,render,route:routeCategory,getItems:()=>items,clearSearch(){searchField.value='';clearSelectedItem();},clearType(){machineType='';offersMode=false;history.replaceState(null,'','#'+filter);render();}};
-let catalogFingerprint='',refreshing=false,initialCatalog=true;
+let catalogFingerprint='',catalogDay='',refreshing=false,initialCatalog=true;
+function refreshListingDay(){
+ const today=GoullartListingPolicy.listingDay(new Date().toISOString());
+ if(today!==catalogDay){catalogDay=today;if(!initialCatalog)render();}
+}
 async function refreshCatalog(){
  if(refreshing)return;refreshing=true;
+ refreshListingDay();
  try{
   const response=await fetch('/api/catalog',{cache:'no-store',signal:window.GoullartRuntime.timeout(15000)});
   if(!response.ok)throw Error('Catálogo indisponível');
