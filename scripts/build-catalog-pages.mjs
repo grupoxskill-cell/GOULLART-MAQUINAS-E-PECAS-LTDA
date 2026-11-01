@@ -21,7 +21,7 @@ export async function prepareCatalogue(directory,now=Date.now()){
    const highlights=eligibleItems.filter(i=>i.category==='maquinas').slice(0,8);
    const preview=highlights.map(i=>`<article class="catalog-page-card"><a href="/?area=maquinas&item=${encodeURIComponent(i.id)}"><img src="${esc(i.image)}" alt="${esc(i.title)}" width="640" height="440" loading="lazy"></a><div><h3>${esc(i.title)}</h3><p>${esc(dataTools.facts(i))}</p><strong>${i.price==null?'Valor sob consulta':money(i.price)}</strong></div></article>`).join('');
    const fallback='<a href="https://wa.me/5562999427276" rel="noopener noreferrer">Veja nossas máquinas pelo WhatsApp</a>';
-   html=html.replace(/<p class="hero-offers-loading" id="hero-offers-loading"[^>]*>[\\s\\S]*?<\\/p>/,
+   html=html.replace(/<p class="hero-offers-loading" id="hero-offers-loading"[^>]*>[\s\S]*?<\/p>/,
      '<div class="hero-offers-loading" id="hero-offers-loading">'+(preview||fallback)+'</div>');
   }
   if(filename!=='index.html'){
@@ -40,7 +40,7 @@ export async function prepareCatalogue(directory,now=Date.now()){
   html=html.replace(/<a\b[^>]*href="\/maquinas\/([a-z-]+)\/?"[^>]*>[\s\S]*?<\/a>/g,(tag,id)=>counts[id]===0?tag.replace('<a ','<a hidden '):tag);
   html=html.replace(/<details class="sidebar-group"[^>]*>[\s\S]*?<\/details>/g,tag=>/<a(?! hidden )/.test(tag)?tag:tag.replace('<details ','<details hidden '));
   const hasOffers=eligibleItems.some(i=>i.category==='maquinas'&&i.offer?.verified===true&&i.offer.price===i.price&&i.offer.discountPercent>=20);
-  html=html.replace(/<a\\b[^>]*href="\\/ofertas\\/?"[^>]*>[\\s\\S]*?<\\/a>/g,tag=>hasOffers?tag:tag.replace('<a ','<a hidden '));
+  html=html.replace(/<a\b[^>]*href="\/ofertas\/?"[^>]*>[\s\S]*?<\/a>/g,tag=>hasOffers?tag:tag.replace('<a ','<a hidden '));
   await writeFile(path,html);
  }
  return data;
