@@ -1,5 +1,5 @@
 (() => {
- const entries=[['texas','TEXAS','Botas e informações da marca','horizontal-botas-texas'],['magazine','MAGAZINE','Notícias e informações do Radar','horizontal-magazine-canais'],['pecas','PEÇAS','Componentes e pedidos de orçamento','horizontal-pecas-motores'],['locacao','LOCAÇÃO','Equipamentos e oportunidades de locação','horizontal-protecoes'],['maquinas','VENDAS DE MÁQUINAS','Anúncios organizados por equipamento','horizontal-junior-catalogo']];
+ const entries=[['texas','TEXAS','Botas e informações da marca','horizontal-botas-texas'],['magazine','MAGAZINE','Notícias Goullart Magazine','horizontal-magazine-canais'],['pecas','PEÇAS','Componentes e pedidos de orçamento','horizontal-pecas-motores'],['locacao','LOCAÇÃO','Equipamentos e oportunidades de locação','horizontal-protecoes'],['maquinas','VENDAS DE MÁQUINAS','Anúncios organizados por equipamento','horizontal-junior-catalogo']];
  const main=document.querySelector('main');if(!main)return;
  const hub=document.createElement('section');hub.className='business-cards';hub.setAttribute('aria-label','Áreas GOULLART');
  hub.innerHTML=entries.map(([id,title,desc,image])=>`<a href="${id==='texas'?'/texas.html':'/?area='+id}"><img src="/assets/banners/${image}.jpeg" alt="${title}" loading="lazy"><strong>${title}</strong><span>${desc}</span><b>ACESSAR</b></a>`).join('');
@@ -11,7 +11,7 @@
  if(!params.get('area')){params.set('area',area);if(route.type)params.set('tipo',route.type);history.replaceState(null,'','/?'+params.toString()+location.hash);}
  document.body.classList.add('area-page');
  const page=document.createElement('div');page.className='area-page-content';main.prepend(page);
- const title=area==='ofertas'?'OFERTAS ABAIXO DO MERCADO':area==='implementos'?'IMPLEMENTOS / OUTROS':window.GoullartMachineTypes?.label(params.get('tipo'))||entries.find(e=>e[0]===area)[1];
+ const title=area==='magazine'?'NOTÍCIAS GOULLART MAGAZINE':area==='ofertas'?'OFERTAS ABAIXO DO MERCADO':area==='implementos'?'IMPLEMENTOS / OUTROS':window.GoullartMachineTypes?.label(params.get('tipo'))||entries.find(e=>e[0]===area)[1];
  document.title=title.toUpperCase()+' | GOULLART';
  page.innerHTML='<a class="area-back" href="/">← VOLTAR AO INÍCIO</a><h1>'+title+'</h1>';
  if(area==='ofertas')page.insertAdjacentHTML('beforeend','<p class="offers-intro">MÁQUINAS COM PREÇO ABAIXO DO MERCADO E COMPARAÇÃO CONFERIDA PELA EQUIPE.</p>');
