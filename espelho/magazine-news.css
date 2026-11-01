@@ -1,0 +1,7 @@
+/* Magazine: cada arte pode ser aberta inteira, com leitura confortável no celular. */
+.magazine-news-card .magazine-art{display:block;background:#fff;line-height:0}
+.magazine-news-card .magazine-art img{display:block;width:100%;height:auto;max-height:none;object-fit:contain;background:#fff}
+.magazine-news-card .magazine-art:focus-visible{outline:3px solid #e8b319;outline-offset:-3px}
+.magazine-news-copy .magazine-source{font-size:12px;margin-bottom:4px;color:#53657a}
+.magazine-editions{line-height:1.5}
+@media(max-width:700px){.area-page-content .magazine-panel{margin:16px auto}.magazine-content{padding:12px}.magazine-news-grid{gap:20px}.magazine-news-card .magazine-art img{max-height:none}}
