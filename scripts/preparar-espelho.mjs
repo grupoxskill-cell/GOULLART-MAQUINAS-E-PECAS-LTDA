@@ -59,7 +59,7 @@ for await (const file of arquivos(SAIDA)) {
  html=html.replace(/href="#maquinas"([^>]*>Explorar o catálogo de peças)/g,'href="#pecas"$1');
  html=html.replace(/href="#maquinas"([^>]*>Ver editais e locações)/g,'href="#locacao"$1');
  html=html.replace(/Estudo de personalização\. Consulte modelos e tamanhos\./g,'Bordado country. Consulte modelos e tamanhos.');
- html=html.replace(/<a\\b[^>]*>[^<]*(?:Solicitar link oficial|Área do administrador)[^<]*<\\/a>/gi,'');
+ html=html.replace(/<a\b[^>]*>[^<]*(?:Solicitar link oficial|Área do administrador)[^<]*<\/a>/gi,'');
  html=html.replace(/Falaa, Júnior!/gi,'Olá, equipe Goullart! Vim pelo site e quero conversar sobre uma máquina.');
  html=html.replace(/goullartmaquinaspesadas\.com\.br/g,'www.goullartmaquinaspesadas.com.br').replace(/www\.www\./g,'www.');
  if(file.includes('/adm/'))html=html.replace(/<head>/i,'<head><meta name="robots" content="noindex,nofollow">');
