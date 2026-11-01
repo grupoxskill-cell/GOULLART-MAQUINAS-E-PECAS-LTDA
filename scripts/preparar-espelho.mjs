@@ -2,12 +2,14 @@
 // Uso: node scripts/preparar-espelho.mjs   (gera site-novo/)
 import { cp, readdir, readFile, rm, stat, writeFile, mkdir } from "node:fs/promises";
 import { join } from "node:path";
+import { protectCourse } from './proteger-curso.mjs';
 
 const ORIGEM = "https://www.goullartmaquinaspesadas.com.br";
 const DOMINIO = "https://www.goullartmaquinaspesadas.com.br";
 const SAIDA = "site-novo";
 await rm(SAIDA, { recursive: true, force: true });
 await cp("espelho", SAIDA, { recursive: true });
+await protectCourse(SAIDA);
 await rm(join(SAIDA, "cdn-cgi"), { recursive: true, force: true });
 await rm(join(SAIDA, "admin"), { recursive: true, force: true });
 await rm(join(SAIDA, "_relatorio.txt"), { force: true });

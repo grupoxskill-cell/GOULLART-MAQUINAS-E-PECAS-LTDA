@@ -17,6 +17,7 @@ function publico(caminho) {
   let p;
   try { p = decodeURIComponent(u.pathname); } catch { return false; }
   if (p.split("/").some(s => s === ".." || s.startsWith("."))) return false;
+  if (/^\/(?:curso\/|assets\/course\/media\/|courses\/|course-media\.js|course-module-route\.js)/i.test(p)) return false;
   if (/^\/(?:admin|adm|cliente|api\/(?:admin|customer|checkout|payment|curso)|cdn-cgi)(?:\/|$)/i.test(p)) return false;
   if (p.startsWith("/api/")) return p === "/api/catalog";
   if (obrigatorios.includes(p)) return true;
