@@ -135,6 +135,12 @@ UNIT
 
   cat > "$INCLUDE.tmp" <<NGX
 # GOULLART: ADM, fotos do ADM e catálogo dinâmico vão para o serviço Node local.
+# Canonical: domínio raiz redireciona permanentemente para www.
+if (\$host = goullartmaquinaspesadas.com.br) {
+    return 301 https://www.goullartmaquinaspesadas.com.br\$request_uri;
+}
+location = /cliente { return 302 /?area=maquinas; }
+location = /cliente/ { return 302 /?area=maquinas; }
 location ^~ /adm {
     proxy_pass http://127.0.0.1:$PORTA;
     proxy_set_header Host \$host;
