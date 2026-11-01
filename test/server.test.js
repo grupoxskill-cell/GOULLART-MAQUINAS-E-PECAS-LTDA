@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
-import { readFile, mkdtemp, writeFile } from 'node:fs/promises';
+import { readFile, mkdtemp, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { hashSenha } from '../lib/auth.js';
@@ -187,4 +187,20 @@ test('entrada do Radar: token, ficha interna, repetição e foto com marca d\'á
   assert.deepEqual(publica.fotos, item.fotos.filter((f) => !item.fotosMarca.includes(f)));
   for (const campo of ['fonte', 'link', 'contato', 'precoMercado', 'descontoPct', 'precoOrigem']) assert.equal(publica[campo], undefined);
   assert.equal((await fetch(base + '/adm/fontes/InterDisplay-Black.otf')).status, 200);
+});
+
+test('rental public feed preserves update dates, original photos and the publication approval gate',async()=>{
+ const file=join(dataDir,'publicacoes.json');
+ const published={id:'RENTAL-APPROVED',codigo:'TEST-RENTAL',titulo:'Locação teste',categoria:'locacao',noSite:true,imagens:['/assets/original-test.jpg'],publicadoEm:'2026-10-10',recebidoEm:'2026-10-10',atualizadoEm:'2026-11-01T12:00:00Z',notasPrivadas:'não divulgar',fonte:'privada'};
+ const saved=JSON.stringify({itens:[published,{...published,id:'RENTAL-PENDING',noSite:false}]});
+ await writeFile(file,saved);
+ try{
+  const feed=await (await fetch(base+'/adm/catalogo.json')).json();
+  const item=feed.items.find(i=>i.id===published.id);
+  assert.equal(item.updatedAt,published.atualizadoEm);assert.equal(item.publishedAt,published.publicadoEm);
+  assert.equal(item.publicCode,published.codigo);assert.deepEqual(item.images,published.imagens);
+  assert.ok(!feed.items.some(i=>i.id==='RENTAL-PENDING'));
+  assert.equal(item.notasPrivadas,undefined);assert.equal(item.fonte,undefined);
+  assert.equal(await readFile(file,'utf8'),saved);
+ }finally{await rm(file,{force:true});}
 });

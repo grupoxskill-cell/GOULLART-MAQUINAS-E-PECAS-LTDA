@@ -41,7 +41,7 @@ export async function prepareCatalogue(directory,now=Date.now()){
   html=html.replace(/<a\b[^>]*href="\/maquinas\/([a-z-]+)\/?"[^>]*>[\s\S]*?<\/a>/g,(tag,id)=>counts[id]===0?tag.replace('<a ','<a hidden '):tag);
   html=html.replace(/<details class="sidebar-group"[^>]*>[\s\S]*?<\/details>/g,tag=>/<a(?! hidden )/.test(tag)?tag:tag.replace('<details ','<details hidden '));
   // Cavalo Mecânico é classificado em Caminhões, sem card independente na home.
-  if(filename==='index.html')html=html.replace(/<a\\b[^>]*id="tipo-cavalo-mecanico"[^>]*>[\\s\\S]*?<\\/a>/g,'');
+  if(filename==='index.html')html=html.replace(/<a\b[^>]*id="tipo-cavalo-mecanico"[^>]*>[\s\S]*?<\/a>/g,'');
   const hasOffers=eligibleItems.some(i=>i.category==='maquinas'&&i.offer?.verified===true&&i.offer.price===i.price&&i.offer.discountPercent>=20);
   html=html.replace(/<a\b[^>]*href="\/ofertas\/?"[^>]*>[\s\S]*?<\/a>/g,tag=>hasOffers?tag:tag.replace('<a ','<a hidden '));
   await writeFile(path,html);
