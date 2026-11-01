@@ -17,6 +17,15 @@ export async function prepareCatalogue(directory,now=Date.now()){
  for(const filename of files){
   const path=directory+'/'+filename;let html=await readFile(path,'utf8');
   if(filename==='index.html'){
+   // Uma foto original do próprio anúncio para cada categoria disponível.
+   for(const [id,label] of types.entries){
+    const listing=eligibleItems.find(i=>i.category==='maquinas'&&types.classify(i)===id&&i.image);
+    if(!listing)continue;
+    const re=new RegExp('(<a\\\\b[^>]*id="tipo-'+id+'"[^>]*>)[\\\\s\\\\S]*?(<strong>'+label+'</strong>)');
+    html=html.replace(re,(_,start,end)=>start+'<span class="machine-art-window"><img src="'+esc(listing.image)+'" alt="'+esc(label)+' — foto real do anúncio '+esc(listing.publicCode)+'" loading="lazy" style="width:100%;height:100%;object-fit:cover"></span>'+end);
+   }
+   html=html.replace(/Seja VIP, Entra no canal oficial/g,'Seja VIP: entre no canal oficial');
+
    // Conteúdo útil no HTML mesmo sem JavaScript; a atualização dinâmica continua opcional.
    const highlights=eligibleItems.filter(i=>i.category==='maquinas').slice(0,8);
    const preview=highlights.map(i=>`<article class="catalog-page-card"><a href="/?area=maquinas&item=${encodeURIComponent(i.id)}"><img src="${esc(i.image)}" alt="${esc(i.title)}" width="640" height="440" loading="lazy"></a><div><h3>${esc(i.title)}</h3><p>${esc(dataTools.facts(i))}</p><strong>${i.price==null?'Valor sob consulta':money(i.price)}</strong></div></article>`).join('');
