@@ -44,7 +44,20 @@ Cada máquina tem página própria em `maquina/<slug>.html`, com título, foto e
 
 O botão "Tenho interesse" e a abertura das páginas são contados em `/api/interesse` (sem dados pessoais; a mesma pessoa conta uma vez a cada 30 minutos). Os números aparecem no início do ADM.
 
-## ADM (Radar, Pátio, CRM e Encontros)
+## Layout do site (cópia do site do ChatGPT)
+
+A página inicial, `/curso`, `/cursos`, `/central` e `/texas.html` vêm de `espelho/`, cópia do site publicado em `www.goullartmaquinaspesadas.com.br`. Para atualizar a cópia, rode a ação "Importar site do ChatGPT" (branch `importar-chatgpt`) e junte no master. `scripts/preparar-espelho.mjs` adapta a cópia no build (tira scripts da Cloudflare do ChatGPT e mantém o painel privado em `/adm`, sem link público).
+
+O catálogo do site é lido de `/adm/catalogo.json` (ADM, só campos públicos). Se o ADM não responder, o site usa a cópia estática `api/catalog.json`.
+
+## ADM (Publicações, Radares, Radar de preço, Pátio, CRM e Encontros)
+
+- **Publicações:** importe `goullart-agro-brasil-backup.json` (painel do ChatGPT). Fica "No site" o que o site mostrava na importação; o resto entra "Fora do site". Editar título, preço, texto, fotos ou tirar/colocar no site muda o catálogo na hora. Notas privadas e fonte nunca saem do ADM.
+- **Radares:** perfis de busca do backup, com critérios e situação editáveis.
+- **Radar (preço):** máquina publicada vai para o catálogo do site com nome, ano, horas, preço (origem + margem) e o "texto para o cliente". Fonte, local, observações e preço de origem ficam só no ADM.
+- **Entrada do Radar:** `POST /adm/entrada/radar` com `Authorization: Bearer <token>` (token em ADM > Config.). Cada oferta vira máquina "Aguardando você" com ficha interna (fonte, link, contato, preço de mercado, % abaixo e classificação Quente/Boa/Fraca) e até 3 fotos; fotos marcadas com marca d'água de terceiros nunca vão para o site. Um endereço de aviso (Zapier, Make, iZap) recebe cada nova oferta com o link para aprovar. Regras completas em `docs/RADAR-REGRAS.md`.
+- **Arte:** botão "Fazer arte" no Radar e no Pátio gera uma imagem 1080x1350 com foto, marca e preço, usada como capa no site e baixável para WhatsApp/Instagram. Refazer a imagem apaga os dados escondidos da foto original.
+- O site público não tem link para `/adm` nem para a área de cliente do ChatGPT.
 
 Área privada em `/adm`, com senha. Roda como serviço Node (`goullart-app`) no servidor, ouvindo só em `127.0.0.1:3210`; o nginx encaminha `/adm`, `/fotos/` e `/maquinas.json`. Os dados ficam em `/www/goullart-dados` (variável `DATA_DIR`), nunca no GitHub.
 

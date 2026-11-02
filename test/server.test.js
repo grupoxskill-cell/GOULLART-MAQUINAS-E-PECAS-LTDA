@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
-import { readFile, mkdtemp, writeFile } from 'node:fs/promises';
+import { readFile, mkdtemp, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { hashSenha } from '../lib/auth.js';
@@ -36,7 +36,7 @@ test('catálogo funciona na URL compartilhada com publicação estática', async
 });
 test('site, logo e HEAD disponíveis; sem UI da Sophia', async () => {
   const html = await (await fetch(base)).text();
-  assert.ok(html.includes('assets/logo-oficial.png'));
+  assert.ok(html.includes('Goullart Agro Brasil'));
   assert.ok(!/data-open-chat|chat-toggle|Sophia/.test(html));
   assert.equal((await fetch(base + '/assets/logo-oficial.png')).headers.get('content-type'), 'image/png');
   const h = await fetch(base, { method: 'HEAD' });
@@ -143,4 +143,64 @@ test('contador conta visitas e cliques, ignora repetição e referência desconh
   assert.equal(linha.visitas, 1);
   assert.equal(linha.interesses, 1);
   assert.equal((await fetch(base + '/adm/api/interesse')).status, 401);
+});
+
+test('catálogo público do ADM sem dados privados', async () => {
+  const r = await fetch(base + '/adm/catalogo.json');
+  assert.equal(r.status, 200);
+  const c = await r.json();
+  assert.ok(Array.isArray(c.items) && c.items.length > 0);
+  assert.ok(!/privateNotes|notasPrivadas|sourceKey/.test(JSON.stringify(c)));
+});
+
+test('entrada do Radar: token, ficha interna, repetição e foto com marca d\'água fora do site', async () => {
+  const cookie = await entrar();
+  const oferta = (corpo, token) => fetch(base + '/adm/entrada/radar', { method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) }, body: JSON.stringify(corpo) });
+  assert.equal((await oferta({ titulo: 'x' }, 'qualquer')).status, 503);
+  const { token } = await (await enviar(cookie, '/adm/api/entrada/token', 'POST')).json();
+  assert.equal((await oferta({ titulo: 'x' }, 'errado')).status, 401);
+
+  // JPEG mínimo válido (1x1) em base64 para não depender de internet.
+  const jpeg = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=';
+  const corpo = { titulo: 'Escavadeira Volvo EC220D teste radar', ano: '2019', horas: '6.000 h', precoOrigem: 300000, precoMercado: 400000,
+    fonte: 'Marketplace X', link: 'https://exemplo.com/anuncio/123', contato: '62 90000-0000',
+    fotos: [{ dados: jpeg }, { dados: jpeg, marcaDagua: true }] };
+  const r = await oferta(corpo, token);
+  assert.equal(r.status, 201);
+  const criada = await r.json();
+  assert.equal(criada.descontoPct, 25);
+  assert.equal(criada.classificacao, 'Quente');
+  const repetida = await (await oferta(corpo, token)).json();
+  assert.equal(repetida.repetida, true);
+
+  const radar = await (await enviar(cookie, '/adm/api/radar', 'GET')).json();
+  const item = radar.find((x) => x.id === criada.id);
+  assert.equal(item.status, 'novo');
+  assert.equal(item.fotos.length, 2);
+  assert.equal(item.fotosMarca.length, 1);
+  assert.equal((await fetch(`${base}/${item.fotosMarca[0]}`)).status, 200);
+
+  assert.equal((await enviar(cookie, `/adm/api/radar/${item.id}/publicar`, 'POST')).status, 200);
+  const publica = (await (await fetch(base + '/maquinas.json')).json()).find((m) => m.titulo === corpo.titulo);
+  assert.equal(publica.preco, 'R$ 320.000');
+  assert.deepEqual(publica.fotos, item.fotos.filter((f) => !item.fotosMarca.includes(f)));
+  for (const campo of ['fonte', 'link', 'contato', 'precoMercado', 'descontoPct', 'precoOrigem']) assert.equal(publica[campo], undefined);
+  assert.equal((await fetch(base + '/adm/fontes/InterDisplay-Black.otf')).status, 200);
+});
+
+test('rental public feed preserves update dates, original photos and the publication approval gate',async()=>{
+ const file=join(dataDir,'publicacoes.json');
+ const published={id:'RENTAL-APPROVED',codigo:'TEST-RENTAL',titulo:'Locação teste',categoria:'locacao',noSite:true,imagens:['/assets/original-test.jpg'],publicadoEm:'2026-10-10',recebidoEm:'2026-10-10',atualizadoEm:'2026-11-01T12:00:00Z',notasPrivadas:'não divulgar',fonte:'privada'};
+ const saved=JSON.stringify({itens:[published,{...published,id:'RENTAL-PENDING',noSite:false}]});
+ await writeFile(file,saved);
+ try{
+  const feed=await (await fetch(base+'/adm/catalogo.json')).json();
+  const item=feed.items.find(i=>i.id===published.id);
+  assert.equal(item.updatedAt,published.atualizadoEm);assert.equal(item.publishedAt,published.publicadoEm);
+  assert.equal(item.publicCode,published.codigo);assert.deepEqual(item.images,published.imagens);
+  assert.ok(!feed.items.some(i=>i.id==='RENTAL-PENDING'));
+  assert.equal(item.notasPrivadas,undefined);assert.equal(item.fonte,undefined);
+  assert.equal(await readFile(file,'utf8'),saved);
+ }finally{await rm(file,{force:true});}
 });
