@@ -80,3 +80,25 @@ test('gravações simultâneas do mesmo arquivo não falham nem corrompem', asyn
   assert.equal((await ler('contador', null)).n, 20);
   assert.ok(Number.isInteger((await ler('x', null)).i));
 });
+
+test('foto do Radar não baixa de endereço interno, nem por nome que aponta para ele', async () => {
+  process.env.DATA_DIR = await mkdtemp(join(tmpdir(), 'goullart-foto-'));
+  const { receberOferta } = await import('../lib/radar-entrada.js');
+  for (const url of ['https://localhost/x.jpg', 'https://127.0.0.1/x.jpg', 'https://[::ffff:7f00:1]/x.jpg', 'http://exemplo.com/x.jpg', 'file:///etc/passwd']) {
+    const { item } = await receberOferta({ titulo: 'Teste', categoria: 'Escavadeiras', link: `https://exemplo.com/${Math.random()}`, fotos: [{ url }] }, []);
+    assert.equal(item.fotos.length, 0, url);
+    assert.ok(item.avisos.some((a) => /foto/i.test(a)), url);
+  }
+});
+
+test('link do anúncio só aceita http/https', async () => {
+  const { receberOferta } = await import('../lib/radar-entrada.js');
+  const { item } = await receberOferta({ titulo: 'Teste', categoria: 'Escavadeiras', link: 'javascript:alert(1)' }, []);
+  assert.equal(item.link, '');
+});
+
+test('cópia do ChatGPT recusa copiar o próprio domínio', async () => {
+  const p = spawn(process.execPath, ['scripts/espelhar-chatgpt.mjs', 'https://www.goullartmaquinaspesadas.com.br'], { stdio: 'ignore' });
+  const [codigo] = await once(p, 'exit');
+  assert.equal(codigo, 1);
+});
