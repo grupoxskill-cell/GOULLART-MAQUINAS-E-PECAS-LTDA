@@ -82,6 +82,11 @@ for (const html of paginas) {
   const pasta = html.slice(0,-5);
   let texto = await readFile(html,"utf8");
   if (!/<base\b/i.test(texto)) texto = texto.replace(/<head>/i,'<head><base href="/">');
+  // O base da cópia não pode levar o atalho dos anúncios à página inicial.
+  if (/\bdata-catalog-page\b/.test(texto)) {
+    const rota = '/' + pasta.slice(SAIDA.length + 1) + '/';
+    texto = texto.replace(/href="#catalog-page-list"/g, `href="${rota}#catalog-page-list"`);
+  }
   await mkdir(pasta,{recursive:true});
   await writeFile(join(pasta,"index.html"),texto);
 }
