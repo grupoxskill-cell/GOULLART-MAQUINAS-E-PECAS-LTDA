@@ -3,6 +3,11 @@ import { mkdir, writeFile, rm } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
 const ORIGEM = new URL(process.argv[2]).origin;
+// O domínio próprio já é servido por este repositório: copiá-lo traria o próprio site de volta.
+if (/(^|\.)goullartmaquinaspesadas\.com\.br$/i.test(new URL(ORIGEM).hostname)) {
+  console.error("Origem é o próprio site GOULLART. Use o endereço do site do ChatGPT (….chatgpt.site).");
+  process.exit(1);
+}
 const SAIDA = "espelho";
 const LIMITE = 3000;
 const obrigatorios = ["/", "/texas", "/texas.html", "/curso", "/cursos", "/central", "/ofertas", "/maquinas/escavadeira", "/maquinas/pa-carregadeira", "/api/catalog"];

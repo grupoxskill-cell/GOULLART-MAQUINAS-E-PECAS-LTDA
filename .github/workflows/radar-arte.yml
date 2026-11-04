@@ -39,30 +39,41 @@ jobs:
           git config user.email "radar@goullart.invalid"
           mkdir -p /tmp/saida
           shopt -s nullglob
+          processados=()
           for pedido in fila/RADAR-*.json; do
             codigo=$(basename "$pedido" .json)
-            url=$(node -e 'const d=require(process.argv[1]);process.stdout.write(d.fotoUrl||"")' "$PWD/$pedido")
+            # Um pedido com problema vai para fila/erro e não trava os outros.
+            if ! url=$(node -e 'const d=require(process.argv[1]);process.stdout.write(String(d.fotoUrl||""))' "$PWD/$pedido"); then
+              echo "::warning::$codigo: JSON inválido; movido para fila/erro"; mkdir -p fila/erro; git mv -f "$pedido" fila/erro/; continue
+            fi
             dados=/tmp/$codigo.json
-            cp "$pedido" "$dados"
+            node -e 'const f=require("fs"),[o,p]=process.argv.slice(1);const d=JSON.parse(f.readFileSync(o));delete d.fotoUrl;f.writeFileSync(p,JSON.stringify(d))' "$pedido" "$dados"
             if [ -n "$url" ]; then
               ext=$(printf '%s' "$url" | sed -E 's/[?#].*//; s/.*\.([A-Za-z0-9]{3,4})$/\1/' | tr 'A-Z' 'a-z')
               case "$ext" in jpg|jpeg|png|webp) ;; *) ext=jpg ;; esac
               foto=/tmp/saida/$codigo-foto.$ext
-              if curl -fsSL --max-time 60 -A "Mozilla/5.0" -o "$foto" "$url"; then
-                node -e 'const f=require("fs"),[p,foto]=process.argv.slice(1);const d=JSON.parse(f.readFileSync(p));delete d.fotoUrl;d.foto=foto;f.writeFileSync(p,JSON.stringify(d))' "$dados" "$foto"
+              # Só https: nada de file:// ou outros esquemas que leriam arquivos do próprio GitHub.
+              if curl -fsSL --proto =https --proto-redir =https --max-time 60 --max-filesize 15000000 -A "Mozilla/5.0" -o "$foto" "$url"; then
+                node -e 'const f=require("fs"),[p,foto]=process.argv.slice(1);const d=JSON.parse(f.readFileSync(p));d.foto=foto;f.writeFileSync(p,JSON.stringify(d))' "$dados" "$foto"
               else
                 echo "::warning::$codigo: foto não baixou; arte sai sem foto"
                 rm -f "$foto"
               fi
             fi
-            node -e 'const f=require("fs"),p=process.argv[1];const d=JSON.parse(f.readFileSync(p));delete d.fotoUrl;f.writeFileSync(p,JSON.stringify(d))' "$dados"
-            node scripts/radar/arte.mjs "$dados" "/tmp/saida/$codigo.png"
+            if ! node scripts/radar/arte.mjs "$dados" "/tmp/saida/$codigo.png"; then
+              echo "::warning::$codigo: arte falhou; movido para fila/erro"
+              rm -f /tmp/saida/"$codigo"*; mkdir -p fila/erro; git mv -f "$pedido" fila/erro/; continue
+            fi
             git rm -q "$pedido"
+            processados+=("$codigo")
           done
-          if [ -z "$(ls /tmp/saida)" ]; then echo "Fila vazia"; exit 0; fi
+          if [ -n "$(ls /tmp/saida)" ]; then
+            # Primeiro grava as artes; só depois tira os pedidos da fila (nada se perde se um envio falhar).
+            if git fetch -q origin radar-artes; then git worktree add -q /tmp/artes origin/radar-artes; else git worktree add -q --orphan -b radar-artes /tmp/artes; fi
+            cp /tmp/saida/* /tmp/artes/
+            git -C /tmp/artes add RADAR-*
+            git -C /tmp/artes commit -q -m "Radar: artes ${processados[*]}"
+            git -C /tmp/artes push -q origin HEAD:radar-artes
+          fi
+          if git diff --cached --quiet; then echo "Fila vazia"; exit 0; fi
           git commit -q -m "Radar: fila processada" && git push -q origin HEAD:radar-fila
-          if git fetch -q origin radar-artes; then git switch -q -c radar-artes origin/radar-artes; else git switch -q --orphan radar-artes; git rm -rq --cached . >/dev/null 2>&1 || true; git clean -fdxq -e node_modules; fi
-          cp /tmp/saida/* .
-          git add RADAR-*
-          git commit -q -m "Radar: artes $(ls /tmp/saida | grep -c png)"
-          git push -q origin radar-artes

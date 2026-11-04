@@ -359,7 +359,7 @@ function fichaInterna(m, recarregar) {
   if (m.classificacao) linhas.push(h("span", {}, h("span", { class: `selo ${classe}` }, m.classificacao),
     m.descontoPct != null ? ` ${m.descontoPct}% abaixo do mercado (${reais(m.precoMercado)})` : " • preço de mercado a informar"));
   if (m.fonte || m.link) linhas.push(h("span", { class: "muted" }, "Fonte: ", m.fonte || "", " ",
-    m.link ? h("a", { href: m.link, target: "_blank", rel: "noopener noreferrer" }, "abrir anúncio") : ""));
+    /^https?:\/\//i.test(m.link || "") ? h("a", { href: m.link, target: "_blank", rel: "noopener noreferrer" }, "abrir anúncio") : ""));
   if (m.contato) linhas.push(h("span", { class: "muted" }, `Vendedor: ${m.contato}`));
   for (const aviso of m.avisos || []) linhas.push(h("span", { class: "erro" }, aviso));
   if (m.fotos?.length) {
