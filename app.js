@@ -76,9 +76,11 @@ function clearSelectedItem(){selectedItemId='';const url=new URL(location.href);
 searchField.oninput=()=>{clearSelectedItem();visible=initialVisible;render()};
 if($('#catalog-reset'))$('#catalog-reset').onclick=()=>{window.GoullartCatalog.clearSearch();visible=initialVisible;render();};$('#sort').onchange=()=>{visible=initialVisible;render()};if($('#search-button'))$('#search-button').onclick=()=>{render();$('#products').scrollIntoView({behavior:'smooth',block:'start'})};$('#more').onclick=()=>{visible+=6;render()};
 document.querySelectorAll('[data-filter]').forEach(b=>b.onclick=()=>{searchField.value='';setFilter(b.dataset.filter);history.pushState(null,'','#'+(b.dataset.filter||'maquinas'));});
-document.querySelectorAll('[data-catalog-filter]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();location.assign('/?area='+encodeURIComponent(a.dataset.catalogFilter));}));
+document.querySelectorAll('[data-catalog-filter]:not(.parts-catalog-link)').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();location.assign('/?area='+encodeURIComponent(a.dataset.catalogFilter));}));
 document.querySelectorAll('[data-machine-type]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();location.assign('/?area=maquinas&tipo='+encodeURIComponent(a.dataset.machineType));}));
-document.querySelectorAll('[data-part]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-part]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));$('#need').value=b.dataset.part;$('#quote').scrollIntoView({behavior:'smooth',block:'center'});$('#need').focus({preventScroll:true});});
+// Peças: cada família abre o WhatsApp com o nome da peça (pedido de Júnior em 04/11/2026).
+document.querySelectorAll('[data-part]').forEach(b=>b.onclick=()=>{window.open(contact('Olá, equipe Goullart! Procuro peça: '+b.dataset.part+'. Pode me passar valor e disponibilidade? Marca e modelo da máquina:'),'_blank','noopener');});
+document.querySelectorAll('.parts-catalog-link').forEach(a=>{a.href=contact('Olá, equipe Goullart! Procuro uma peça. Vou mandar a foto da peça e da identificação da máquina.');a.target='_blank';a.rel='noopener';a.removeAttribute('data-catalog-filter');});
 $('#quote').onsubmit=e=>{e.preventDefault();const f=new FormData(e.target);const lines=['Olá, tenho interesse em '+f.get('need')+'. Pode me passar valor e disponibilidade?'];if(f.get('name'))lines.push('Nome: '+f.get('name'));if(f.get('city'))lines.push('Cidade: '+f.get('city'));if(f.get('model'))lines.push('Marca e modelo: '+f.get('model'));const u=contact(lines.join('\n'));$('#quote-handoff').href=u;$('#quote-handoff').hidden=false;location.assign(u);};
 
 function routeCategory(){
