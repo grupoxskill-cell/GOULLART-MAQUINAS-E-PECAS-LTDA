@@ -61,6 +61,10 @@ for await (const file of arquivos(SAIDA)) {
  html=html.replace(/<nav class="central-navigation"[^>]*>[\s\S]*?<\/nav>/g,'');
  html=html.replace(/href="\/cliente(?:\/)?"/g,'href="/?area=maquinas"');
  html=html.replace(/href="#maquinas"([^>]*>Explorar o catálogo de peças)/g,'href="#pecas"$1');
+ // Peças vão direto para o WhatsApp (não há lista de peças com foto no site).
+ html=html.replace(/<summary>Ver peças e pedir orçamento<\/summary>/g,'<summary>Pedir peça pelo WhatsApp</summary>');
+ html=html.replace(/<small>Consultar (?:peça|aplicação ↗)<\/small>/g,'<small>Pedir no WhatsApp ↗</small>');
+ html=html.replace(/(>)Explorar o catálogo de peças( <span)/g,'$1Pedir peça pelo WhatsApp$2');
  html=html.replace(/href="#maquinas"([^>]*>Ver editais e locações)/g,'href="#locacao"$1');
  html=html.replace(/Estudo de personalização\. Consulte modelos e tamanhos\./g,'Bordado country. Consulte modelos e tamanhos.');
  html=html.replace(/<a\b[^>]*>[^<]*(?:Solicitar link oficial|Área do administrador)[^<]*<\/a>/gi,'');
