@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 import { rotaAdm, servirFoto, maquinasPublicas } from "./lib/adm.js";
 import { paginaMaquina, sitemap } from "./lib/paginas.js";
 import { registrar } from "./lib/interesse.js";
+import { ipCliente } from "./lib/auth.js";
 
 const PORT = Number(process.env.PORT) || 3000;
 const HOST = process.env.HOST || undefined;
@@ -54,12 +55,12 @@ async function contarInteresse(req, res) {
   let dados;
   try { dados = JSON.parse(corpo); } catch { return res.writeHead(400).end(); }
   const refs = new Map((await maquinasPublicas()).map((m) => [m.referencia, m.titulo]));
-  const ip = String(req.headers["x-forwarded-for"] || req.socket.remoteAddress || "").split(",")[0].trim();
+  const ip = ipCliente(req);
   const ok = registrar(String(dados?.ref || ""), String(dados?.tipo || ""), ip, refs);
   res.writeHead(ok ? 204 : 400).end();
 }
 
-const server = http.createServer(async (req, res) => {
+async function atender(req, res) {
   res.setHeader("X-Content-Type-Options", "nosniff");
   res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
   let pathname;
@@ -93,5 +94,15 @@ const server = http.createServer(async (req, res) => {
   }
   if (pathname === "/api/catalogo" || pathname === "/catalogo.json") return sendJson(res, 200, CATALOGO);
   return serveStatic(req, res, pathname);
+}
+
+// Nenhum erro de um pedido (corpo cortado, JSON de dados corrompido etc.) pode derrubar o servidor.
+const server = http.createServer((req, res) => {
+  atender(req, res).catch((err) => {
+    console.error("pedido falhou:", req.method, req.url, err?.message || err);
+    if (!res.headersSent) res.writeHead(500, { "Content-Type": "text/plain; charset=utf-8" });
+    if (!res.writableEnded) res.end("Erro interno.");
+  });
 });
+process.on("unhandledRejection", (err) => console.error("promessa sem tratamento:", err));
 server.listen(PORT, HOST, () => console.log(`GOULLART em http://localhost:${PORT} — atendimento humano; IA desativada.`));
