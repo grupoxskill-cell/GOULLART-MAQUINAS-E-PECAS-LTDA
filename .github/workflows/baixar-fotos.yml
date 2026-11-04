@@ -1,0 +1,22 @@
+# Uso único: baixa duas fotos de anúncios do painel do ChatGPT para esta branch.
+name: Baixar fotos de anúncios
+on:
+  push:
+    branches: [baixar-fotos]
+    paths: [".github/workflows/baixar-fotos.yml"]
+permissions:
+  contents: write
+jobs:
+  baixar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          set -e
+          O=https://catalogo-goullart-pesados-brasil.fitbun9.chatgpt.site/assets/publicacoes
+          for f in 00003422-PHOTO-2026-09-14-17-38-37.webp 00003528-PHOTO-2026-09-28-10-20-21.webp; do
+            curl -fsSL "$O/$f" -o "espelho/assets/publicacoes/$f"
+            file "espelho/assets/publicacoes/$f"
+          done
+          git config user.name "github-actions"; git config user.email "github-actions@users.noreply.github.com"
+          git add espelho/assets/publicacoes && git commit -m "Fotos R140 LC-9 e Scania P310" && git push
