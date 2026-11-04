@@ -1,0 +1,107 @@
+{
+  "status": "AGUARDANDO_UPLOAD_FOTOS_E_VALIDACAO",
+  "generatedAt": "2026-11-02",
+  "source": "artes enviadas pelo usuário nesta conversa",
+  "publicationPolicy": "Não inserir no feed público até que imagens originais estejam hospedadas, dados e disponibilidade confirmados.",
+  "items": [
+    {
+      "code": "ja2400",
+      "title": "Ford F4000 comboio 1.500 litros",
+      "year": 2010,
+      "priceBRL": 130000,
+      "category": "caminhoes",
+      "imagePath": "public/assets/anuncios/ja2400.jpg",
+      "imageUploaded": false,
+      "availability": "pendente",
+      "verified": false
+    },
+    {
+      "code": "cl7898",
+      "title": "Caterpillar FD9",
+      "year": 1997,
+      "priceBRL": 350000,
+      "category": "tratores-esteira",
+      "imagePath": "public/assets/anuncios/cl7898.jpg",
+      "imageUploaded": false,
+      "availability": "pendente",
+      "verified": false
+    },
+    {
+      "code": "bru1928",
+      "title": "Caterpillar D6DD",
+      "year": 1989,
+      "priceBRL": 450000,
+      "category": "tratores-esteira",
+      "imagePath": "public/assets/anuncios/bru1928.jpg",
+      "imageUploaded": false,
+      "availability": "pendente",
+      "verified": false
+    },
+    {
+      "code": "ger55",
+      "title": "Gerador 55 kVA MWM",
+      "year": 2009,
+      "priceBRL": 56000,
+      "category": "geradores",
+      "imagePath": "public/assets/anuncios/ger55.jpg",
+      "imageUploaded": false,
+      "availability": "pendente",
+      "verified": false
+    },
+    {
+      "code": "ger100",
+      "title": "Gerador 100 kVA CAT",
+      "year": 2010,
+      "priceBRL": 82000,
+      "category": "geradores",
+      "imagePath": "public/assets/anuncios/ger100.jpg",
+      "imageUploaded": false,
+      "availability": "pendente",
+      "verified": false
+    },
+    {
+      "code": "komd61",
+      "title": "Komatsu D61EX",
+      "year": 2011,
+      "priceBRL": 380000,
+      "category": "tratores-esteira",
+      "imagePath": "public/assets/anuncios/komd61.jpg",
+      "imageUploaded": false,
+      "availability": "pendente",
+      "verified": false
+    },
+    {
+      "code": "axor4144",
+      "title": "Mercedes-Benz Axor 4144",
+      "year": 2014,
+      "priceBRL": 449000,
+      "category": "caminhoes",
+      "imagePath": "public/assets/anuncios/axor4144.jpg",
+      "imageUploaded": false,
+      "availability": "pendente",
+      "verified": false
+    },
+    {
+      "code": "valtrabm110",
+      "title": "Valtra BM110",
+      "year": 2015,
+      "priceBRL": 230000,
+      "category": "tratores-agricolas",
+      "imagePath": "public/assets/anuncios/valtrabm110.jpg",
+      "imageUploaded": false,
+      "availability": "pendente",
+      "verified": false
+    },
+    {
+      "code": "catd6d1986",
+      "title": "Caterpillar D6D",
+      "year": 1986,
+      "priceBRL": 300000,
+      "category": "tratores-esteira",
+      "imagePath": "public/assets/anuncios/catd6d1986.jpg",
+      "imageUploaded": false,
+      "availability": "pendente",
+      "verified": false
+    }
+  ]
+}

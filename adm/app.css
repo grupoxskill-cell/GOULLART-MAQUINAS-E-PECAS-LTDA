@@ -48,3 +48,11 @@ textarea { min-height: 70px; }
 .aviso { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 12px 16px; border-radius: 10px; max-width: calc(100% - 32px); z-index: 20; }
 a { color: var(--ink); }
 @media (max-width: 520px) { .item { grid-template-columns: 72px 1fr; } .item img, .item .semfoto { width: 72px; height: 56px; } }
+.acoes { display: flex; flex-wrap: wrap; gap: 8px; }
+.fotos-prev span { display: grid; gap: 4px; }
+details summary { cursor: pointer; font-weight: 600; font-size: 0.9rem; }
+.arte-prev { display: grid; place-items: center; }
+.arte-canvas { width: min(100%, 432px); height: auto; border-radius: 12px; box-shadow: 0 4px 18px rgba(0,0,0,.18); }
+.ficha-interna { display: grid; gap: 6px; margin-top: 6px; padding: 10px; border: 1px dashed #c9a227; border-radius: 10px; background: #fffbea; }
+.foto-marca { display: grid; gap: 4px; font-size: 0.75rem; font-weight: 600; }
+.foto-marca img { width: 88px; height: 66px; object-fit: cover; border-radius: 6px; }
