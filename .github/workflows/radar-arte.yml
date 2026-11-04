@@ -1,8 +1,8 @@
 # Radar GOULLART: baixa a foto original do anúncio e gera a arte com ela.
 # A conversa do Radar não consegue baixar fotos (rede bloqueada); o GitHub consegue.
 # Entrada: fila/RADAR-AAMMDD-NN.json na branch radar-fila, com
-#   { codigo, titulo, ano, horas, precoSite, local, fotoUrl }   (só dados públicos)
-# Saída: RADAR-AAMMDD-NN.png (arte) e RADAR-AAMMDD-NN-foto.<ext> (foto original) na branch radar-artes.
+#   { codigo, titulo, ano, horas, precoSite, local, fotoUrls [até 3] }   (só dados públicos)
+# Saída: RADAR-AAMMDD-NN.png (arte) e RADAR-AAMMDD-NN-foto1/2/3.<ext> (fotos originais) na branch radar-artes.
 name: Radar - arte com foto original
 
 on:
@@ -43,23 +43,27 @@ jobs:
           for pedido in fila/RADAR-*.json; do
             codigo=$(basename "$pedido" .json)
             # Um pedido com problema vai para fila/erro e não trava os outros.
-            if ! url=$(node -e 'const d=require(process.argv[1]);process.stdout.write(String(d.fotoUrl||""))' "$PWD/$pedido"); then
+            # fotoUrls (até 3) ou fotoUrl (uma): a primeira vira a foto da arte; todas vão para radar-artes como -foto1/2/3.
+            if ! urls=$(node -e 'const d=require(process.argv[1]);const l=[...(Array.isArray(d.fotoUrls)?d.fotoUrls:[]),...(d.fotoUrl?[d.fotoUrl]:[])].filter(Boolean).slice(0,3);process.stdout.write(l.join("\n"))' "$PWD/$pedido"); then
               echo "::warning::$codigo: JSON inválido; movido para fila/erro"; mkdir -p fila/erro; git mv -f "$pedido" fila/erro/; continue
             fi
             dados=/tmp/$codigo.json
-            node -e 'const f=require("fs"),[o,p]=process.argv.slice(1);const d=JSON.parse(f.readFileSync(o));delete d.fotoUrl;f.writeFileSync(p,JSON.stringify(d))' "$pedido" "$dados"
-            if [ -n "$url" ]; then
+            node -e 'const f=require("fs"),[o,p]=process.argv.slice(1);const d=JSON.parse(f.readFileSync(o));delete d.fotoUrl;delete d.fotoUrls;f.writeFileSync(p,JSON.stringify(d))' "$pedido" "$dados"
+            n=0
+            while IFS= read -r url; do
+              [ -n "$url" ] || continue
+              n=$((n+1))
               ext=$(printf '%s' "$url" | sed -E 's/[?#].*//; s/.*\.([A-Za-z0-9]{3,4})$/\1/' | tr 'A-Z' 'a-z')
               case "$ext" in jpg|jpeg|png|webp) ;; *) ext=jpg ;; esac
-              foto=/tmp/saida/$codigo-foto.$ext
+              foto=/tmp/saida/$codigo-foto$n.$ext
               # Só https: nada de file:// ou outros esquemas que leriam arquivos do próprio GitHub.
               if curl -fsSL --proto =https --proto-redir =https --max-time 60 --max-filesize 15000000 -A "Mozilla/5.0" -o "$foto" "$url"; then
-                node -e 'const f=require("fs"),[p,foto]=process.argv.slice(1);const d=JSON.parse(f.readFileSync(p));d.foto=foto;f.writeFileSync(p,JSON.stringify(d))' "$dados" "$foto"
+                if [ "$n" = 1 ]; then node -e 'const f=require("fs"),[p,foto]=process.argv.slice(1);const d=JSON.parse(f.readFileSync(p));d.foto=foto;f.writeFileSync(p,JSON.stringify(d))' "$dados" "$foto"; fi
               else
-                echo "::warning::$codigo: foto não baixou; arte sai sem foto"
+                echo "::warning::$codigo: foto $n não baixou"
                 rm -f "$foto"
               fi
-            fi
+            done <<< "$urls"
             if ! node scripts/radar/arte.mjs "$dados" "/tmp/saida/$codigo.png"; then
               echo "::warning::$codigo: arte falhou; movido para fila/erro"
               rm -f /tmp/saida/"$codigo"*; mkdir -p fila/erro; git mv -f "$pedido" fila/erro/; continue

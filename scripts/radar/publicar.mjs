@@ -1,6 +1,6 @@
 // Publica no site uma máquina do Radar aprovada pelo Júnior ("SIM RADAR-AAMMDD-NN" no WhatsApp).
 // Uso: node scripts/radar/publicar.mjs dados.json
-// dados.json: { codigo, titulo, categoria, ano, horas, local ("Cidade - UF"), precoSite (número), foto (caminho local) }
+// dados.json: { codigo, titulo, categoria, ano, horas, local ("Cidade - UF"), precoSite (número), fotos [até 3 caminhos locais] }
 // Só grava dados públicos em public/maquinas.json. Não aceita fonte, contato ou preço de origem.
 import { copyFile, readFile, writeFile } from "node:fs/promises";
 import { extname } from "node:path";
@@ -17,19 +17,21 @@ const proibidos = ["fonte", "contato", "telefone", "vendedor", "precoOrigem", "l
 if (proibidos.length) throw new Error(`Dados privados não vão para o site: ${proibidos.join(", ")}`);
 if (!CATEGORIAS.includes(d.categoria)) throw new Error(`Categoria fora da lista: ${d.categoria}`);
 if (!(Number(d.precoSite) > 0)) throw new Error("precoSite precisa ser um número");
-if (!d.foto) throw new Error("Sem foto original da máquina: não publica");
+const fotosEntrada = [...(Array.isArray(d.fotos) ? d.fotos : []), ...(d.foto ? [d.foto] : [])].filter(Boolean).slice(0, 3);
+if (!fotosEntrada.length) throw new Error("Sem foto original da máquina: não publica");
 
 const catalogo = JSON.parse(await readFile("public/maquinas.json", "utf8"));
 if (catalogo.some((m) => m.referencia === d.codigo)) {
   console.log(`${d.codigo} já está no site. Nada a fazer.`);
   process.exit(0);
 }
+// Até 3 fotos reais da máquina (capa do site), copiadas para public/maquinas/.
 const fotos = [];
-if (d.foto) {
-  const destino = `maquinas/${slugify(`radar ${d.titulo} ${d.ano ?? ""} ${d.codigo}`)}-1${extname(d.foto).toLowerCase() || ".jpg"}`;
-  await copyFile(d.foto, `public/${destino}`);
+for (const [n, origem] of fotosEntrada.entries()) {
+  const destino = `maquinas/${slugify(`radar ${d.titulo} ${d.ano ?? ""} ${d.codigo}`)}-${n + 1}${extname(origem).toLowerCase() || ".jpg"}`;
+  await copyFile(origem, `public/${destino}`);
   fotos.push(destino);
 }
 catalogo.push(entradaPublica({ ...d, fotos }));
 await writeFile("public/maquinas.json", JSON.stringify(catalogo, null, 1));
-console.log(`${d.codigo} publicado em public/maquinas.json${fotos.length ? ` com foto ${fotos[0]}` : " sem foto"}.`);
+console.log(`${d.codigo} publicado em public/maquinas.json${fotos.length ? ` com ${fotos.length} foto(s)` : " sem foto"}.`);
