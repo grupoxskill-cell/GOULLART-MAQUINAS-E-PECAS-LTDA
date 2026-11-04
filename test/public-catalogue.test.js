@@ -28,3 +28,7 @@ test('normalization also corrects a stale public ADM record without altering the
 test('private administration remains excluded from indexing',()=>{
  const html=readFileSync(new URL('../adm/index.html',import.meta.url),'utf8');assert.match(html,/<meta name="robots" content="noindex(?:, nofollow)?">/);
 });
+test('parts without a photograph stay out of the public feed',()=>{
+ const out=tools.feed({items:[{category:'pecas',title:'Rolete',image:'',images:[]},{category:'pecas',title:'Sapata',image:'/assets/listings/sapata.jpg',images:['/assets/listings/sapata.jpg']},{category:'maquinas',title:'ESCAVADEIRA • X • 2020',image:'',images:[]}]});
+ assert.deepEqual(out.items.map(i=>i.title),['Sapata','ESCAVADEIRA • X • 2020']);
+});

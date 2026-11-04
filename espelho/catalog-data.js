@@ -26,6 +26,9 @@
   const hours=i.hours||text.match(/horímetro\s*:?\s*([\d.]+)/i)?.[1],km=i.km||text.match(/\bkm\s*:?\s*([\d.]+)/i)?.[1];
   return [year?'Ano '+year:'Ano a confirmar',km?km+' km':hours?hours+' h':'Horímetro a confirmar',i.location||i.state||'Localização a confirmar'].join(' · ');
  }
- function feed(data){return {...data,items:(data.items||[]).map(normalize),opportunities:(data.opportunities||[]).map(normalize)};}
- globalThis.GoullartCatalogData={normalize,feed,facts,asset,clean};
+ // Peças só aparecem no site com foto (pedido de Júnior em 04/11/2026). As demais seguem no ADM e voltam sozinhas quando ganharem foto.
+ const temFoto=item=>Boolean((typeof item.image==='string'&&item.image.trim())||(Array.isArray(item.images)&&item.images.some(x=>typeof x==='string'&&x.trim())));
+ const visivel=item=>item.category!=='pecas'||temFoto(item);
+ function feed(data){return {...data,items:(data.items||[]).map(normalize).filter(visivel),opportunities:(data.opportunities||[]).map(normalize)};}
+ globalThis.GoullartCatalogData={normalize,feed,facts,asset,clean,visivel};
 })();
