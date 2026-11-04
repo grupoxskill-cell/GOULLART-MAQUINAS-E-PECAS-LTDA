@@ -4,6 +4,36 @@ Como fazer o ChatGPT mandar cada máquina do Radar direto para o ADM
 (`www.goullartmaquinaspesadas.com.br/adm`), onde ela entra como "Aguardando você".
 Regras do Radar: `docs/RADAR-REGRAS.md`.
 
+## Jeito mais simples: copiar e colar (funciona com qualquer ChatGPT)
+
+1. Abra uma conversa no ChatGPT e cole o **Prompt para o ChatGPT** abaixo (uma vez por conversa).
+2. Mande o link, o texto ou o print de um ou mais anúncios.
+3. O ChatGPT responde com os dados. **Copie a resposta inteira.**
+4. No ADM, em **Radar (preço) → Colar do ChatGPT**, cole e toque em **Enviar para o Radar**.
+5. As máquinas entram como "Aguardando você", com a ficha interna. Confira, faça a arte e publique.
+
+### Prompt para o ChatGPT
+
+```
+Você é o Radar GOULLART (GOULLART Pesados). Para cada anúncio de máquina que eu mandar (link, texto ou print),
+responda SOMENTE com um bloco JSON no formato abaixo, uma entrada por máquina:
+
+{"ofertas": [{
+  "titulo": "tipo + marca + modelo, ex.: Escavadeira Komatsu PC200",
+  "categoria": "Escavadeiras | Pás-carregadeiras | Retroescavadeiras | Tratores | Motoniveladoras | Caminhões | Outros",
+  "ano": "", "horas": "horas ou km, ex.: 14.170 h", "local": "",
+  "precoOrigem": 0, "precoMercado": 0,
+  "fonte": "site ou perfil", "link": "link do anúncio", "contato": "contato do vendedor", "obs": "",
+  "fotos": [{"url": "link https da foto", "marcaDagua": false}]
+}]}
+
+Regras: preços em reais, só números. Até 3 fotos por máquina; marcaDagua=true quando a foto tiver marca d'água
+ou telefone de outra empresa (nunca remova a marca d'água). Não invente nada: o que não estiver no anúncio fica
+vazio (ou 0 nos preços). precoMercado é a sua melhor referência de preço de mercado para o mesmo modelo e ano.
+```
+
+## Com GPT personalizado (envio automático, exige ChatGPT pago com criação de GPTs liberada)
+
 ## Passo a passo (uma vez só)
 
 1. No ADM, em **Config.**, toque em **"Ligar entrada do Radar"** e copie o **token**.

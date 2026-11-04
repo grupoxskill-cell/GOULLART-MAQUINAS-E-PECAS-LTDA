@@ -216,13 +216,15 @@ async function telaMaquinas(tipo) {
   filtro.addEventListener("change", desenhar);
   let aberto = false;
   const novo = h("button", { class: "btn" }, radar ? "+ Adicionar do Radar" : "+ Adicionar ao Pátio");
+  const colar = radar ? h("button", { class: "btn sec" }, "Colar do ChatGPT") : null;
   const area = h("div");
+  colar?.addEventListener("click", () => { aberto = false; area.replaceChildren(painelColar(recarregar)); });
   novo.addEventListener("click", () => { aberto = !aberto; area.replaceChildren(aberto ? formulario(tipo, null, recarregar) : ""); });
   conteudo.replaceChildren(
     h("div", { class: "painel" }, h("h2", {}, radar ? "Radar" : "Pátio"),
       h("p", { class: "muted" }, radar ? `Só você vê. Preço do site = origem + ${reais(resumo.margem)}. Nada vai para o site sem você tocar em Publicar.`
                                         : "Máquinas que estão com a GOULLART. As publicadas aparecem na seção Pátio do site, com o local informado."),
-      h("div", { class: "acoes" }, novo, h("label", {}, "Mostrar", filtro))),
+      h("div", { class: "acoes" }, novo, colar, h("label", {}, "Mostrar", filtro))),
     area, caixa);
   desenhar();
 }
@@ -350,6 +352,33 @@ async function desenharArte(m, preco, fotoIdx, enquadre, formato = "feed") {
   }
   ctx.restore();
   return c;
+}
+
+// "Colar do ChatGPT": o ChatGPT responde com o JSON da oferta (docs/CHATGPT-RADAR.md) e Júnior cola aqui.
+// Aceita uma oferta, uma lista ou {ofertas: [...]}, mesmo dentro de ```json ... ``` ou com texto em volta.
+function lerOfertasColadas(texto) {
+  const t = String(texto).replace(/```(?:json)?/gi, "").trim();
+  const ini = t.search(/[[{]/);
+  const fim = Math.max(t.lastIndexOf("]"), t.lastIndexOf("}"));
+  if (ini < 0 || fim < ini) throw new Error("Não encontrei os dados da máquina. Cole a resposta do ChatGPT inteira.");
+  try { return JSON.parse(t.slice(ini, fim + 1)); }
+  catch { throw new Error("O texto colado está incompleto. Peça ao ChatGPT: \"responda só com o JSON\" e cole de novo."); }
+}
+function painelColar(recarregar) {
+  const caixaTexto = h("textarea", { rows: 10, placeholder: "Cole aqui a resposta do ChatGPT com os dados da máquina (JSON)." });
+  const enviar = h("button", { class: "btn" }, "Enviar para o Radar");
+  const saida = h("div", { class: "lista" });
+  enviar.addEventListener("click", () => acao(enviar, async () => {
+    const { resultados } = await api("/radar/importar", { method: "POST", body: lerOfertasColadas(caixaTexto.value) });
+    saida.replaceChildren(...resultados.map((r) => h("p", { class: r.erro ? "erro" : "" },
+      r.erro ? `✗ ${r.titulo}: ${r.erro}` : `${r.novo ? "✓ Entrou" : "• Já estava no Radar"}: ${r.titulo}` +
+        (r.classificacao ? ` — ${r.classificacao}${r.descontoPct != null ? `, ${r.descontoPct}% abaixo` : ""}` : "") +
+        (r.avisos?.length ? ` (${r.avisos.join(" ")})` : ""))));
+    if (resultados.some((r) => r.novo)) setTimeout(recarregar, 2500);
+  }, "Ofertas enviadas para o Radar."));
+  return h("div", { class: "painel" }, h("h2", {}, "Colar do ChatGPT"),
+    h("p", { class: "muted" }, "No ChatGPT, mande o anúncio e o pedido do arquivo \"Prompt para o ChatGPT\". Copie a resposta inteira e cole aqui. As máquinas entram como \"Aguardando você\"; nada vai para o site sem você publicar."),
+    caixaTexto, enviar, saida);
 }
 
 // Ficha interna do Radar: só no ADM, nunca no site (docs/RADAR-REGRAS.md).
