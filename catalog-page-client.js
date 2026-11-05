@@ -35,6 +35,6 @@
  }
  form.addEventListener('submit',event=>{if(!items)return;event.preventDefault();const url=new URL(location.href);url.searchParams.set('ordem',select.value);history.replaceState(null,'',url);render();});
  const order=new URLSearchParams(location.search).get('ordem');if(['low','high','recent'].includes(order))select.value=order;
- refresh();setInterval(()=>{if(!document.hidden)refresh();},2000);
+ refresh();setInterval(()=>{if(!document.hidden)refresh();},30000);
  document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh();});
 })();

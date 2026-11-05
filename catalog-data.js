@@ -28,7 +28,10 @@
  }
  // Peças só aparecem no site com foto (pedido de Júnior em 04/11/2026). As demais seguem no ADM e voltam sozinhas quando ganharem foto.
  const temFoto=item=>Boolean((typeof item.image==='string'&&item.image.trim())||(Array.isArray(item.images)&&item.images.some(x=>typeof x==='string'&&x.trim())));
- const visivel=item=>item.category!=='pecas'||temFoto(item);
+ // Máquinas que Júnior marcou como vendidas saem do site inteiro (home, ofertas, categorias e /adm/catalogo.json),
+ // mesmo que o ADM ainda as tenha como "no site". GOUL-291: Hyundai R220 LC-9 2022, vendida (Trello, 04/11/2026).
+ const vendidas=new Set(['GOUL-291']);
+ const visivel=item=>!vendidas.has(item.publicCode)&&(item.category!=='pecas'||temFoto(item));
  function feed(data){return {...data,items:(data.items||[]).map(normalize).filter(visivel),opportunities:(data.opportunities||[]).map(normalize)};}
  globalThis.GoullartCatalogData={normalize,feed,facts,asset,clean,visivel};
 })();
