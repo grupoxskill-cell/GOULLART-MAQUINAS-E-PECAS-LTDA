@@ -25,7 +25,7 @@
  async function refresh(){
   if(busy)return;busy=true;
   try{
-   const r=await ((o)=>fetch('/adm/catalogo.json',o).then((r)=>r.ok?r:Promise.reject(r)).catch(()=>fetch('/api/catalog.json',o)))({cache:'no-store',signal:window.GoullartRuntime.timeout(15000)});
+   const r=await window.GoullartRuntime.fetchCatalog({cache:'no-store',signal:window.GoullartRuntime.timeout(15000)});
    if(!r.ok)throw Error('Catálogo indisponível');
    const data=window.GoullartCatalogData.feed(await r.json());if(!Array.isArray(data.items))throw Error('Resposta inválida');
    const next=JSON.stringify(data.items);

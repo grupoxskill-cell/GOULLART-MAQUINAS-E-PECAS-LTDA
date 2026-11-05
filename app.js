@@ -41,7 +41,7 @@ async function refreshCatalog(){
  if(refreshing)return;refreshing=true;
  refreshListingDay();
  try{
-  const response=await ((o)=>fetch('/adm/catalogo.json',o).then((r)=>r.ok?r:Promise.reject(r)).catch(()=>fetch('/api/catalog.json',o)))({cache:'no-store',signal:window.GoullartRuntime.timeout(15000)});
+  const response=await window.GoullartRuntime.fetchCatalog({cache:'no-store',signal:window.GoullartRuntime.timeout(15000)});
   if(!response.ok)throw Error('Catálogo indisponível');
   const d=window.GoullartCatalogData.feed(await response.json());const fingerprint=JSON.stringify(d);
   if(fingerprint!==catalogFingerprint){
