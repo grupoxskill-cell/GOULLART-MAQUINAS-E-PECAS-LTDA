@@ -650,10 +650,11 @@ async function config() {
   trocar.addEventListener("click", () => acao(trocar, async () => { await api("/senha", { method: "POST", body: { atual: atual.value, nova: nova.value } }); atual.value = nova.value = ""; }, "Senha trocada."));
   const entrada = await api("/entrada");
   const urlEntrada = h("input", { readonly: true, value: entrada.url });
-  const token = h("input", { readonly: true, value: entrada.token || "(desligada: gere o token)" });
-  const gerar = h("button", { class: "btn sec" }, entrada.token ? "Gerar novo token" : "Ligar entrada do Radar");
-  gerar.addEventListener("click", () => (!entrada.token || confirm("O token antigo deixa de funcionar. Continuar?")) &&
-    acao(gerar, async () => { entrada.token = (await api("/entrada/token", { method: "POST" })).token; token.value = entrada.token; }, "Token gerado."));
+  // O servidor guarda só o hash: o token aparece uma única vez, na hora em que é gerado.
+  const token = h("input", { readonly: true, value: entrada.token || (entrada.ligada ? "(ligada — o token só aparece quando é gerado)" : "(desligada: gere o token)") });
+  const gerar = h("button", { class: "btn sec" }, entrada.ligada ? "Gerar novo token" : "Ligar entrada do Radar");
+  gerar.addEventListener("click", () => (!entrada.ligada || confirm("O token antigo deixa de funcionar. Continuar?")) &&
+    acao(gerar, async () => { entrada.token = (await api("/entrada/token", { method: "POST" })).token; entrada.ligada = true; token.value = entrada.token; gerar.textContent = "Gerar novo token"; }, "Token gerado. Copie agora: ele não será mostrado de novo."));
   const aviso = h("input", { value: entrada.avisoWebhook, placeholder: "https://... (Zapier, Make ou iZap)" });
   const salvarAviso = h("button", { class: "btn" }, "Salvar aviso");
   salvarAviso.addEventListener("click", () => acao(salvarAviso, async () => { await api("/config", { method: "PUT", body: { avisoWebhook: aviso.value } }); }, "Aviso salvo."));

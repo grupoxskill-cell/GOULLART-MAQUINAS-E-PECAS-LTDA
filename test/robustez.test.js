@@ -163,3 +163,15 @@ test('máquina do Radar sem arte nem foto não publica', async () => {
   assert.equal(r.status, 400);
   assert.match((await r.json()).erro, /foto/i);
 });
+
+test('token do Radar fica só como hash no servidor e aparece uma única vez', async () => {
+  const cookie = await entrar(base);
+  const { token } = await (await fetch(base + '/adm/api/entrada/token', { method: 'POST', headers: { Cookie: cookie, Origin: base } })).json();
+  const cfg = JSON.parse(await readFile(join(dataDir, 'config.json'), 'utf8'));
+  assert.ok(!JSON.stringify(cfg).includes(token), 'o token em texto puro não pode estar em config.json');
+  assert.match(cfg.tokenEntradaHash, /^[a-f0-9]{64}$/);
+  const info = await (await fetch(base + '/adm/api/entrada', { headers: { Cookie: cookie } })).json();
+  assert.equal(info.token, ''); assert.equal(info.ligada, true);
+  const r = await fetch(`${base}/adm/entrada/radar`, { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: JSON.stringify({ titulo: 'Escavadeira hash', categoria: 'Escavadeiras', link: 'https://exemplo.com/h1' }) });
+  assert.equal(r.status, 201);
+});
