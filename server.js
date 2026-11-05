@@ -4,7 +4,7 @@ import { readFile } from "node:fs/promises";
 import { extname, resolve, relative, isAbsolute } from "node:path";
 import { fileURLToPath } from "node:url";
 import { rotaAdm, servirFoto, maquinasPublicas } from "./lib/adm.js";
-import { paginaMaquina, sitemap } from "./lib/paginas.js";
+import { paginaMaquina, sitemap, tiposDeMaquina } from "./lib/paginas.js";
 import { registrar } from "./lib/interesse.js";
 import { ipCliente } from "./lib/auth.js";
 
@@ -95,7 +95,7 @@ async function atender(req, res) {
   if (pagina) return servirPaginaMaquina(req, res, pagina[1]);
   if (pathname === "/sitemap.xml") {
     res.writeHead(200, { "Content-Type": "application/xml; charset=utf-8" });
-    return res.end(sitemap(await maquinasPublicas()));
+    return res.end(sitemap(await maquinasPublicas(), await tiposDeMaquina()));
   }
   if (pathname === "/api/catalogo" || pathname === "/catalogo.json") return sendJson(res, 200, CATALOGO);
   return serveStatic(req, res, pathname);
