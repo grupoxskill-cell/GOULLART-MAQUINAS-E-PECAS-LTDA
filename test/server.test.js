@@ -204,3 +204,23 @@ test('rental public feed preserves update dates, original photos and the publica
   assert.equal(await readFile(file,'utf8'),saved);
  }finally{await rm(file,{force:true});}
 });
+
+test('Colar do ChatGPT: importa várias ofertas com as regras do Radar', async () => {
+  const cookie = await entrar();
+  const ofertas = [
+    { titulo: 'Retroescavadeira Case 580N colada', ano: '2020', precoOrigem: 250000, precoMercado: 340000, link: 'https://exemplo.com/colar/1' },
+    { titulo: 'Pá-carregadeira Caterpillar 924K colada', ano: '2019', precoOrigem: 400000, precoMercado: 420000, link: 'https://exemplo.com/colar/2' },
+    { ano: '2018' },
+  ];
+  const r = await (await enviar(cookie, '/adm/api/radar/importar', 'POST', { ofertas })).json();
+  assert.equal(r.resultados.length, 3);
+  assert.equal(r.resultados[0].novo, true);
+  assert.equal(r.resultados[0].classificacao, 'Quente');
+  assert.equal(r.resultados[1].classificacao, 'Fraca');
+  assert.ok(r.resultados[2].erro);
+  const de_novo = await (await enviar(cookie, '/adm/api/radar/importar', 'POST', ofertas[0])).json();
+  assert.equal(de_novo.resultados[0].novo, false);
+  assert.equal((await fetch(base + '/adm/api/radar/importar', { method: 'POST', body: '{}' })).status, 401);
+  const publico = await (await fetch(base + '/maquinas.json')).json();
+  assert.ok(!publico.some((m) => /colada/.test(m.titulo)));
+});

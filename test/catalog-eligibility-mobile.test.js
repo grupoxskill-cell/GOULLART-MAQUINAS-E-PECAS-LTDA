@@ -115,6 +115,18 @@ test('the production build loads the shared policy before every category client'
    const client=scripts.findIndex(s=>s.startsWith('/catalog-page-client.js'));
    assert.ok(policy>=0&&policy<client,filename);
    assert.match(scripts[client],/v=elegibilidade-inicio-20261031/);
+   // Resolve como o navegador: o base também afeta links de fragmento.
+   for (const path of filename.endsWith('/index.html') ? [filename, filename.replace(/index\.html$/, ''), filename.replace(/\/index\.html$/, '')] : [filename]) {
+    const documentURL = new URL('/' + path, 'https://example.com');
+    const baseHref = html.match(/<base\b[^>]*href="([^"]+)"/)?.[1];
+    const base = baseHref ? new URL(baseHref, documentURL) : documentURL;
+    const href = html.match(/<a\b[^>]*href="([^"]+)"[^>]*>Ir para os anúncios<\/a>/)?.[1];
+    assert.ok(href, filename);
+    const resolved = new URL(href, base);
+    assert.equal(resolved.pathname, '/' + (filename.endsWith('/index.html') ? filename.replace(/index\.html$/, '') : filename), path);
+    assert.equal(resolved.hash, '#catalog-page-list');
+    assert.match(html, /<section id="catalog-page-list"/);
+   }
   }
  }
 });
