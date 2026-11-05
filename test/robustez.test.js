@@ -224,3 +224,30 @@ test('máquina do Radar publicada no ADM com preço de mercado vira oferta verif
   assert.deepEqual({ ...oferta.offer, reviewedAt: undefined }, { verified: true, price: 339000, referencePrice: 490000, discountPercent: 31, reviewedAt: undefined });
   assert.ok(!JSON.stringify(oferta).includes('319000'), 'preço de origem não sai no catálogo público');
 });
+
+test('auditoria: login, senha errada e ações ficam registrados só com IP, hora e alvo', async () => {
+  await fetch(base + '/adm/api/entrar', { method: 'POST', body: JSON.stringify({ senha: 'errada-de-proposito' }) });
+  const cookie = await entrar(base);
+  const r = await (await fetch(base + '/adm/api/resumo', { headers: { Cookie: cookie } })).json();
+  assert.ok(Array.isArray(r.acessos) && r.acessos.length >= 2);
+  assert.equal(r.acessos[0].tipo, 'login');
+  assert.ok(r.acessos.some((a) => a.tipo === 'login_falhou'));
+  assert.ok(r.acessos.every((a) => a.ip && a.em && !('senha' in a) && !('cookie' in a)));
+  const bruto = await readFile(join(dataDir, 'auditoria.json'), 'utf8');
+  assert.ok(!bruto.includes('senha-de-teste') && !bruto.includes('errada-de-proposito'), 'senha nunca vai para a auditoria');
+  const { mode } = await (await import('node:fs/promises')).stat(join(dataDir, 'auditoria.json'));
+  assert.equal(mode & 0o777, 0o600);
+});
+
+test('sessão: cookie no formato antigo não vale e cookie parado há mais de 2 horas expira', async () => {
+  const { lerSessao, criarCookie } = await import('../lib/auth.js');
+  const segredo = 'e'.repeat(64);
+  assert.equal(lerSessao({ headers: { cookie: `adm=${Date.now() + 3600000}.${'a'.repeat(64)}` } }, segredo), null, 'formato antigo (2 partes)');
+  const novo = criarCookie(segredo, true).split(';')[0];
+  const s = lerSessao({ headers: { cookie: novo } }, segredo);
+  assert.ok(s && s.expiraAbsoluto > Date.now() && Date.now() - s.ultimaAtividade < 5000);
+  assert.match(criarCookie(segredo, true), /Max-Age=7(1|2)\d\d;/, 'Max-Age de ~2 h (inatividade), não 12 h');
+  const [exp, ult, ass] = novo.replace('adm=', '').split('.');
+  assert.equal(lerSessao({ headers: { cookie: `adm=${exp}.${Number(ult) - 3 * 3600000}.${ass}` } }, segredo), null, 'alterar a hora quebra a assinatura');
+  assert.equal((await fetch(base + '/adm/api/resumo', { headers: { Cookie: `adm=${Date.now() + 3600000}.${'a'.repeat(64)}` } })).status, 401);
+});
