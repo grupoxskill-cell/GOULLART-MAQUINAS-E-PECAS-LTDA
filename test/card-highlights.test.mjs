@@ -1,10 +1,14 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
+import { execFileSync } from "node:child_process";
 test("layout público injeta CSS dos cards no build", async () => {
   const build = await readFile("scripts/preparar-espelho.mjs", "utf8");
   assert.match(build, /card-highlights\.css\?v=20261104/);
-  assert.match(build, /!f\.includes\("\/adm\/"\)/);
+  assert.match(build, /t\.includes\(\x27id="products"\x27\)/);
+  assert.doesNotMatch(build, /conteúdo\.\\n  if/);
+  assert.doesNotMatch(build, /20261104<\/head>\x27\);\\n/);
+  assert.doesNotThrow(() => execFileSync(process.execPath, ["--check", "scripts/preparar-espelho.mjs"]));
 });
 test("preço permanece visível e respeita redução de movimento", async () => {
   const css = await readFile("espelho/card-highlights.css", "utf8");
