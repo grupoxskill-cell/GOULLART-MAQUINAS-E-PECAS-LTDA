@@ -80,7 +80,12 @@ async function atender(req, res) {
       whatsapp: `https://wa.me/${EMPRESA.whatsapp}` });
   }
   // ADM privado (login próprio) e fotos enviadas pelo ADM.
-  if (pathname === "/adm" || pathname.startsWith("/adm/")) return rotaAdm(req, res, pathname);
+  if (pathname === "/adm" || pathname.startsWith("/adm/")) {
+    res.setHeader("Cache-Control", "no-store, private");
+    res.setHeader("Referrer-Policy", "no-referrer");
+    res.setHeader("X-Robots-Tag", "noindex, nofollow, noarchive");
+    return rotaAdm(req, res, pathname);
+  }
   if (pathname === "/api/interesse" && req.method === "POST") return contarInteresse(req, res);
   if (req.method !== "GET" && req.method !== "HEAD") {
     res.setHeader("Allow", "GET, HEAD");
@@ -88,7 +93,7 @@ async function atender(req, res) {
   }
   if (pathname === "/health") return sendJson(res, 200, { ok: true, automaticReplies: false, atendimento: "humano" });
   if (pathname === "/api/empresa") return sendJson(res, 200, EMPRESA);
-  if (pathname.startsWith("/fotos/")) return servirFoto(res, pathname);
+  if (pathname.startsWith("/fotos/")) return servirFoto(req, res, pathname);
   // Catálogo do site + máquinas publicadas pelo ADM (Radar com margem e Pátio).
   if (pathname === "/maquinas.json") return sendJson(res, 200, await maquinasPublicas());
   const pagina = /^\/maquina\/([a-z0-9-]+?)(?:\.html)?$/.exec(pathname);
@@ -104,7 +109,8 @@ async function atender(req, res) {
 // Nenhum erro de um pedido (corpo cortado, JSON de dados corrompido etc.) pode derrubar o servidor.
 const server = http.createServer((req, res) => {
   atender(req, res).catch((err) => {
-    console.error("pedido falhou:", req.method, req.url, err?.message || err);
+    // Não registrar query string: ela pode conter identificadores e links privados.
+    console.error("pedido falhou:", req.method, new URL(req.url, "http://localhost").pathname, err?.message || err);
     if (!res.headersSent) res.writeHead(500, { "Content-Type": "text/plain; charset=utf-8" });
     if (!res.writableEnded) res.end("Erro interno.");
   });

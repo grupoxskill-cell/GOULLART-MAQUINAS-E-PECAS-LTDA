@@ -3,3 +3,17 @@ node_modules/
 _site/
 dados-privados/
 site-novo/
+.env.*
+!.env.example
+*.pem
+*.p12
+*.pfx
+*.key
+*.sqlite
+*.sqlite3
+*.db
+*.bak
+*.tar.gz
+*.zip
+backups-privados/
+credenciais/
