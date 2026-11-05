@@ -15,6 +15,11 @@ if (!entrada || !saida) {
   process.exit(1);
 }
 const d = JSON.parse(await readFile(entrada, "utf8"));
+// Regra de Júnior: a arte só vale com foto real da máquina. Sem foto, o pedido vai para fila/erro em vez de sair com um quadro vazio.
+if (!d.foto) {
+  console.error(`${d.codigo ?? entrada}: sem foto original da máquina; arte não gerada.`);
+  process.exit(2);
+}
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 const dataUri = async (p) => `data:image/${extname(p).slice(1).replace("jpg", "jpeg")};base64,${(await readFile(p)).toString("base64")}`;
 
