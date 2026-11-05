@@ -80,7 +80,12 @@ async function atender(req, res) {
       whatsapp: `https://wa.me/${EMPRESA.whatsapp}` });
   }
   // ADM privado (login próprio) e fotos enviadas pelo ADM.
-  if (pathname === "/adm" || pathname.startsWith("/adm/")) return rotaAdm(req, res, pathname);
+  if (pathname === "/adm" || pathname.startsWith("/adm/")) {
+    res.setHeader("Cache-Control", "no-store, private");
+    res.setHeader("Referrer-Policy", "no-referrer");
+    res.setHeader("X-Robots-Tag", "noindex, nofollow, noarchive");
+    return rotaAdm(req, res, pathname);
+  }
   if (pathname === "/api/interesse" && req.method === "POST") return contarInteresse(req, res);
   if (req.method !== "GET" && req.method !== "HEAD") {
     res.setHeader("Allow", "GET, HEAD");
