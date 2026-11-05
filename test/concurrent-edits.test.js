@@ -14,7 +14,7 @@ const segredo = 'synthetic-test-secret';
 await gravar('config', { segredo, margem: 20000, tokenEntrada: 'synthetic-token' });
 test.after(() => rm(dir, { recursive: true, force: true }));
 const ids = ['aaaaaaaaaaaaaaaa', 'bbbbbbbbbbbbbbbb'];
-const seed = () => ids.map(id => ({ id, titulo: id, fotos: [], precoOrigem: 100000, status: 'novo', publicado: false }));
+const seed = () => ids.map(id => ({ id, titulo: id, fotos: ['fotos/aaaaaaaaaaaaaaaaaaaaaaaa.jpg'], precoOrigem: 100000, status: 'novo', publicado: false }));
 async function request(path, method, body = {}, beforeBody = async () => {}) {
   const req = { method, url: path, headers: { host: 'localhost', cookie: criarCookie(segredo, false).split(';')[0], authorization: 'Bearer synthetic-token' },
     async *[Symbol.asyncIterator]() { await beforeBody(); yield Buffer.from(JSON.stringify(body)); } };

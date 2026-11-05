@@ -1,4 +1,4 @@
-import { selectCheapestMachines, machineName } from './hero-offers-model.mjs?v=twenty-2';
+import { selectCheapestMachines, machineName } from './hero-offers-model.js?v=twenty-2';
 
 const root = document.getElementById('hero-offers');
 const track = document.getElementById('hero-offers-track');

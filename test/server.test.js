@@ -76,7 +76,7 @@ test('ADM exige login e recusa senha errada', async () => {
 
 test('Radar soma a margem e só aparece no site depois de publicar', async () => {
   const cookie = await entrar();
-  const item = await (await enviar(cookie, '/adm/api/radar', 'POST', { titulo: 'Escavadeira Komatsu PC200 teste', ano: '2018', precoOrigem: 'R$ 259.000', fonte: 'contato privado' })).json();
+  const item = await (await enviar(cookie, '/adm/api/radar', 'POST', { titulo: 'Escavadeira Komatsu PC200 teste', ano: '2018', precoOrigem: 'R$ 259.000', fonte: 'contato privado', fotos: ['fotos/aaaaaaaaaaaaaaaaaaaaaaaa.jpg'] })).json();
   assert.equal(item.status, 'novo');
   const antes = await (await fetch(base + '/maquinas.json')).json();
   assert.ok(!antes.some((m) => m.titulo === item.titulo));
@@ -90,7 +90,7 @@ test('Radar soma a margem e só aparece no site depois de publicar', async () =>
 
 test('Pátio publicado aparece com local e marcado como pátio', async () => {
   const cookie = await entrar();
-  const item = await (await enviar(cookie, '/adm/api/patio', 'POST', { titulo: 'Pá-carregadeira teste pátio', preco: '300000', local: 'Goiânia/GO' })).json();
+  const item = await (await enviar(cookie, '/adm/api/patio', 'POST', { titulo: 'Pá-carregadeira teste pátio', preco: '300000', local: 'Goiânia/GO', fotos: ['fotos/aaaaaaaaaaaaaaaaaaaaaaaa.jpg'] })).json();
   await enviar(cookie, `/adm/api/patio/${item.id}/publicar`, 'POST');
   const m = (await (await fetch(base + '/maquinas.json')).json()).find((x) => x.titulo === item.titulo);
   assert.equal(m.patio, true); assert.equal(m.local, 'Goiânia/GO'); assert.equal(m.preco, 'R$ 300.000');

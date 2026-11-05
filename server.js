@@ -63,6 +63,11 @@ async function contarInteresse(req, res) {
 async function atender(req, res) {
   res.setHeader("X-Content-Type-Options", "nosniff");
   res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  // Nada do serviço pode ser embutido em outro site (clickjacking no ADM), e o navegador fica só em HTTPS.
+  res.setHeader("X-Frame-Options", "DENY");
+  if (req.headers["x-forwarded-proto"] === "https" || /https/.test(req.headers["cf-visitor"] || "")) {
+    res.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+  }
   let pathname;
   try { pathname = decodeURIComponent(new URL(req.url, "http://localhost").pathname); }
   catch { return sendJson(res, 400, { error: "Endereço inválido." }); }

@@ -32,3 +32,11 @@ test('parts without a photograph stay out of the public feed',()=>{
  const out=tools.feed({items:[{category:'pecas',title:'Rolete',image:'',images:[]},{category:'pecas',title:'Sapata',image:'/assets/listings/sapata.jpg',images:['/assets/listings/sapata.jpg']},{category:'maquinas',title:'ESCAVADEIRA • X • 2020',image:'',images:[]}]});
  assert.deepEqual(out.items.map(i=>i.title),['Sapata','ESCAVADEIRA • X • 2020']);
 });
+test('máquina vendida (GOUL-291) sai do feed público mesmo que a fonte ainda a traga',()=>{
+ const bruto=JSON.parse(readFileSync(new URL('../espelho/api/catalog.json',import.meta.url),'utf8'));
+ assert.ok(bruto.items.some(i=>i.publicCode==='GOUL-291'),'a fonte estática ainda traz a GOUL-291');
+ const publico=tools.feed(bruto);
+ assert.ok(!publico.items.some(i=>i.publicCode==='GOUL-291'),'GOUL-291 vendida não pode aparecer no site');
+ assert.ok(!tools.visivel({publicCode:'GOUL-291',category:'maquinas',image:'/assets/listings/x.jpg'}));
+ assert.ok(tools.visivel({publicCode:'GOUL-293',category:'maquinas',image:'/assets/listings/x.jpg'}));
+});
