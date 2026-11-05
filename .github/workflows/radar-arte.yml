@@ -57,10 +57,12 @@ jobs:
               case "$ext" in jpg|jpeg|png|webp) ;; *) ext=jpg ;; esac
               foto=/tmp/saida/$codigo-foto$n.$ext
               # Só https: nada de file:// ou outros esquemas que leriam arquivos do próprio GitHub.
-              if curl -fsSL --proto =https --proto-redir =https --max-time 60 --max-filesize 15000000 -A "Mozilla/5.0" -o "$foto" "$url"; then
+              # Sites que bloqueiam robôs devolvem uma página HTML com status 200: só vale se o arquivo for imagem de verdade.
+              if curl -fsSL --proto =https --proto-redir =https --max-time 60 --max-filesize 15000000 -A "Mozilla/5.0" -o "$foto" "$url" \
+                 && [[ "$(file -b --mime-type "$foto")" == image/* ]]; then
                 if [ "$n" = 1 ]; then node -e 'const f=require("fs"),[p,foto]=process.argv.slice(1);const d=JSON.parse(f.readFileSync(p));d.foto=foto;f.writeFileSync(p,JSON.stringify(d))' "$dados" "$foto"; fi
               else
-                echo "::warning::$codigo: foto $n não baixou"
+                echo "::warning::$codigo: foto $n não baixou ou não é imagem"
                 rm -f "$foto"
               fi
             done <<< "$urls"
