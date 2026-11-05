@@ -34,13 +34,14 @@ for await (const f of arquivos(SAIDA)) {
   if(f.endsWith(".html")) t=t.replace(/((?:mobile-navigation|catalog-page-client)\.js)\?v=[^"'<>\s]+/g, '$1?v=elegibilidade-inicio-20261031');
   if(f.endsWith(".html")) t=t.replace(/((?:listing-policy|app)\.js|site-typography\.css)\?v=[^"'<>\s]+/g, '$1?v=locacoes-20261101-2');
   if(f.endsWith(".html")) t=t.replace(/(area-pages\.js)\?v=[^"'<>\s]+/g, '$1?v=magazine-20261101');
+  if(f.endsWith(".html")) t=t.replace(/(src="\/(?:runtime-compat|app|catalog-page-client|hero-offers)\.js)(?:\?v=[^"'<>\s]+)?/g, '$1?v=catalog-fallback-20261105');
   t = t.split(ORIGEM).join(DOMINIO);
   // Script de verificação da Cloudflare do servidor do ChatGPT: não existe no domínio próprio.
   t = t.replace(/<script>\(function\(\)\{function c\(\)\{var b=a\.contentDocument[\s\S]*?<\/script>/g, "");
   // Catálogo vira arquivo estático.
   // Catálogo: primeiro o do ADM (publicações editadas lá); se o ADM não responder, a cópia estática.
   t = t.replace(/fetch\((['"])\/api\/catalog\1\s*,/g,
-    "((o)=>fetch('/adm/catalogo.json',o).then((r)=>r.ok?r:Promise.reject(r)).catch(()=>fetch('/api/catalog.json',o)))(");
+    "window.GoullartRuntime.fetchCatalog(");
   // Área administrativa e de cliente do ChatGPT não existem aqui: "Administração" vai para o ADM do servidor.
   // Links de login do ChatGPT saem do site público. O ADM fica em /adm, sem link visível para visitantes.
   t = t.replace(/<a href="\/(?:admin\/login|cliente)">[^<]*<\/a>/g, "");
