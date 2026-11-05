@@ -139,6 +139,13 @@ UNIT
 if (\$host = goullartmaquinaspesadas.com.br) {
     return 301 https://www.goullartmaquinaspesadas.com.br\$request_uri;
 }
+# Proteção do visitante: só HTTPS, sem adivinhar tipo de arquivo, sem embutir o site em outro.
+add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+add_header X-Content-Type-Options "nosniff" always;
+add_header X-Frame-Options "SAMEORIGIN" always;
+add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+# Arquivos ocultos e de controle nunca saem do servidor (.git, .env); .well-known fica para o certificado.
+location ~ /\\.(?!well-known/) { return 404; }
 location = /cliente { return 302 /?area=maquinas; }
 location = /cliente/ { return 302 /?area=maquinas; }
 location ^~ /adm {
@@ -148,7 +155,11 @@ location ^~ /adm {
     proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
     proxy_set_header X-Forwarded-Proto \$scheme;
     client_max_body_size 16m;
+    # add_header em location apaga os do nível acima: repete os de proteção aqui.
     add_header X-Robots-Tag "noindex, nofollow" always;
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
 }
 location ^~ /fotos/ {
     proxy_pass http://127.0.0.1:$PORTA;
