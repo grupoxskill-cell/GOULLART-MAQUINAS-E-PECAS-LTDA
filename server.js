@@ -88,7 +88,7 @@ async function atender(req, res) {
   }
   if (pathname === "/health") return sendJson(res, 200, { ok: true, automaticReplies: false, atendimento: "humano" });
   if (pathname === "/api/empresa") return sendJson(res, 200, EMPRESA);
-  if (pathname.startsWith("/fotos/")) return servirFoto(res, pathname);
+  if (pathname.startsWith("/fotos/")) return servirFoto(req, res, pathname);
   // Catálogo do site + máquinas publicadas pelo ADM (Radar com margem e Pátio).
   if (pathname === "/maquinas.json") return sendJson(res, 200, await maquinasPublicas());
   const pagina = /^\/maquina\/([a-z0-9-]+?)(?:\.html)?$/.exec(pathname);
