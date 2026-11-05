@@ -102,6 +102,11 @@ async function inicio() {
       h("strong", {}, `${resumo.envelhecidas.length} máquina(s) há mais de 30 dias no site sem vender.`),
       h("p", { class: "muted" }, "Vale decidir: baixar o preço, trocar a foto ou tirar do site."),
       h("ul", {}, resumo.envelhecidas.slice(0, 12).map((m) => h("li", {}, h("b", {}, m.codigo), ` ${m.titulo} — ${m.dias} dias (desde ${m.publicadoEm.split("-").reverse().join("/")})`)))) : "",
+    h("div", { class: "painel" },
+      h("h2", {}, "Últimos acessos ao ADM"),
+      h("p", { class: "muted" }, "Só você deveria aparecer aqui. Entrada de um endereço estranho: troque a senha em Config. (um login de IP novo também gera aviso pela automação configurada)."),
+      resumo.acessos?.length ? h("ul", {}, resumo.acessos.map((a) => h("li", {}, `${new Date(a.em).toLocaleString("pt-BR")} — ${({ login: "entrou", login_falhou: "senha errada", sair: "saiu", senha_trocada: "trocou a senha", token_gerado: "gerou token do Radar" })[a.tipo] || a.tipo}${a.ip ? ` — IP ${a.ip}` : ""}`)))
+        : h("p", {}, "Nenhum acesso registrado ainda.")),
     h("div", { class: "numeros" },
       n("Publicações no site", resumo.publicacoesImportadasEm ? resumo.publicacoesNoSite : "—", "publicacoes"),
       n("Novas no Radar (aguardando você)", resumo.radarNovos, "radar"),
