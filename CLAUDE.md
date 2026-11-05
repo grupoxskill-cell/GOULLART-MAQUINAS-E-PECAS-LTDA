@@ -38,6 +38,13 @@ O painel ADM tem CSP estrita: nenhum script ou estilo embutido em `adm/index.htm
 Quadros por função: RADAR, APROVAÇÃO (lista "⏳ Aguardando Júnior" → "✅ Aprovada"/"❌ Recusada"), SITE, PEDIDOS, CRM etc.
 Cards do Radar levam código, máquina, ano, horas, preço anunciado → preço do site, cidade/UF e até 3 fotos.
 
+## Proteção dos dados do ADM (resumo do que já existe)
+
+- Só Júnior tem a senha; sessão expira com 2 h sem uso (máx. 12 h); sair ou trocar a senha derruba todas as sessões.
+- `DATA_DIR` (0700) com arquivos 0600; fotos de ofertas não publicadas só abrem com sessão do ADM; backup diário em `/www/goullart-backups`.
+- Auditoria em `auditoria.json` (acessos e ações, só IP/hora/alvo); "Últimos acessos" no painel; aviso de login de IP novo pelo webhook de Config.
+- Token do Radar só como hash; CSP estrita no painel; serviço systemd confinado (`ProtectSystem=strict`, `UMask=0077`, sem capacidades).
+
 ## Pendências conhecidas (nov/2026)
 
 - Deixar o repositório privado e proteger o `master` (ação do dono no GitHub).
