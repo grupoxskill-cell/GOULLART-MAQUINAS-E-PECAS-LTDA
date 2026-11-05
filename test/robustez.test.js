@@ -199,3 +199,14 @@ test('cabeçalhos de proteção: CSP no painel, DENY de frame em tudo e HSTS atr
   const html = await (await fetch(base + '/adm/')).text();
   assert.ok(!/<script(?![^>]*\bsrc=)/.test(html) && !/<style/.test(html) && !/ style="/.test(html), 'painel não pode ter script/estilo embutido (CSP estrita)');
 });
+
+test('resumo do ADM lista as máquinas há mais de 30 dias no site', async () => {
+  const cookie = await entrar(base);
+  const r = await (await fetch(base + '/adm/api/resumo', { headers: { Cookie: cookie } })).json();
+  assert.ok(Array.isArray(r.envelhecidas));
+  const d51 = r.envelhecidas.find((m) => m.codigo === 'GOUL-293');
+  assert.ok(d51, 'a D51 publicada em 17/09 deveria constar como envelhecida');
+  assert.ok(d51.dias > 30);
+  assert.ok(r.envelhecidas.every((m) => m.dias > 30 && m.codigo && m.titulo));
+  assert.ok(!r.envelhecidas.some((m) => m.codigo === 'GOUL-291'), 'vendida não entra');
+});
