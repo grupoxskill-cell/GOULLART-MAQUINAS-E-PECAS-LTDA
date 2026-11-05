@@ -114,7 +114,10 @@ test('the production build loads the shared policy before every category client'
    const policy=scripts.findIndex(s=>s.startsWith('/listing-policy.js'));
    const client=scripts.findIndex(s=>s.startsWith('/catalog-page-client.js'));
    assert.ok(policy>=0&&policy<client,filename);
-   assert.match(scripts[client],/v=elegibilidade-inicio-20261031/);
+   assert.match(scripts[client],/v=catalog-fallback-20261105/);
+   const runtime=scripts.findIndex(s=>s.startsWith('/runtime-compat.js'));
+   assert.ok(runtime>=0&&runtime<client,filename);
+   assert.match(scripts[runtime],/v=catalog-fallback-20261105/);
    // Resolve como o navegador: o base também afeta links de fragmento.
    for (const path of filename.endsWith('/index.html') ? [filename, filename.replace(/index\.html$/, ''), filename.replace(/\/index\.html$/, '')] : [filename]) {
     const documentURL = new URL('/' + path, 'https://example.com');
