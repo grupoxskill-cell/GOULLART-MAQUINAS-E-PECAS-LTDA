@@ -27,6 +27,8 @@ for await (const f of arquivos(SAIDA)) {
   const antes = t;
   if(f.endsWith(".html") && /src="\/catalog-page-client\.js/.test(t) && !/src="\/?listing-policy\.js/.test(t)) t=t.replace(/<script(?=[^>]*src="\/catalog-page-client\.js)/,'<script defer src="/listing-policy.js?v=locacoes-20261031-2"></script><script');
   if(f.endsWith(".html") && !t.includes('src="/catalog-data.js')) t=t.replace(/<script(?=[^>]*src="\/(?:app|catalog-page-client)\.js)/,'<script defer src="/catalog-data.js?v=correcoes-20261031-2"></script><script');
+  // Páginas individuais das máquinas (ficha completa) linkadas a partir dos cards.
+  if(f.endsWith(".html") && !t.includes('src="/paginas-maquinas.js')) t=t.replace(/<script(?=[^>]*src="\/(?:app|catalog-page-client)\.js)/,'<script defer src="/paginas-maquinas.js?v=20261105"></script><script');
   if(f.endsWith(".html") && /src="\/(?:app|catalog-page-client)\.js/.test(t) && !t.includes('src="/catalog-navigation.js')) t=t.replace('</body>','<script defer src="/catalog-navigation.js?v=correcoes-20261031-2"></script></body>');
   if(f.endsWith(".html")) t=t.replace(/((?:catalog-data|catalog-navigation|catalog-routes|area-pages|organized-areas|mobile-navigation|catalog-page-client|app)\.js)\?v=[^"'<>\s]+/g, '$1?v=correcoes-20261031-2').replace(/(organized-areas\.css)\?v=[^"'<>\s]+/g, '$1?v=correcoes-20261031-2');
   if(f.endsWith(".html")) t=t.replace(/((?:mobile-navigation|catalog-page-client)\.js)\?v=[^"'<>\s]+/g, '$1?v=elegibilidade-inicio-20261031');
