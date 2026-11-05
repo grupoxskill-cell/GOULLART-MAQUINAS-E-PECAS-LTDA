@@ -12,4 +12,4 @@ body.catalog-page .catalog-page-heading form{display:flex;flex-direction:row;ali
 .catalog-page-categories a{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;padding:8px 12px;background:#eef3f8;border:1px solid #d7e1eb;border-radius:8px;text-decoration:none;font-size:13px;font-weight:700;max-width:100%}
 .catalog-page-categories a strong{display:grid;place-items:center;min-width:26px;min-height:26px;border-radius:6px;background:#f5c32b;color:#092b49;font-size:13px}
 .catalog-page-categories a[aria-current=page]{background:#092b49;color:#fff;border-color:#092b49}
-@media(max-width:430px){.catalog-page-categories{padding:12px}.catalog-page-categories a{flex:1 1 46%;font-size:12px;gap:6px;padding:8px}.catalog-page-categories a span{overflow-wrap:anywhere}}
+@media(max-width:430px){.catalog-page-categories{padding:12px}.catalog-page-categories a{flex:1 1 100%;font-size:12px;gap:6px;padding:8px}.catalog-page-categories a span{overflow-wrap:normal}}
