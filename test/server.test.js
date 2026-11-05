@@ -126,7 +126,10 @@ test('cada máquina tem página própria com prévia para WhatsApp e Google', as
   assert.match(html, /og:image" content="https:\/\/www\.goullartmaquinaspesadas\.com\.br\/maquinas\//);
   assert.match(html, /"@type":"Product"/);
   assert.equal((await fetch(base + '/maquina/nao-existe.html')).status, 404);
-  assert.match(await (await fetch(base + '/sitemap.xml')).text(), /maquina\/escavadeira-komatsu-pc200-2018\.html/);
+  const mapa = await (await fetch(base + '/sitemap.xml')).text();
+  assert.match(mapa, /maquina\/escavadeira-komatsu-pc200-2018\.html/);
+  assert.match(mapa, /<loc>https:\/\/www\.goullartmaquinaspesadas\.com\.br\/ofertas\/<\/loc>/);
+  assert.match(mapa, /\/maquinas\/escavadeira\/<\/loc>/);
 });
 
 test('contador conta visitas e cliques, ignora repetição e referência desconhecida', async () => {
