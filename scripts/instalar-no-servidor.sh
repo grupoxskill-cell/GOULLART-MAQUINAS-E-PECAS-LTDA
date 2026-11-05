@@ -24,6 +24,8 @@ SERVICO="${SERVICO:-/etc/systemd/system/goullart-app.service}"
 NGINX="${NGINX:-$(command -v nginx || echo /www/server/nginx/sbin/nginx)}"
 BIN="${BIN:-/usr/local/bin/goullart-atualizar-site}"
 CRON_FILE="${CRON_FILE:-/etc/cron.d/goullart-site}"
+BACKUP_DIR="${BACKUP_DIR:-/www/goullart-backups}"
+BACKUP_BIN="${BACKUP_BIN:-/usr/local/bin/goullart-backup-dados}"
 AUTOMATICO="${AUTOMATICO:-0}"
 SEM_APP="${SEM_APP:-0}"
 DATA=$(date +%Y%m%d-%H%M%S)
@@ -59,7 +61,8 @@ sincronizar() {
   versao=$(curl -fsSL -H "Accept: application/vnd.github.sha" "https://api.github.com/repos/$REPO/commits/$branch" || true)
   if [ -n "$versao" ] && [ -d "$pasta" ] && [ "$(cat "$pasta/.versao" 2>/dev/null)" = "$versao" ]; then return 1; fi
   rm -rf "$TMP/$branch" && mkdir -p "$TMP/$branch" "$(dirname "$pasta")" || falhar "não consegui preparar as pastas de $branch."
-  curl -fsSL "https://github.com/$REPO/archive/${versao:-refs/heads/$branch}.tar.gz" | tar -xz -C "$TMP/$branch" \
+  # --no-same-owner/-permissions: nada do pacote vira arquivo de root com permissão especial.
+  curl -fsSL "https://github.com/$REPO/archive/${versao:-refs/heads/$branch}.tar.gz" | tar -xz --no-same-owner --no-same-permissions -C "$TMP/$branch" \
     || falhar "download de $branch falhou. Nada foi alterado."
   origem=$(dirname "$(ls "$TMP/$branch"/*/"$teste" 2>/dev/null | head -1)")
   [ -f "$origem/$teste" ] || falhar "download de $branch incompleto. Nada foi alterado."
@@ -219,12 +222,32 @@ fi
 # ---------- 3. Atualização automática ----------
 if [ "$AUTOMATICO" != "1" ]; then
   curl -fsSL "$SCRIPT_URL" -o "$BIN.tmp" && bash -n "$BIN.tmp" && chmod 755 "$BIN.tmp" && mv "$BIN.tmp" "$BIN"
+  # Backup diário dos dados privados (CRM, senha, token, Radar, fotos): 14 cópias em $BACKUP_DIR, só root lê.
+  mkdir -p "$BACKUP_DIR" && chmod 700 "$BACKUP_DIR"
+  cat > "$BACKUP_BIN" <<BKP
+#!/usr/bin/env bash
+# Backup dos dados do ADM GOULLART. Restaurar: systemctl stop goullart-app; tar -xzf ARQUIVO -C /; systemctl start goullart-app
+set -euo pipefail
+umask 077
+DADOS="$DADOS"; DESTINO="$BACKUP_DIR"; MANTER=14
+[ -d "\$DADOS" ] || exit 0
+ARQ="\$DESTINO/goullart-dados-\$(date +%Y%m%d-%H%M%S).tar.gz"
+tar -czf "\$ARQ.tmp" -C / "\${DADOS#/}" && mv "\$ARQ.tmp" "\$ARQ"
+tar -tzf "\$ARQ" >/dev/null || { echo "backup corrompido: \$ARQ"; rm -f "\$ARQ"; exit 1; }
+ls -1t "\$DESTINO"/goullart-dados-*.tar.gz | tail -n +\$((MANTER+1)) | xargs -r rm -f
+echo "\$(date '+%F %T') backup ok: \$ARQ (\$(du -h "\$ARQ" | cut -f1))"
+BKP
+  chmod 700 "$BACKUP_BIN"
+  "$BACKUP_BIN" || echo "AVISO: o primeiro backup falhou; veja $BACKUP_BIN"
   cat > "$CRON_FILE" <<CRON
 # Atualiza o site e o ADM da GOULLART a partir do GitHub (instalado por $SCRIPT_URL)
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 */10 * * * * root AUTOMATICO=1 flock -n /tmp/goullart-site.lock $BIN >> /var/log/goullart-site.log 2>&1
+# Backup diário dos dados privados do ADM (14 cópias em $BACKUP_DIR)
+17 3 * * * root $BACKUP_BIN >> /var/log/goullart-backup.log 2>&1
 CRON
   chmod 644 "$CRON_FILE"
   echo "ATUALIZAÇÃO AUTOMÁTICA LIGADA: o servidor confere o GitHub a cada 10 minutos."
+  echo "BACKUP DIÁRIO LIGADO: $BACKUP_DIR (14 cópias; restauração explicada em $BACKUP_BIN)."
   echo "PRONTO."
 fi

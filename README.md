@@ -87,6 +87,8 @@ O `render.yaml` está pronto para Node, `npm run build`, `npm start` e health ch
 
 ## Segurança
 
+Backup diário dos dados privados do ADM (`/www/goullart-dados`): o instalador grava `/usr/local/bin/goullart-backup-dados` e um cron às 03h17 que guarda 14 cópias em `/www/goullart-backups` (só root lê). Restaurar: `systemctl stop goullart-app; tar -xzf /www/goullart-backups/ARQUIVO.tar.gz -C /; systemctl start goullart-app`. Copie as cópias para fora da VM de tempos em tempos.
+
 Nunca incluir `.env`, tokens, dados de CRM, fornecedores, custos ou chaves de API na pasta pública. O script legado `chat.js` permanece vazio para evitar novas chamadas por HTML antigo. Configurações do iZap não são alteradas por este site.
 
 ## Domínio: configuração possível, ainda não aplicada
