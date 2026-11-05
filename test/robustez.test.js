@@ -175,3 +175,14 @@ test('token do Radar fica só como hash no servidor e aparece uma única vez', a
   const r = await fetch(`${base}/adm/entrada/radar`, { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: JSON.stringify({ titulo: 'Escavadeira hash', categoria: 'Escavadeiras', link: 'https://exemplo.com/h1' }) });
   assert.equal(r.status, 201);
 });
+
+test('senha antiga (custo padrão) continua entrando e a nova é gravada com custo maior', async () => {
+  const { hashSenha, senhaConfere, CUSTO_SENHA } = await import('../lib/auth.js');
+  const antiga = { sal: 'ab'.repeat(8), hash: hashSenha('minha-senha', 'ab'.repeat(8), 2 ** 14).hash }; // sem "custo", como as configs antigas
+  assert.equal(await senhaConfere('minha-senha', antiga), true);
+  assert.equal(await senhaConfere('outra', antiga), false);
+  const nova = hashSenha('minha-senha');
+  assert.equal(nova.custo, CUSTO_SENHA);
+  assert.equal(await senhaConfere('minha-senha', nova), true);
+  assert.equal(await senhaConfere('x', { sal: 'a', hash: 'zz' }), false);
+});
