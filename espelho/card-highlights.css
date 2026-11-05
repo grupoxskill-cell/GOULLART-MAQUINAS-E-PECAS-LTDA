@@ -1,0 +1,44 @@
+/* GOULLART — destaque de modelo e preço sem alterar fotos ou dados do catálogo.
+   Isolado nos cards da vitrine. Anima somente o brilho, sem esconder o valor. */
+.products .product h3,
+.products .product h3 a {
+  color: #061e42;
+  font-weight: 900;
+  letter-spacing: -.025em;
+  line-height: 1.2;
+}
+.products .product h3 {
+  display: block;
+  padding: .72rem .85rem;
+  border-left: 5px solid #f7ba00;
+  border-radius: 9px;
+  background: linear-gradient(105deg, #fff0a3 0%, #ffd339 58%, #ffbf00 100%);
+  overflow-wrap: anywhere;
+}
+.products .product .price {
+  display: inline-block;
+  max-width: 100%;
+  margin: .65rem 0 .7rem;
+  padding: .55rem .8rem;
+  border: 2px solid #ffc400;
+  border-radius: 12px;
+  background: #061e42;
+  color: #fff;
+  font-size: clamp(1.12rem, 2.2vw, 1.65rem);
+  font-weight: 900;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+  box-shadow: 0 0 0 2px rgba(255,196,0,.22), 0 0 14px rgba(255,196,0,.34);
+  animation: goullartPrecoBrilho 3s ease-in-out infinite;
+}
+@keyframes goullartPrecoBrilho {
+  0%,100% { box-shadow: 0 0 0 2px rgba(255,196,0,.22), 0 0 9px rgba(255,196,0,.25); }
+  50% { box-shadow: 0 0 0 3px rgba(255,196,0,.6), 0 0 19px rgba(255,196,0,.65); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .products .product .price { animation: none; }
+}
+@media (max-width: 620px) {
+  .products .product h3 { font-size: 1rem; padding: .6rem; }
+  .products .product .price { font-size: 1.05rem; padding: .5rem .55rem; }
+}
