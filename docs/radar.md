@@ -5,7 +5,7 @@ O fluxo foi combinado com Júnior em 31/10/2026:
 1. Júnior (ou a equipe) **encaminha para o WhatsApp oficial (62) 99942-7276** os anúncios de máquinas dos grupos e do canal, a partir do número **o número pessoal do Júnior**.
 2. A cada 3 horas, a rotina lê o que chegou e só segue com **ofertas de verdade**:
    - **anúncio real:** o link abre, o anúncio está no ar e tem foto da própria máquina;
-   - **recente:** publicado há no máximo 7 dias;
+   - **recente:** publicado há no máximo 15 dias;
    - **com localização:** cidade e estado;
    - **abaixo do mercado:** pelo menos 15% abaixo das máquinas parecidas do catálogo (`lib/radar.js`).
 3. Para cada barata, a rotina faz uma **arte** e manda para o Júnior com um código `RADAR-AAMMDD-NN`.

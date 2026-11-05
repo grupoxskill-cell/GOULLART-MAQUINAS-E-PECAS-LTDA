@@ -15,7 +15,7 @@ Site da GOULLART (máquinas pesadas, peças, locação) em `www.goullartmaquinas
 ## Regras fixas de Júnior (dono)
 
 1. **Nada vai para o site sem o SIM de Júnior com o código exato** (`SIM RADAR-AAMMDD-NN`). Na dúvida, não publica.
-2. Só **ofertas reais, recentes (≤ 7–15 dias) e com cidade/estado**; pelo menos 15% abaixo das parecidas.
+2. Só **ofertas reais, recentes (≤ 15 dias) e com cidade/estado**; pelo menos 15% abaixo das parecidas.
 3. **Fonte, link do anúncio, contato/nome do vendedor e preço de origem nunca** vão para o GitHub, para a arte nem para o site.
 4. Preço do site = preço de origem + R$ 20.000 (margem do ADM).
 5. Só máquinas: nada de Aurora, BotConversa ou outros projetos no site.

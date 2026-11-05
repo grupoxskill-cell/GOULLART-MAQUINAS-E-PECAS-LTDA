@@ -182,7 +182,9 @@ test('entrada do Radar: token, ficha interna, repetição e foto com marca d\'á
   assert.equal(item.status, 'novo');
   assert.equal(item.fotos.length, 2);
   assert.equal(item.fotosMarca.length, 1);
-  assert.equal((await fetch(`${base}/${item.fotosMarca[0]}`)).status, 200);
+  // Foto de oferta ainda não publicada: só quem está logado no ADM vê; visitante recebe 404.
+  assert.equal((await fetch(`${base}/${item.fotosMarca[0]}`)).status, 404);
+  assert.equal((await fetch(`${base}/${item.fotosMarca[0]}`, { headers: { Cookie: cookie } })).status, 200);
 
   assert.equal((await enviar(cookie, `/adm/api/radar/${item.id}/publicar`, 'POST')).status, 200);
   const publica = (await (await fetch(base + '/maquinas.json')).json()).find((m) => m.titulo === corpo.titulo);
