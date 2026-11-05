@@ -1,6 +1,7 @@
 // Publica no site uma máquina do Radar aprovada pelo Júnior ("SIM RADAR-AAMMDD-NN" no WhatsApp).
 // Uso: node scripts/radar/publicar.mjs dados.json
-// dados.json: { codigo, titulo, categoria, ano, horas, local ("Cidade - UF"), precoSite (número), fotos [até 3 caminhos locais] }
+// dados.json: { codigo, titulo, categoria, ano, horas, local ("Cidade - UF"), precoSite (número), precoMercado (número, opcional:
+//               mediana pública das parecidas, vira o selo "abaixo do mercado" em /ofertas), fotos [até 3 caminhos locais] }
 // Só grava dados públicos em public/maquinas.json. Não aceita fonte, contato ou preço de origem.
 import { copyFile, readFile, writeFile } from "node:fs/promises";
 import { extname } from "node:path";

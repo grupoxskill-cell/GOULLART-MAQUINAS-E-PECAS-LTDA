@@ -61,3 +61,13 @@ test('valorEmReais do ADM também entende milhão, mil e k', async () => {
   assert.equal(valorEmReais('R$ 259.000,00'), 259000);
   assert.equal(valorEmReais('R$ 850'), null);
 });
+
+test('oferta pública: selo abaixo do mercado sem revelar o preço de origem', async () => {
+  const { ofertaPublica } = await import('../lib/radar.js');
+  const e = entradaPublica({ codigo: 'RADAR-261104-08', titulo: 'Escavadeira Sany SY215C', categoria: 'Escavadeiras', ano: '2021', horas: '5000', local: 'Belo Horizonte/MG', precoSite: 339000, precoMercado: 490000, fotos: ['maquinas/x-1.jpg'] });
+  assert.equal(e.mercado, 'R$ 490.000'); assert.equal(e.desconto, 31);
+  assert.ok(!JSON.stringify(e).includes('319000'), 'preço de origem não entra');
+  assert.deepEqual(ofertaPublica('R$ 339.000', 'R$ 490.000', '2026-11-04'), { verified: true, price: 339000, referencePrice: 490000, discountPercent: 31, reviewedAt: '2026-11-04' });
+  assert.equal(ofertaPublica(339000, 300000, '2026-11-04'), undefined, 'mercado abaixo do site não é oferta');
+  assert.equal(entradaPublica({ codigo: 'RADAR-261104-09', titulo: 'X', categoria: 'Escavadeiras', local: 'Goiânia/GO', precoSite: 100000 }).mercado, undefined);
+});

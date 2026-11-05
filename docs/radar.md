@@ -76,7 +76,8 @@ O iZap é usado pelas ferramentas `mcp__Izap__*`. O negócio é `API AGRO GOULLA
    Origem R$ X · Site R$ X+20 mil · <N>% abaixo de <K> parecidas
    Fonte: <grupo/canal/link> · Vendedor: <contato>
    Responda SIM RADAR-AAMMDD-NN para publicar ou NÃO RADAR-AAMMDD-NN.
-   #dados {"codigo":"…","titulo":"…","categoria":"…","ano":"…","horas":"…","local":"Cidade - UF","precoSite":000000}
+   #dados {"codigo":"…","titulo":"…","categoria":"…","ano":"…","horas":"…","local":"Cidade - UF","precoSite":000000,"precoMercado":000000}
+   (`precoMercado` = mediana pública das parecidas; com ele a máquina ganha o selo "abaixo do mercado" em /ofertas. Preço de origem nunca.)
    ```
 9. No fim, mande ao Júnior **um** resumo curto, só se houve anúncio na rodada: "Radar 14h: 6 anúncios, 2 ofertas enviadas, 2 acima do mercado, 1 antigo, 1 sem cidade." Se não chegou nada, não mande mensagem.
 
