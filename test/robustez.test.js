@@ -102,3 +102,15 @@ test('cópia do ChatGPT recusa copiar o próprio domínio', async () => {
   const [codigo] = await once(p, 'exit');
   assert.equal(codigo, 1);
 });
+
+test('máquina do Radar publicada pelo repositório aparece na vitrine da página inicial', async () => {
+  const r = await fetch(base + '/adm/catalogo.json');
+  assert.equal(r.status, 200);
+  const { items } = await r.json();
+  const pc200 = items.find((i) => i.publicCode === 'RADAR-PC200-2018');
+  assert.ok(pc200, 'RADAR-PC200-2018 deveria estar no feed');
+  assert.equal(pc200.category, 'maquinas');
+  assert.equal(pc200.price, 259000);
+  assert.equal(pc200.image, '/maquinas/radar-komatsu-pc200-2018-1.jpg');
+  assert.equal(pc200.publishedAt, '2026-10-22');
+});
