@@ -16,6 +16,10 @@ jobs:
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
+      - name: Nunca gravar direto no master
+        # Código copiado de um site de terceiros só entra no master por PR revisado.
+        run: |
+          case "$GITHUB_REF_NAME" in importar-chatgpt|importar-chatgpt-*) ;; *) echo "::error::Rode este fluxo numa branch importar-chatgpt-*, nunca em $GITHUB_REF_NAME."; exit 1;; esac
       - uses: actions/setup-node@v4
         with:
           node-version: 22

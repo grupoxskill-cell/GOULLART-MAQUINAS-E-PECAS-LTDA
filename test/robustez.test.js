@@ -186,3 +186,16 @@ test('senha antiga (custo padrão) continua entrando e a nova é gravada com cus
   assert.equal(await senhaConfere('minha-senha', nova), true);
   assert.equal(await senhaConfere('x', { sal: 'a', hash: 'zz' }), false);
 });
+
+test('cabeçalhos de proteção: CSP no painel, DENY de frame em tudo e HSTS atrás de HTTPS', async () => {
+  const painel = await fetch(base + '/adm/');
+  assert.match(painel.headers.get('content-security-policy') || '', /default-src 'self'/);
+  assert.match(painel.headers.get('content-security-policy') || '', /frame-ancestors 'none'/);
+  assert.equal(painel.headers.get('x-frame-options'), 'DENY');
+  assert.equal(painel.headers.get('x-content-type-options'), 'nosniff');
+  assert.equal((await fetch(base + '/maquinas.json')).headers.get('strict-transport-security'), null, 'sem HTTPS não manda HSTS');
+  const https_ = await fetch(base + '/maquinas.json', { headers: { 'X-Forwarded-Proto': 'https' } });
+  assert.match(https_.headers.get('strict-transport-security') || '', /max-age=31536000/);
+  const html = await (await fetch(base + '/adm/')).text();
+  assert.ok(!/<script(?![^>]*\bsrc=)/.test(html) && !/<style/.test(html) && !/ style="/.test(html), 'painel não pode ter script/estilo embutido (CSP estrita)');
+});

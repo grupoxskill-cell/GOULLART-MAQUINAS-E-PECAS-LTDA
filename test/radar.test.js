@@ -11,6 +11,13 @@ test('lê preços como escritos no catálogo e nos anúncios', () => {
   assert.equal(precoEmReais('230 mil'), 230000);
   assert.equal(precoEmReais('R$ 259.000,00'), 259000);
   assert.equal(precoEmReais('a combinar'), null);
+  // "milhão" não é "mil": uma máquina de R$ 1,2 milhão não pode virar R$ 1.000 no site.
+  assert.equal(precoEmReais('R$ 1,2 milhão'), 1200000);
+  assert.equal(precoEmReais('R$ 2 milhões'), 2000000);
+  assert.equal(precoEmReais('1.2 milhões'), 1200000);
+  assert.equal(precoEmReais('1,5 mil'), 1500);
+  assert.equal(precoEmReais('R$ 850'), null);
+  assert.equal(precoEmReais('R$ 1.250.000,00'), 1250000);
 });
 test('reconhece marca e modelo', () => {
   assert.equal(marcaDe('Escavadeira Komatsu PC200'), 'komatsu');
@@ -43,4 +50,14 @@ test('só passa anúncio real, recente e com cidade e estado', () => {
   assert.deepEqual(anuncioAprovado({ ...bom, ativo: false, temFotoOriginal: false }, hoje).motivos, ['sem foto real da máquina', 'anúncio fora do ar']);
   assert.equal(localValido('Capital SP'), null);
   assert.equal(localValido('São Paulo/sp'), 'São Paulo - SP');
+});
+
+test('valorEmReais do ADM também entende milhão, mil e k', async () => {
+  const { valorEmReais } = await import('../lib/encontros.js');
+  assert.equal(valorEmReais('R$ 1,2 milhão'), 1200000);
+  assert.equal(valorEmReais('2 MILHÕES'), 2000000);
+  assert.equal(valorEmReais('259 mil'), 259000);
+  assert.equal(valorEmReais('300k'), 300000);
+  assert.equal(valorEmReais('R$ 259.000,00'), 259000);
+  assert.equal(valorEmReais('R$ 850'), null);
 });
