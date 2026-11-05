@@ -149,6 +149,9 @@ add_header X-Frame-Options "SAMEORIGIN" always;
 add_header Referrer-Policy "strict-origin-when-cross-origin" always;
 # Arquivos ocultos e de controle nunca saem do servidor (.git, .env); .well-known fica para o certificado.
 location ~ /\\.(?!well-known/) { return 404; }
+# Página de "não encontrado" com a cara do site (vendida, endereço antigo), em vez da tela padrão do nginx.
+error_page 404 /404.html;
+location = /404.html { internal; }
 location = /cliente { return 302 /?area=maquinas; }
 location = /cliente/ { return 302 /?area=maquinas; }
 location ^~ /adm {
