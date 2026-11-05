@@ -109,7 +109,8 @@ async function atender(req, res) {
 // Nenhum erro de um pedido (corpo cortado, JSON de dados corrompido etc.) pode derrubar o servidor.
 const server = http.createServer((req, res) => {
   atender(req, res).catch((err) => {
-    console.error("pedido falhou:", req.method, req.url, err?.message || err);
+    // Não registrar query string: ela pode conter identificadores e links privados.
+    console.error("pedido falhou:", req.method, new URL(req.url, "http://localhost").pathname, err?.message || err);
     if (!res.headersSent) res.writeHead(500, { "Content-Type": "text/plain; charset=utf-8" });
     if (!res.writableEnded) res.end("Erro interno.");
   });
