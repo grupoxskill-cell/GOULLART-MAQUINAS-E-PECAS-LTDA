@@ -25,6 +25,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Rodar testes (nada vai ao ar com teste quebrado)
+        run: npm test
       - name: Montar site estático
         run: node scripts/build.mjs
       - name: Conferir versão antes de publicar
