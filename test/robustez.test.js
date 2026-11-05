@@ -210,3 +210,17 @@ test('resumo do ADM lista as máquinas há mais de 30 dias no site', async () =>
   assert.ok(r.envelhecidas.every((m) => m.dias > 30 && m.codigo && m.titulo));
   assert.ok(!r.envelhecidas.some((m) => m.codigo === 'GOUL-291'), 'vendida não entra');
 });
+
+test('máquina do Radar publicada no ADM com preço de mercado vira oferta verificada no catálogo público', async () => {
+  const cookie = await entrar(base);
+  const foto = 'fotos/' + 'b'.repeat(24) + '.jpg';
+  const criado = await (await fetch(base + '/adm/api/radar', { method: 'POST', headers: { Cookie: cookie, Origin: base }, body: JSON.stringify({ titulo: 'Escavadeira Sany SY215C oferta', categoria: 'Escavadeiras', precoOrigem: 319000, fotos: [foto] }) })).json();
+  await fetch(`${base}/adm/api/radar/${criado.id}`, { method: 'PUT', headers: { Cookie: cookie, Origin: base }, body: JSON.stringify({ precoMercado: 490000 }) });
+  assert.equal((await fetch(`${base}/adm/api/radar/${criado.id}/publicar`, { method: 'POST', headers: { Cookie: cookie, Origin: base } })).status, 200);
+  const { items } = await (await fetch(base + '/adm/catalogo.json')).json();
+  const oferta = items.find((i) => i.title.startsWith('Escavadeira Sany SY215C oferta'));
+  assert.ok(oferta, 'publicada deveria estar no catálogo');
+  assert.equal(oferta.price, 339000);
+  assert.deepEqual({ ...oferta.offer, reviewedAt: undefined }, { verified: true, price: 339000, referencePrice: 490000, discountPercent: 31, reviewedAt: undefined });
+  assert.ok(!JSON.stringify(oferta).includes('319000'), 'preço de origem não sai no catálogo público');
+});
