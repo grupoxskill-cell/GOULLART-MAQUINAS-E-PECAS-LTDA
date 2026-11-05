@@ -114,3 +114,52 @@ test('máquina do Radar publicada pelo repositório aparece na vitrine da págin
   assert.equal(pc200.image, '/maquinas/radar-komatsu-pc200-2018-1.jpg');
   assert.equal(pc200.publishedAt, '2026-10-22');
 });
+
+// Revisão de segurança de 05/11/2026.
+async function entrar(b, senha = 'senha-de-teste') {
+  const r = await fetch(b + '/adm/api/entrar', { method: 'POST', body: JSON.stringify({ senha }) });
+  assert.equal(r.status, 200);
+  return r.headers.get('set-cookie').split(';')[0];
+}
+
+test('corpo que não é objeto (null, número) dá 400, não 500', async () => {
+  const cookie = await entrar(base);
+  for (const corpo of ['null', '5', '"x"']) {
+    const r = await fetch(base + '/adm/api/config', { method: 'PUT', headers: { Cookie: cookie, Origin: base }, body: corpo });
+    assert.equal(r.status, 400, corpo);
+  }
+  assert.ok(await vivo());
+});
+
+test('token do Radar só vale no cabeçalho, nunca na URL', async () => {
+  const cookie = await entrar(base);
+  const { token } = await (await fetch(base + '/adm/api/entrada/token', { method: 'POST', headers: { Cookie: cookie, Origin: base } })).json();
+  const naUrl = await fetch(`${base}/adm/entrada/radar?token=${token}`, { method: 'POST', body: JSON.stringify({ titulo: 'X', categoria: 'Escavadeiras' }) });
+  assert.equal(naUrl.status, 401);
+  const noCabecalho = await fetch(`${base}/adm/entrada/radar`, { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: JSON.stringify({ titulo: 'Escavadeira teste', categoria: 'Escavadeiras', link: 'https://exemplo.com/a1' }) });
+  assert.equal(noCabecalho.status, 201);
+});
+
+test('sair derruba a sessão em todos os navegadores', async () => {
+  const a = await entrar(base), b = await entrar(base);
+  assert.equal((await fetch(base + '/adm/api/resumo', { headers: { Cookie: b } })).status, 200);
+  assert.equal((await fetch(base + '/adm/api/sair', { method: 'POST', headers: { Cookie: a, Origin: base } })).status, 200);
+  assert.equal((await fetch(base + '/adm/api/resumo', { headers: { Cookie: a } })).status, 401);
+  assert.equal((await fetch(base + '/adm/api/resumo', { headers: { Cookie: b } })).status, 401);
+});
+
+test('catálogo público responde 304 quando nada mudou', async () => {
+  const r1 = await fetch(base + '/adm/catalogo.json');
+  const etag = r1.headers.get('etag');
+  assert.ok(etag);
+  const r2 = await fetch(base + '/adm/catalogo.json', { headers: { 'If-None-Match': etag } });
+  assert.equal(r2.status, 304);
+});
+
+test('máquina do Radar sem arte nem foto não publica', async () => {
+  const cookie = await entrar(base);
+  const criado = await (await fetch(base + '/adm/api/radar', { method: 'POST', headers: { Cookie: cookie, Origin: base }, body: JSON.stringify({ titulo: 'Pá sem foto', categoria: 'Pás-carregadeiras', precoOrigem: 100000 }) })).json();
+  const r = await fetch(`${base}/adm/api/radar/${criado.id}/publicar`, { method: 'POST', headers: { Cookie: cookie, Origin: base } });
+  assert.equal(r.status, 400);
+  assert.match((await r.json()).erro, /foto/i);
+});

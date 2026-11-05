@@ -67,7 +67,7 @@ async function refreshCatalog(){
  }finally{refreshing=false;}
 }
 const feed=refreshCatalog();
-setInterval(()=>{if(!document.hidden)refreshCatalog().catch(()=>{});},2000);
+setInterval(()=>{if(!document.hidden)refreshCatalog().catch(()=>{});},30000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshCatalog().catch(()=>{});});
 window.addEventListener('online',()=>refreshCatalog().catch(()=>{}));
 window.GoullartFeed=feed;
