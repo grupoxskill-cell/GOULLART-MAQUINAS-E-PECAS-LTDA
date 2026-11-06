@@ -581,5 +581,85 @@
   "textoSite": "Escavadeira SANY SY215C, ano 2021, com 5.000 horas. Localização: Belo Horizonte/MG. Preço: R$ 319.000.",
   "artwork": true,
   "slug": "escavadeira-sany-sy215c-2021"
+ },
+ {
+  "ficha": "arte-2026-11-05",
+  "referencia": "ROB-6117",
+  "titulo": "Escavadeira XCMG XE225BR-I",
+  "categoria": "Escavadeiras",
+  "ano": "2026",
+  "horas": "300 h",
+  "preco": "Preço sob consulta",
+  "local": "Localização sob consulta",
+  "fotos": [
+   "assets/listings/rob-6117.jpg"
+  ],
+  "textoSite": "Escavadeira XCMG XE225BR-I, ano 2026, com 300 horas. Solicite proposta. Preço e localização sob consulta.",
+  "artwork": true,
+  "slug": "escavadeira-xcmg-xe225br-i-2026"
+ },
+ {
+  "ficha": "arte-2026-11-05",
+  "referencia": "GOUL-ART-261105-05",
+  "titulo": "Trator agrícola Valtra BM110",
+  "categoria": "Tratores Agrícolas",
+  "ano": "2003",
+  "horas": "9.930 h",
+  "preco": "R$ 125.000",
+  "local": "Caiapônia/GO",
+  "fotos": [
+   "assets/listings/goul-art-261105-05.jpg"
+  ],
+  "textoSite": "Trator Valtra BM110, ano 2003, com 9.930 horas informadas. Caiapônia/GO. Cabine fechada com ar-condicionado, tração 4x4 e transmissão mecânica. Preço: R$ 125.000.",
+  "artwork": true,
+  "slug": "trator-agricola-valtra-bm110-2003"
+ },
+ {
+  "ficha": "arte-2026-11-05",
+  "referencia": "GOUL-ART-261105-06",
+  "titulo": "Escavadeira John Deere 210G",
+  "categoria": "Escavadeiras",
+  "ano": "2019",
+  "horas": "7.659 h",
+  "preco": "R$ 449.900 — valor a conferir",
+  "local": "Belém/PA",
+  "fotos": [
+   "assets/listings/goul-art-261105-06.jpg"
+  ],
+  "textoSite": "Escavadeira John Deere 210G, ano 2019, com 7.659 horas. Belém/PA. Valor a conferir: R$ 449.900. Consulte a equipe para confirmar o preço.",
+  "artwork": true,
+  "slug": "escavadeira-john-deere-210g-2019"
+ },
+ {
+  "ficha": "arte-2026-11-05",
+  "referencia": "GOUL-ART-261105-07",
+  "titulo": "Escavadeira Komatsu PC240",
+  "categoria": "Escavadeiras",
+  "ano": "2013",
+  "horas": "17.000 h",
+  "preco": "R$ 235.000",
+  "local": "Belo Horizonte/MG",
+  "fotos": [
+   "assets/listings/goul-art-261105-07.jpg"
+  ],
+  "textoSite": "Escavadeira Komatsu PC240, ano 2013, com 17.000 horas informadas. Belo Horizonte/MG. Valor GOULLART: R$ 235.000.",
+  "artwork": true,
+  "slug": "escavadeira-komatsu-pc240-2013"
+ },
+ {
+  "ficha": "arte-2026-11-05",
+  "referencia": "GOUL-ART-261105-08",
+  "titulo": "Escavadeira SANY SY135C",
+  "categoria": "Escavadeiras",
+  "ano": "2021",
+  "horas": "6.000 h",
+  "preco": "R$ 315.000",
+  "local": "Belo Horizonte/MG",
+  "fotos": [
+   "assets/listings/goul-art-261105-08.jpg"
+  ],
+  "textoSite": "Escavadeira SANY SY135C, ano 2021, com 6.000 horas informadas. Belo Horizonte/MG. Valor GOULLART: R$ 315.000.",
+  "artwork": true,
+  "slug": "escavadeira-sany-sy135c-2021"
  }
 ]
