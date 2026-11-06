@@ -144,7 +144,7 @@ function formulario(tipo, item, aoSalvar) {
   };
   let fotos = [...(item?.fotos || [])];
   const prev = h("div", { class: "fotos-prev" });
-  const desenhar = () => prev.replaceChildren(...fotos.map((f) => h("img", { src: `/${f}`, alt: "" })));
+  const desenhar = () => prev.replaceChildren(...fotos.map((f) => h("img", { src: `/adm/${f}`, alt: "" })));
   desenhar();
   const precoSite = h("p", { class: "preco" });
   const calc = () => { const v = Number(String(campos.preco.value).replace(/\D/g, "")); precoSite.textContent = radar && v ? `Preço no site: ${reais(v + resumo.margem)} (origem + ${reais(resumo.margem)})` : ""; };
@@ -206,7 +206,7 @@ async function telaMaquinas(tipo) {
     botoes.push(h("button", { class: "btn sec", onclick: () => conteudo.replaceChildren(formulario(tipo, m, recarregar), h("button", { class: "btn sec", onclick: recarregar }, "Voltar")) }, "Editar"));
     botoes.push(h("button", { class: "btn perigo", onclick: (e) => confirm(`Excluir "${m.titulo}"?`) && acao(e.target, async () => { await api(`/${tipo}/${m.id}`, { method: "DELETE" }); recarregar(); }, "Excluída.") }, "Excluir"));
     return h("article", { class: "item" },
-      m.arte || m.fotos?.[0] ? h("img", { src: `/${m.arte || m.fotos[0]}`, alt: "" }) : h("div", { class: "semfoto" }, "Sem foto"),
+      m.arte || m.fotos?.[0] ? h("img", { src: `/adm/${m.arte || m.fotos[0]}`, alt: "" }) : h("div", { class: "semfoto" }, "Sem foto"),
       h("div", { class: "corpo" },
         h("div", {}, h("span", { class: `selo ${estado}` }, rotulo), " ", h("span", { class: "muted" }, m.categoria)),
         h("strong", {}, m.titulo),
@@ -351,7 +351,7 @@ async function desenharArte(m, preco, fotoIdx, enquadre, formato = "feed") {
   caixa(ctx, M, topo, W - 2 * M, fh, 28, "#e9edf2"); ctx.restore();
   ctx.save(); ctx.beginPath(); ctx.roundRect(M, topo, W - 2 * M, fh, 28); ctx.clip();
   if (fotoIdx >= 0 && m.fotos?.[fotoIdx]) {
-    const foto = await carregarImagem(`/${m.fotos[fotoIdx]}`);
+    const foto = await carregarImagem(`/adm/${m.fotos[fotoIdx]}`);
     const fw = W - 2 * M, escala = Math.max(fw / foto.width, fh / foto.height);
     const dw = foto.width * escala, dh = foto.height * escala;
     ctx.drawImage(foto, M + (fw - dw) / 2, topo + (fh - dh) * enquadre, dw, dh);
@@ -409,7 +409,7 @@ function fichaInterna(m, recarregar) {
         await api(`/radar/${m.id}`, { method: "PUT", body: { fotosMarca: [...marcadas] } });
         recarregar();
       }, caixaMarca.checked ? "Foto fora do site (marca d'água)." : "Foto liberada para o site."));
-      return h("label", { class: "foto-marca" }, h("img", { src: `/${f}`, alt: "" }), h("span", {}, caixaMarca, " marca d'água"));
+      return h("label", { class: "foto-marca" }, h("img", { src: `/adm/${f}`, alt: "" }), h("span", {}, caixaMarca, " marca d'água"));
     })));
     if (marcadas.size) {
       const msg = `Olá! Vi o anúncio da ${m.titulo}${m.ano ? ` ${m.ano}` : ""}. Tenho comprador interessado. Consegue me mandar fotos sem marca d'água e um vídeo da máquina funcionando?`;

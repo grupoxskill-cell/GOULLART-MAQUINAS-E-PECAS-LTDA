@@ -5,7 +5,7 @@ import { garantirConfig } from "../lib/auth.js";
 import { DATA_DIR, prepararPastas } from "../lib/dados.js";
 
 await prepararPastas();
-const senha = await garantirConfig(process.argv.includes("--nova") ? randomBytes(9).toString("base64url") : undefined);
+const senha = await garantirConfig(process.argv.includes("--nova") ? randomBytes(18).toString("base64url") : undefined);
 
 if (senha) {
   console.log(`SENHA DO ADM: ${senha}`);
