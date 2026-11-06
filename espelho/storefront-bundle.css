@@ -1779,3 +1779,6 @@ body.goullart-storefront.approved-layout .goullart-header-tools{gap:10px}
  body.goullart-storefront.approved-layout .channel-invite .channel-invite-cta{font-size:15px!important}
 }
 @media(prefers-reduced-motion:reduce){body.goullart-storefront.approved-layout .goullart-header-vip.channel-invite{transition:none}}
+
+/* Preserva a proporção das artes aprovadas por Júnior. */
+body.approved-layout .product.approved-artwork .product-photo>img{height:auto;aspect-ratio:auto;object-fit:contain}

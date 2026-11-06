@@ -477,5 +477,65 @@
   "fotos": [
    "maquinas/radar-komatsu-pc200-2018-1.jpg"
   ]
+ },
+ {
+  "ficha": "arte-2026-11-05",
+  "referencia": "GOUL-ART-261105-01",
+  "titulo": "Pá-carregadeira John Deere 524K-II",
+  "categoria": "Pás-carregadeiras",
+  "ano": "2020",
+  "horas": "10.626 h",
+  "preco": "R$ 264.500",
+  "local": "Americana/SP",
+  "fotos": [
+   "assets/listings/goul-art-261105-01.jpg"
+  ],
+  "textoSite": "Pá-carregadeira John Deere 524K-II, ano 2020, com 10.626 horas. Localização: Americana/SP. Preço: R$ 264.500.",
+  "artwork": true
+ },
+ {
+  "ficha": "arte-2026-11-05",
+  "referencia": "GOUL-ART-261105-02",
+  "titulo": "Escavadeira Caterpillar 320GC",
+  "categoria": "Escavadeiras",
+  "ano": "2019",
+  "horas": "9.000 h",
+  "preco": "R$ 250.000",
+  "local": "Colinas/MA",
+  "fotos": [
+   "assets/listings/goul-art-261105-02.jpg"
+  ],
+  "textoSite": "Escavadeira Caterpillar 320GC, ano 2019, com 9.000 horas. Localização: Colinas/MA. Preço: R$ 250.000.",
+  "artwork": true
+ },
+ {
+  "ficha": "arte-2026-11-05",
+  "referencia": "GOUL-ART-261105-03",
+  "titulo": "Escavadeira Caterpillar 313D2L",
+  "categoria": "Escavadeiras",
+  "ano": "2018",
+  "horas": "11.460 h",
+  "preco": "R$ 249.900",
+  "local": "Colatina/ES",
+  "fotos": [
+   "assets/listings/goul-art-261105-03.jpg"
+  ],
+  "textoSite": "Escavadeira Caterpillar 313D2L, ano 2018, com 11.460 horas. Localização: Colatina/ES. Preço: R$ 249.900.",
+  "artwork": true
+ },
+ {
+  "ficha": "arte-2026-11-05",
+  "referencia": "GOUL-ART-261105-04",
+  "titulo": "Escavadeira SANY SY215C",
+  "categoria": "Escavadeiras",
+  "ano": "2021",
+  "horas": "5.000 h",
+  "preco": "R$ 319.000",
+  "local": "Belo Horizonte/MG",
+  "fotos": [
+   "assets/listings/goul-art-261105-04.jpg"
+  ],
+  "textoSite": "Escavadeira SANY SY215C, ano 2021, com 5.000 horas. Localização: Belo Horizonte/MG. Preço: R$ 319.000.",
+  "artwork": true
  }
 ]

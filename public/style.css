@@ -304,3 +304,6 @@ a.machine-titulo:hover { text-decoration: underline; }
 }
 @media (max-width: 360px) { .machines { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; } .marcas-trilho { animation: none; } }
+
+.maquina-fotos.approved-artwork img{height:auto;aspect-ratio:auto;object-fit:contain}
+.maquina-descricao{line-height:1.6;overflow-wrap:anywhere}
