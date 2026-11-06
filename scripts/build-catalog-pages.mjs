@@ -2,6 +2,7 @@ import {readFile,writeFile,readdir} from 'node:fs/promises';
 import vm from 'node:vm';
 import '../espelho/catalog-data.js';
 import '../espelho/listing-policy.js';
+import {renderMachineBanner} from './machine-banner.mjs';
 const dataTools=globalThis.GoullartCatalogData;
 const context={window:{}};vm.createContext(context);vm.runInContext(await readFile('espelho/catalog-types.js','utf8'),context);
 const types=context.window.GoullartMachineTypes;
@@ -17,6 +18,8 @@ export async function prepareCatalogue(directory,now=Date.now()){
  for(const filename of files){
   const path=directory+'/'+filename;let html=await readFile(path,'utf8');
   if(filename==='index.html'){
+   html=html.replace(/<section\b[^>]*id="approved-banner"[^>]*>[\s\S]*?<\/section>/,renderMachineBanner(eligibleItems,globalThis.GoullartMachinePagesMap));
+   if(!html.includes('href="/machine-banner.css'))html=html.replace('</head>','<link rel="stylesheet" href="/machine-banner.css?v=20261105-1"></head>');
    // Uma foto original do próprio anúncio para cada categoria disponível.
    for(const [id,label] of types.entries){
     const listing=eligibleItems.find(i=>i.category==='maquinas'&&types.classify(i)===id&&i.image);
