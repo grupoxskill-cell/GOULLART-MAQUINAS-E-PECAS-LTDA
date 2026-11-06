@@ -105,3 +105,26 @@ test('validação rejeitada não grava mutações parciais e a fila continua ope
   assert.equal((await request(`/adm/api/radar/${ids[0]}`, 'PUT', { titulo: 'válido' })).status, 200);
   assert.equal((await ler('radar'))[0].status, undefined);
 });
+
+test('editar configuração durante a renovação do token preserva só o token novo', async () => {
+  const edit = await request('/adm/api/config', 'PUT', { margem: 18000 }, async () => {
+    const token = await request('/adm/api/entrada/token', 'POST');
+    assert.equal(token.status, 200);
+  });
+  assert.equal(edit.status, 200);
+  const cfg = await ler('config');
+  assert.equal(cfg.margem, 18000);
+  assert.ok(cfg.tokenEntradaHash);
+  assert.equal(cfg.tokenEntrada, undefined);
+  assert.equal((await request('/adm/entrada/radar', 'POST', { titulo: 'teste' })).status, 401);
+});
+
+test('sair invalida a edição em andamento e o cookie antigo', async () => {
+  const edit = await request('/adm/api/config', 'PUT', { margem: 1 }, async () => {
+    assert.equal((await request('/adm/api/sair', 'POST')).status, 200);
+  });
+  assert.equal(edit.status, 401);
+  assert.notEqual((await ler('config')).segredo, segredo);
+  assert.notEqual((await ler('config')).margem, 1);
+  assert.equal((await request('/adm/api/radar', 'GET')).status, 401);
+});

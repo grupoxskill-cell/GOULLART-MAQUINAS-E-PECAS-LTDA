@@ -9,7 +9,7 @@ const pasta = await mkdtemp(join(tmpdir(), "goullart-security-"));
 process.env.DATA_DIR = pasta;
 const { prepararPastas, gravar, FOTOS_DIR } = await import("../lib/dados.js");
 const { criarCookie } = await import("../lib/auth.js");
-const { servirFoto } = await import("../lib/adm.js");
+const { servirFoto, rotaAdm } = await import("../lib/adm.js");
 
 const fotoPrivada = "fotos/aaaaaaaaaaaaaaaaaaaaaaaa.jpg";
 const fotoPublicada = "fotos/bbbbbbbbbbbbbbbbbbbbbbbb.jpg";
@@ -22,7 +22,7 @@ for (const p of [fotoPrivada, fotoPublicada, arteInterna]) {
 await gravar("config", { segredo });
 await gravar("radar", [
   { id: "private", status: "novo", fotos: [fotoPrivada], arte: arteInterna },
-  { id: "published", status: "publicado", fotos: [fotoPublicada], arte: arteInterna }
+  { id: "published", status: "publicado", fotos: [fotoPublicada, arteInterna], arte: arteInterna }
 ]);
 await gravar("patio", []);
 
@@ -58,6 +58,16 @@ test("administrador autenticado abre foto privada sem cache público", async () 
   await servirFoto(reqAutenticada(), res, "/" + fotoPrivada);
   assert.equal(res.status, 200);
   assert.equal(res.headers["Cache-Control"], "private, no-store");
+});
+test("o painel usa fotos dentro do caminho do cookie, sem liberar o endereço para visitantes", async () => {
+  const url = "/adm/" + fotoPrivada;
+  const anon = resposta();
+  await rotaAdm({ method: "HEAD", headers: {} }, anon, url);
+  assert.equal(anon.status, 404);
+  const admin = resposta();
+  await rotaAdm(reqAutenticada(), admin, url);
+  assert.equal(admin.status, 200);
+  assert.equal(admin.headers["Cache-Control"], "private, no-store");
 });
 test("diretórios privados permanecem restritos ao usuário do serviço", async () => {
   assert.equal((await stat(pasta)).mode & 0o777, 0o700);
