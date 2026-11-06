@@ -2,13 +2,18 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
+import { comSlugs } from '../lib/paginas.js';
 
 test('mapa de fichas e links nos cards do catálogo gerado', { skip: !existsSync('_site/paginas-maquinas.js') && 'rode node scripts/build.mjs antes' }, () => {
   const js = readFileSync('_site/paginas-maquinas.js', 'utf8');
   const mapa = JSON.parse(js.replace(/^window\.GoullartMachinePages=/, '').replace(/;\s*$/, ''));
+  const maquinas = comSlugs(JSON.parse(readFileSync('public/maquinas.json', 'utf8')));
+  const esperado = Object.fromEntries(maquinas.filter(m => m.referencia && m.slug)
+    .map(m => [m.referencia, `/maquina/${m.slug}.html`]));
+  assert.deepEqual(mapa, esperado, 'cada código deve apontar para a ficha da mesma máquina');
   assert.ok(Object.keys(mapa).length >= 30);
   for (const [codigo, pagina] of Object.entries(mapa)) {
-    assert.match(codigo, /^(GOUL|RADAR)-/);
+    assert.match(codigo, /^(?:(?:GOUL|RADAR)-[A-Za-z0-9-]+|ROB-\d{4})$/);
     assert.ok(existsSync('_site' + pagina), `${codigo}: ${pagina} não existe`);
   }
   const categoria = readFileSync('_site/maquinas/escavadeira/index.html', 'utf8');
