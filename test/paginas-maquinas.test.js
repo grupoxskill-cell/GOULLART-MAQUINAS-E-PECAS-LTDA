@@ -8,7 +8,7 @@ test('mapa de fichas e links nos cards do catálogo gerado', { skip: !existsSync
   const mapa = JSON.parse(js.replace(/^window\.GoullartMachinePages=/, '').replace(/;\s*$/, ''));
   assert.ok(Object.keys(mapa).length >= 30);
   for (const [codigo, pagina] of Object.entries(mapa)) {
-    assert.match(codigo, /^(GOUL|RADAR)-/);
+    assert.match(codigo, /^(?:(?:GOUL|RADAR)-[A-Za-z0-9-]+|ROB-\d{4})$/);
     assert.ok(existsSync('_site' + pagina), `${codigo}: ${pagina} não existe`);
   }
   const categoria = readFileSync('_site/maquinas/escavadeira/index.html', 'utf8');
