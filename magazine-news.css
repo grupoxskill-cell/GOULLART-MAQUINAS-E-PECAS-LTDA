@@ -17,3 +17,14 @@
  .magazine-news-copy time{font-size:9px}
  .magazine-news-copy a{font-size:10px;line-height:1.35;min-height:32px;padding:6px 0}
 }
+
+/* Goullart Magazine: arquivo editorial com capas textuais acessíveis. */
+.magazine-edition-header{background:#fff;border-top:2px solid #f8c820;padding:12px 14px;color:#082040}
+.magazine-edition-header strong{display:block;font-size:17px;letter-spacing:.02em}
+.magazine-edition-header p{margin:5px 0;color:#4c6075;font-size:13px}
+.magazine-text-art{display:flex;flex-direction:column;justify-content:space-between;min-height:260px;aspect-ratio:9/16;background:linear-gradient(140deg,#fff 67%,#f8c820 67%,#082040 78%);color:#082040;border:1px solid #e1e8ef;border-radius:12px;text-decoration:none;padding:18px;box-sizing:border-box;gap:15px}
+.magazine-text-art span{font-size:11px;letter-spacing:.11em;font-weight:800;color:#9b7300}
+.magazine-text-art strong{font-size:clamp(15px,1.7vw,23px);line-height:1.18;overflow-wrap:anywhere}
+.magazine-text-art small{font-size:12px;color:#52657a}
+.magazine-text-art:focus-visible{outline:3px solid #e8b319;outline-offset:2px}
+@media(max-width:700px){.magazine-text-art{min-height:185px;padding:9px;gap:7px;border-radius:7px}.magazine-text-art span{font-size:7px}.magazine-text-art strong{font-size:12px}.magazine-text-art small{font-size:9px}.magazine-edition-header strong{font-size:13px}.magazine-edition-header p{font-size:11px}}
