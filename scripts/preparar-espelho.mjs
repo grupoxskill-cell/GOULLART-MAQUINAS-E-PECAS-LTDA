@@ -25,6 +25,10 @@ for await (const f of arquivos(SAIDA)) {
   if (!/\.(html|css|js|mjs|json)$/.test(f)) continue;
   let t = await readFile(f, "utf-8");
   const antes = t;
+  // Destaque apenas no layout da vitrine; não altera o ADM nem o conteúdo dos anúncios.
+  if (f.endsWith(".html") && !f.includes("/adm/") && t.includes('id="products"') && !t.includes("card-highlights.css")) {
+    t = t.replace(/<\/head>/i, '<link rel="stylesheet" href="/card-highlights.css?v=20261104"></head>');
+  }
   if(f.endsWith(".html") && /src="\/catalog-page-client\.js/.test(t) && !/src="\/?listing-policy\.js/.test(t)) t=t.replace(/<script(?=[^>]*src="\/catalog-page-client\.js)/,'<script defer src="/listing-policy.js?v=locacoes-20261031-2"></script><script');
   if(f.endsWith(".html") && !t.includes('src="/catalog-data.js')) t=t.replace(/<script(?=[^>]*src="\/(?:app|catalog-page-client)\.js)/,'<script defer src="/catalog-data.js?v=correcoes-20261031-2"></script><script');
   // Páginas individuais das máquinas (ficha completa) linkadas a partir dos cards.

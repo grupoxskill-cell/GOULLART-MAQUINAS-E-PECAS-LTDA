@@ -1,0 +1,35 @@
+name: Validar alterações antes de publicar
+
+on:
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verificar sintaxe do build
+        run: node --check scripts/preparar-espelho.mjs
+      - name: Rodar testes
+        run: npm test
+      - name: Gerar site sem publicar
+        run: npm run build
+      - name: Verificar CSS no resultado
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s _site/card-highlights.css
+          grep -q 'card-highlights.css?v=20261104' _site/index.html
+          grep -q 'prefers-reduced-motion' _site/card-highlights.css
+          if grep -q 'card-highlights.css' _site/adm/index.html; then
+            echo "CSS comercial apareceu no ADM" >&2
+            exit 1
+          fi
