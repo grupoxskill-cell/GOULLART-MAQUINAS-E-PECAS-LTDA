@@ -3,6 +3,7 @@
  const main=document.querySelector('main');if(!main)return;
  const hub=document.createElement('section');hub.className='business-cards';hub.setAttribute('aria-label','Áreas GOULLART');
  hub.innerHTML=entries.map(([id,title,desc,image])=>`<a href="${id==='texas'?'/texas.html':'/?area='+id}"><img src="/assets/banners/${image}.jpeg" alt="${title}" loading="lazy"><strong>${title}</strong><span>${desc}</span><b>ACESSAR</b></a>`).join('');
+ hub.insertAdjacentHTML('beforeend','<a href="/curso/"><img src="/assets/course/curso-goullart-compartilhar.jpg" alt="" loading="lazy"><strong>CURSO GOULLART</strong><span>Como vender máquinas online</span><b>ACESSAR</b></a>');
  const banner=document.getElementById('approved-banner');if(banner)banner.after(hub);else main.prepend(hub);
  const params=new URLSearchParams(location.search),route=window.GoullartRoutes.resolve(location.href),area=route.area;
  document.querySelectorAll('a[href="#inicio"]').forEach(a=>a.setAttribute('href','/'));
