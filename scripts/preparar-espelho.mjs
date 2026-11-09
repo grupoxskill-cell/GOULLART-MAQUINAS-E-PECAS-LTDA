@@ -62,6 +62,9 @@ await prepareCatalogue(SAIDA);
 for await (const file of arquivos(SAIDA)) {
  if(!file.endsWith('.html'))continue;
  let html=await readFile(file,'utf8'),original=html;
+ if(!html.includes('href="/site-typography.css')) {
+  html=html.replace(/<\/head>/i,'<link rel="stylesheet" href="/site-typography.css?v=locacoes-20261101-2"></head>');
+ }
  html=html.replace(/<nav class="central-navigation"[^>]*>[\s\S]*?<\/nav>/g,'');
  html=html.replace(/href="\/cliente(?:\/)?"/g,'href="/?area=maquinas"');
  html=html.replace(/href="#maquinas"([^>]*>Explorar o catálogo de peças)/g,'href="#pecas"$1');
