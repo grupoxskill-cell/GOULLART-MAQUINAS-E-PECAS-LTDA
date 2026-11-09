@@ -19,7 +19,7 @@ export async function prepareCatalogue(directory,now=Date.now()){
   const path=directory+'/'+filename;let html=await readFile(path,'utf8');
   if(filename==='index.html'){
    html=html.replace(/<section\b[^>]*id="approved-banner"[^>]*>[\s\S]*?<\/section>/,renderMachineBanner(eligibleItems,globalThis.GoullartMachinePagesMap));
-   if(!html.includes('href="/machine-banner.css'))html=html.replace('</head>','<link rel="stylesheet" href="/machine-banner.css?v=20261105-1"></head>');
+   if(!html.includes('href="/machine-banner.css'))html=html.replace('</head>','<link rel="stylesheet" href="/machine-banner.css?v=sem-faixa"></head>');
    // Uma foto original do próprio anúncio para cada categoria disponível.
    for(const [id,label] of types.entries){
     const listing=eligibleItems.find(i=>i.category==='maquinas'&&types.classify(i)===id&&i.image);

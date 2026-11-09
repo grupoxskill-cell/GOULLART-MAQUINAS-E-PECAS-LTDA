@@ -9,19 +9,12 @@ body.goullart-storefront.approved-layout #approved-banner.machine-banner{max-wid
 #approved-banner.machine-banner .machine-banner-facts{font-size:18px;line-height:1.6;color:#dce5ef;margin:0 0 20px}
 #approved-banner.machine-banner .machine-banner-price{display:block;font-size:clamp(25px,3.5vw,46px);line-height:1.2;color:#ffcc19;margin:0 0 8px}
 #approved-banner.machine-banner .machine-banner-note{color:#ffdf73;font-size:16px;margin:0 0 12px}
-#approved-banner.machine-banner .machine-banner-link{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:8px 20px;margin-top:22px;border-radius:8px;background:#ffcc19;color:#061e38;font-weight:800;text-decoration:none;box-sizing:border-box}
-body.goullart-storefront.approved-layout #approved-banner.machine-banner .approved-controls{display:flex;position:static;width:auto;height:auto;min-height:60px;padding:8px;margin:0;overflow:visible;clip-path:none;white-space:normal;justify-content:center;align-items:center;flex-wrap:wrap;gap:6px;background:#061e38}
-#approved-banner.machine-banner .approved-controls button{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;min-width:44px;padding:0;border-radius:8px;border:1px solid #527392;background:transparent;color:#fff;font-size:17px;cursor:pointer}
-#approved-banner.machine-banner .machine-banner-dots{display:flex;flex-wrap:wrap;justify-content:center;gap:4px}
-#approved-banner.machine-banner .approved-controls [aria-pressed="true"]{background:#ffcc19;color:#061e38;border-color:#ffcc19}
 #approved-banner.machine-banner a:focus-visible,#approved-banner.machine-banner button:focus-visible{outline:3px solid #ffcc19;outline-offset:-3px}
+body.goullart-storefront.approved-layout #approved-banner.machine-banner .approved-controls,
+#approved-banner.machine-banner .machine-banner-link{display:none}
 @media(max-width:700px){
  body.goullart-storefront.approved-layout #approved-banner.machine-banner{margin:10px 10px 22px;border-radius:12px}
  #approved-banner.machine-banner .approved-machine-slide{display:flex;flex-direction:column;height:auto;min-height:0}
  #approved-banner.machine-banner .machine-banner-art{height:min(65vh,580px);width:100%;flex:none}
- #approved-banner.machine-banner .machine-banner-copy{align-self:stretch;padding:8px 12px;text-align:center}
- #approved-banner.machine-banner .machine-banner-copy>*:not(.machine-banner-link){display:none}
- #approved-banner.machine-banner .machine-banner-link{margin:0;min-height:44px;font-size:15px;width:100%}
- #approved-banner.machine-banner .machine-banner-dots{flex-basis:100%;order:2}
- #approved-banner.machine-banner .machine-banner-dots button{width:28px;min-width:28px;height:36px;font-size:13px}
+ #approved-banner.machine-banner .machine-banner-copy{display:none}
 }
