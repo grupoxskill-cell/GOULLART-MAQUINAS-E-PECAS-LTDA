@@ -15,6 +15,20 @@ if (!entrada || !saida) {
   process.exit(1);
 }
 const d = JSON.parse(await readFile(entrada, "utf8"));
+// Regra de Júnior: a arte só vale com foto real da máquina. Sem foto, o pedido vai para fila/erro em vez de sair com um quadro vazio.
+if (!d.foto) {
+  console.error(`${d.codigo ?? entrada}: sem foto original da máquina; arte não gerada.`);
+  process.exit(2);
+}
+for (const campo of ["codigo", "titulo", "local", "fonte"]) {
+  if (typeof d[campo] !== "string" || !d[campo].trim()) throw new Error("Campo obrigatório: " + campo);
+}
+if (!Number.isInteger(d.ano) || !Number.isFinite(d.horas) || d.horas < 0 ||
+    !Number.isFinite(d.precoSite) || d.precoSite <= 0 ||
+    d.precoConfirmado !== true || d.usoFotosAutorizado !== true) {
+  throw new Error("Ficha pendente: ano, horas, preço confirmado ou autorização das fotos");
+}
+if (!/^https:\/\//.test(d.fonte)) throw new Error("Fonte HTTPS obrigatória");
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 const dataUri = async (p) => `data:image/${extname(p).slice(1).replace("jpg", "jpeg")};base64,${(await readFile(p)).toString("base64")}`;
 
@@ -26,7 +40,7 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><style>
 *{box-sizing:border-box;margin:0}body{width:1080px;height:1350px;background:#041832;color:#fff;font-family:"DejaVu Sans",Arial,sans-serif;display:flex;flex-direction:column}
 .topo{display:flex;justify-content:space-between;align-items:center;padding:44px 56px 28px}.topo img{width:230px}
 .selo{background:#f5b800;color:#041832;font-weight:800;font-size:30px;letter-spacing:2px;padding:14px 26px;border-radius:8px}
-.foto{flex:1;margin:0 56px;border-radius:18px;overflow:hidden;background:#0b2a52 center/cover no-repeat;display:flex;align-items:center;justify-content:center}
+.foto{flex:1;margin:0 56px;border-radius:18px;overflow:hidden;background:#0b2a52 center/contain no-repeat;display:flex;align-items:center;justify-content:center}
 .foto span{font-size:34px;color:#8fa6c4;text-align:center;padding:40px}
 .info{padding:36px 56px 0}.info h1{font-size:62px;line-height:1.08;font-weight:800}
 .det{margin-top:18px;font-size:32px;color:#c9d6e6;display:flex;gap:18px;flex-wrap:wrap}.det b{color:#f5b800}
