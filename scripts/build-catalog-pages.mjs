@@ -25,7 +25,7 @@ export async function prepareCatalogue(directory,now=Date.now()){
     const listing=eligibleItems.find(i=>i.category==='maquinas'&&types.classify(i)===id&&i.image);
     if(!listing)continue;
     const re=new RegExp('(<a\\b[^>]*id="tipo-'+id+'"[^>]*>)[\\s\\S]*?(<strong>'+label+'</strong>)');
-    html=html.replace(re,(_,start,end)=>start+'<span class="machine-art-window"><img src="'+esc(listing.image)+'" alt="'+esc(label)+' — foto real do anúncio '+esc(listing.publicCode)+'" loading="lazy" style="width:100%;height:100%;object-fit:cover"></span>'+end);
+    html=html.replace(re,(match,start,end)=>match.includes('class="goullart-category-cover"')?match:start+'<span class="machine-art-window"><img src="'+esc(listing.image)+'" alt="'+esc(label)+' — foto real do anúncio '+esc(listing.publicCode)+'" loading="lazy" style="width:100%;height:100%;object-fit:cover"></span>'+end);
    }
    html=html.replace(/Seja VIP, Entra no canal oficial/g,'Seja VIP: entre no canal oficial');
 
