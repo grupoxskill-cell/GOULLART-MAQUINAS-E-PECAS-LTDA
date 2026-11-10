@@ -25,7 +25,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: radar-fila
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -71,6 +70,7 @@ jobs:
               echo "::warning::$codigo: arte falhou; movido para fila/erro"
               rm -f /tmp/saida/"$codigo"*; mkdir -p fila/erro; git mv -f "$pedido" fila/erro/; continue
             fi
+            node -e 'const f=require("fs"),[p,o,c]=process.argv.slice(1),d=JSON.parse(f.readFileSync(p));f.writeFileSync(o,JSON.stringify({codigo:c,titulo:d.titulo,ano:d.ano,horas:d.horas,local:d.local,precoSite:d.precoSite,fonte:d.fonte}))' "$dados" "/tmp/saida/$codigo.json" "$codigo"
             git rm -q "$pedido"
             processados+=("$codigo")
           done
@@ -78,8 +78,11 @@ jobs:
             # Primeiro grava as artes; só depois tira os pedidos da fila (nada se perde se um envio falhar).
             if git fetch -q origin radar-artes; then git worktree add -q /tmp/artes origin/radar-artes; else git worktree add -q --orphan -b radar-artes /tmp/artes; fi
             cp /tmp/saida/* /tmp/artes/
-            git -C /tmp/artes add RADAR-*
-            git -C /tmp/artes commit -q -m "Radar: artes ${processados[*]}"
+            node scripts/radar/indexar.mjs /tmp/artes
+            git -C /tmp/artes add RADAR-* index.json
+            if ! git -C /tmp/artes diff --cached --quiet; then
+              git -C /tmp/artes commit -q -m "Radar: artes ${processados[*]}"
+            fi
             git -C /tmp/artes push -q origin HEAD:radar-artes
           fi
           if git diff --cached --quiet; then echo "Fila vazia"; exit 0; fi
