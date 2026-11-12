@@ -1782,3 +1782,83 @@ body.goullart-storefront.approved-layout .goullart-header-tools{gap:10px}
 
 /* Preserva a proporção das artes aprovadas por Júnior. */
 body.approved-layout .product.approved-artwork .product-photo>img{height:auto;aspect-ratio:auto;object-fit:contain}
+
+
+/* Menu dourado da GOULLART Pesados */
+#goullart-sidebar {
+  --menu-ink: #101d37;
+  --menu-gold: #b78328;
+  --menu-cream: #fcf7ee;
+  --menu-gold-fill: linear-gradient(135deg, #ffea9e, #ecc055 62%, #d89c29);
+  background: var(--menu-cream);
+  color: var(--menu-ink);
+  border-inline-end: 1px solid var(--menu-gold);
+}
+#goullart-sidebar .sidebar-head {
+  background: var(--menu-cream);
+  border-bottom: 1px solid #d8b66c;
+}
+#goullart-sidebar .sidebar-close {
+  background: var(--menu-gold-fill);
+  border: 1px solid var(--menu-gold);
+  border-radius: 12px;
+  color: var(--menu-ink);
+}
+#goullart-sidebar #main-menu,
+#goullart-sidebar .sidebar-group,
+#goullart-sidebar .sidebar-more {
+  background: transparent;
+}
+#goullart-sidebar .sidebar-group {
+  border-bottom-color: #dbc395;
+}
+#goullart-sidebar .sidebar-label {
+  color: #76501a;
+}
+#goullart-sidebar .sidebar-group > summary,
+#goullart-sidebar #main-menu .sidebar-offers {
+  padding-inline: 14px;
+  border: 1px solid var(--menu-gold);
+  border-radius: 13px;
+  background: var(--menu-gold-fill);
+  box-shadow: 0 3px 7px #714a1522;
+  color: var(--menu-ink);
+  font: 800 clamp(1rem, 4.8vw, 1.25rem)/1.2 "Source Sans 3", Arial, sans-serif;
+  text-transform: uppercase;
+}
+#goullart-sidebar .sidebar-offers > span:first-child {
+  color: inherit;
+}
+#goullart-sidebar .sidebar-group summary > span {
+  border-color: var(--menu-ink);
+}
+#goullart-sidebar #main-menu .sidebar-group > div > a,
+#goullart-sidebar #main-menu .sidebar-secondary > a,
+#goullart-sidebar .sidebar-more > summary {
+  margin-block: 2px;
+  padding-inline: 12px;
+  border: 0;
+  border-inline-start: 4px solid #e6ad38;
+  border-radius: 8px;
+  background: #f4ebdb;
+  color: var(--menu-ink);
+  font-size: 1rem;
+  font-weight: 750;
+  text-transform: uppercase;
+}
+#goullart-sidebar #main-menu .sidebar-group > div > a:hover,
+#goullart-sidebar #main-menu .sidebar-secondary > a:hover,
+#goullart-sidebar .sidebar-more > summary:hover {
+  background: #ffe8ac;
+  color: var(--menu-ink);
+}
+#goullart-sidebar .sidebar-secondary span,
+#goullart-sidebar .sidebar-more > summary span {
+  color: #855713;
+}
+#goullart-sidebar #main-menu [hidden] {
+  display: none;
+}
+#goullart-sidebar :is(a, button, summary):focus-visible {
+  outline-color: #855713;
+}
