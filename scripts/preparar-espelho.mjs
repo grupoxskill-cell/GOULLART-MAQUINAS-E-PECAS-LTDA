@@ -35,7 +35,7 @@ for await (const f of arquivos(SAIDA)) {
   if(f.endsWith(".html")) t=t.replace(/((?:listing-policy|app)\.js|site-typography\.css)\?v=[^"'<>\s]+/g, '$1?v=locacoes-20261101-2');
   if(f.endsWith(".html")) t=t.replace(/(area-pages\.js)\?v=[^"'<>\s]+/g, '$1?v=curso-home');
   if(f.endsWith(".html")) t=t.replace(/(src="\/(?:runtime-compat|app|catalog-page-client|hero-offers)\.js)(?:\?v=[^"'<>\s]+)?/g, '$1?v=catalog-fallback-20261105');
-  if(f.endsWith(".html")) t=t.replace(/((?:app|catalog-page-client)\.js|(?:catalog-pages|storefront-bundle)\.css)(?:\?v=[^"'<>\s]+)?/g, '$1?v=menu-dourado-20261111');
+  if(f.endsWith(".html")) t=t.replace(/((?:app|catalog-page-client)\.js|catalog-pages\.css)(?:\?v=[^"'<>\s]+)?/g, '$1?v=artes-20261105').replace(/(storefront-bundle\.css)(?:\?v=[^"'<>\s]+)?/g, '$1?v=menu-dourado-20261111');
   t = t.split(ORIGEM).join(DOMINIO);
   // Script de verificação da Cloudflare do servidor do ChatGPT: não existe no domínio próprio.
   t = t.replace(/<script>\(function\(\)\{function c\(\)\{var b=a\.contentDocument[\s\S]*?<\/script>/g, "");
