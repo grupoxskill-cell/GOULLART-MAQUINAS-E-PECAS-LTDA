@@ -4,6 +4,8 @@ on:
 
 permissions:
   contents: read
+  # A action troca este token OIDC pelo acesso ao GitHub quando não recebe github_token.
+  id-token: write
 
 jobs:
   revisar:

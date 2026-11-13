@@ -252,5 +252,6 @@ test('página de máquina gerada pelo servidor sai com CSP e sem moldura externa
   const csp = r.headers.get('content-security-policy') || '';
   assert.match(csp, /script-src 'self'/);
   assert.match(csp, /frame-ancestors 'none'/);
+  assert.match(csp, /form-action 'self' https:\/\/wa\.me https:\/\/api\.whatsapp\.com/); // formulário de contato abre o WhatsApp
   assert.doesNotMatch(csp, /script-src[^;]*unsafe-inline/);
 });
