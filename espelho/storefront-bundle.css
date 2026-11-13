@@ -1554,7 +1554,7 @@ body.goullart-storefront .business-cards>a{gap:14px;padding-bottom:18px;box-shad
 body.goullart-storefront .business-cards>a>strong{font-family:"Barlow Condensed","Arial Narrow",sans-serif!important;font-size:clamp(24px,2.5vw,32px);font-weight:700;line-height:1.08;letter-spacing:.5px;color:#082344;border-left:5px solid #ffc928;padding:3px 0 3px 10px;margin:3px 15px 0;text-transform:uppercase}
 body.goullart-storefront .business-cards>a>span{font-family:"Source Sans 3",sans-serif!important;font-weight:600;font-size:13px;line-height:1.45;color:#40536a}
 body.goullart-storefront .business-cards>a>b{display:block;margin-top:auto;padding:10px 12px;border-radius:6px;background:#082344;color:#ffd326;font-family:"Source Sans 3",sans-serif!important;font-size:13px;font-weight:700;letter-spacing:.6px;text-align:center}
-@media(max-width:450px){body.goullart-storefront .business-cards>a>strong{font-size:25px;margin-inline:12px;padding-left:8px}body.goullart-storefront .business-cards>a>span{font-size:12px;margin-inline:12px}body.goullart-storefront .business-cards>a>b{margin-inline:12px}}
+@media(max-width:450px){body.goullart-storefront .business-cards>a>strong{font-size:clamp(16px,5vw,22px);overflow-wrap:normal;hyphens:auto;margin-inline:12px;padding-left:8px}body.goullart-storefront .business-cards>a>span{font-size:12px;margin-inline:12px}body.goullart-storefront .business-cards>a>b{margin-inline:12px}}
 
 /* Página inicial sem os dois cabeçalhos destacados pelo proprietário. */
 body.goullart-storefront:not(.area-page) #catalog-results>.machine-catalog-order,

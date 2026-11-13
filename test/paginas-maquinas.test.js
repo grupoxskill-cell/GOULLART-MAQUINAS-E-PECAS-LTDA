@@ -4,8 +4,11 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { comSlugs } from '../lib/paginas.js';
 
-test('mapa de fichas e links nos cards do catálogo gerado', { skip: !existsSync('_site/paginas-maquinas.js') && 'rode node scripts/build.mjs antes' }, () => {
-  const js = readFileSync('_site/paginas-maquinas.js', 'utf8');
+// `npm test` roda o build antes (pretest), então _site está sempre atual aqui.
+const ARQUIVO_MAPA = '_site/paginas-maquinas.js';
+
+test('mapa de fichas e links nos cards do catálogo gerado', { skip: !existsSync(ARQUIVO_MAPA) && 'rode npm test (o pretest gera o _site)' }, () => {
+  const js = readFileSync(ARQUIVO_MAPA, 'utf8');
   const mapa = JSON.parse(js.replace(/^window\.GoullartMachinePages=/, '').replace(/;\s*$/, ''));
   const maquinas = comSlugs(JSON.parse(readFileSync('public/maquinas.json', 'utf8')));
   const esperado = Object.fromEntries(maquinas.filter(m => m.referencia && m.slug)

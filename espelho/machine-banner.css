@@ -13,7 +13,7 @@ body.goullart-storefront.approved-layout #approved-banner.machine-banner{max-wid
 body.goullart-storefront.approved-layout #approved-banner.machine-banner .approved-controls,
 #approved-banner.machine-banner .machine-banner-link{display:none}
 @media(max-width:700px){
- body.goullart-storefront.approved-layout #approved-banner.machine-banner{margin:10px 10px 22px;border-radius:12px}
+ body.goullart-storefront.approved-layout #approved-banner.machine-banner{margin:10px auto 22px;width:calc(100% - 20px);max-width:calc(100% - 20px);border-radius:12px}
  #approved-banner.machine-banner .approved-machine-slide{display:flex;flex-direction:column;height:auto;min-height:0}
  #approved-banner.machine-banner .machine-banner-art{height:min(65vh,580px);width:100%;flex:none}
  #approved-banner.machine-banner .machine-banner-copy{display:none}

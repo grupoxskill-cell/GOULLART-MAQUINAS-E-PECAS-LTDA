@@ -561,7 +561,7 @@ async function publicacoes() {
           item.textoPublico ? h("span", { class: "muted" }, item.textoPublico.slice(0, 160)) : null,
           item.notasPrivadas ? h("details", {}, h("summary", {}, "Notas privadas"), h("p", { class: "muted" }, item.notasPrivadas)) : null,
           h("div", { class: "acoes" }, alternar, h("button", { class: "btn sec", onclick: () => {
-            caixa.replaceChildren(h("div", { style: "grid-column:1/-1" }, formPublicacao(item, (novo) => { Object.assign(item, novo); preencher(); }, preencher)));
+            caixa.replaceChildren(h("div", { class: "linha-inteira" }, formPublicacao(item, (novo) => { Object.assign(item, novo); preencher(); }, preencher)));
           } }, "Editar"))));
     };
     preencher();
