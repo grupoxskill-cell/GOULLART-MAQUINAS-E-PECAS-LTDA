@@ -669,7 +669,9 @@ async function config() {
   salvarAviso.addEventListener("click", () => acao(salvarAviso, async () => { await api("/config", { method: "PUT", body: { avisoWebhook: aviso.value } }); }, "Aviso salvo."));
   const sair = h("button", { class: "btn perigo" }, "Sair do ADM");
   sair.addEventListener("click", async () => { await api("/sair", { method: "POST" }).catch(() => {}); mostrarLogin(); });
+  const painelWhats = await painelWhatsapp();
   conteudo.replaceChildren(
+    painelWhats,
     h("div", { class: "painel" }, h("h2", {}, "Margem do Radar"),
       h("p", { class: "muted" }, "Valor somado ao preço de origem para calcular o preço do site. Vale para as próximas publicações; as já publicadas mantêm o preço."),
       h("label", {}, "Margem (R$)", margem), salvarMargem),
@@ -681,6 +683,51 @@ async function config() {
       h("label", {}, "Endereço do aviso", aviso), salvarAviso),
     h("div", { class: "painel" }, h("h2", {}, "Trocar senha"), h("label", {}, "Senha atual", atual), h("label", {}, "Nova senha (8+ caracteres)", nova), trocar),
     h("div", { class: "painel" }, sair));
+}
+
+// ---------- WhatsApp do Radar (API oficial da Meta) ----------
+// Token e App Secret só vão do navegador para o servidor; o servidor nunca os devolve.
+async function painelWhatsapp() {
+  let st = await api("/whatsapp");
+  const caixa = h("div", { class: "painel" });
+  const dataHora = (s) => (s ? new Date(s).toLocaleString("pt-BR") : "—");
+  function desenhar() {
+    const phone = h("input", { value: st.phoneNumberId || "", inputmode: "numeric", placeholder: "ID do número (Meta > WhatsApp > Configuração da API)" });
+    const aprovador = h("input", { value: "", inputmode: "tel", placeholder: st.aprovadorFinal ? `Salvo: final ${st.aprovadorFinal} (deixe vazio para manter)` : "55 + DDD + número de quem aprova (SIM/NÃO)" });
+    const token = h("input", { type: "password", autocomplete: "off", placeholder: st.tokenSalvo ? "Salvo (deixe vazio para manter)" : "Token permanente do usuário do sistema" });
+    const secret = h("input", { type: "password", autocomplete: "off", placeholder: st.appSecretSalvo ? "Salvo (deixe vazio para manter)" : "App Secret (32 caracteres)" });
+    const versao = h("input", { value: st.versao || "v23.0" });
+    const salvar = h("button", { class: "btn" }, "Salvar WhatsApp");
+    salvar.addEventListener("click", () => acao(salvar, async () => {
+      const corpo = { phoneNumberId: phone.value, versao: versao.value };
+      if (aprovador.value.trim()) corpo.aprovador = aprovador.value;
+      if (token.value.trim()) corpo.token = token.value;
+      if (secret.value.trim()) corpo.appSecret = secret.value;
+      st = { ...st, ...(await api("/whatsapp", { method: "PUT", body: corpo })) };
+      desenhar();
+    }, "WhatsApp salvo."));
+    const teste = h("button", { class: "btn sec" }, "Enviar mensagem de teste ao aprovador");
+    teste.addEventListener("click", () => acao(teste, () => api("/whatsapp/teste", { method: "POST" }), "Teste enviado. Confira o WhatsApp do aprovador."));
+    const novoVerify = h("button", { class: "btn sec" }, "Gerar novo token de verificação");
+    novoVerify.addEventListener("click", () => confirm("Depois será preciso colar o novo token na Meta. Continuar?") &&
+      acao(novoVerify, async () => { st = { ...st, ...(await api("/whatsapp", { method: "PUT", body: { gerarVerifyToken: true } })) }; desenhar(); }, "Token de verificação trocado."));
+    caixa.replaceChildren(
+      h("h2", {}, "WhatsApp do Radar"),
+      h("p", {}, st.pronto ? h("span", { class: "selo publicado" }, "Configurado") : h("span", { class: "selo novo" }, "Falta configurar")),
+      h("p", { class: "muted" }, "Anúncio encaminhado pelo aprovador ao número da empresa vira oferta no Radar. Se for boa, o aprovador recebe a foto com o código e responde SIM RADAR-… para publicar ou NÃO RADAR-…. Mensagens de clientes são ignoradas."),
+      h("div", { class: "grade" }, h("label", {}, "ID do número (Phone number ID)", phone), h("label", {}, "Aprovador", aprovador)),
+      h("div", { class: "grade" }, h("label", {}, "Token de acesso", token), h("label", {}, "App Secret", secret)),
+      h("label", {}, "Versão da API", versao),
+      salvar,
+      h("p", { class: "muted" }, "Na Meta (Webhooks do WhatsApp), cole estes dois valores e assine o campo \"messages\":"),
+      h("label", {}, "URL de retorno (Callback URL)", h("input", { readonly: true, value: st.webhook || "" })),
+      h("label", {}, "Token de verificação (Verify token)", h("input", { readonly: true, value: st.verifyToken || "(salve para gerar)" })),
+      h("div", { class: "acoes" }, teste, novoVerify),
+      h("p", { class: "muted" }, `Última mensagem recebida: ${dataHora(st.ultimoRecebido)} · Último envio: ${dataHora(st.ultimoEnvio)}` +
+        (st.ultimoErro ? ` · Último erro (${dataHora(st.ultimoErro.em)}): ${st.ultimoErro.msg}` : "")));
+  }
+  desenhar();
+  return caixa;
 }
 
 iniciar();
