@@ -47,6 +47,20 @@ test('X-Forwarded-For forjado não escapa do limite de senhas erradas', async ()
   assert.equal(codigos.at(-1), 429);
 });
 
+test('senhas erradas em paralelo não passam do limite de 5 por IP', async () => {
+  const tentativas = Array.from({ length: 20 }, () => fetch(base + '/adm/api/entrar', { method: 'POST', headers: { 'X-Forwarded-For': '9.9.9.9' }, body: JSON.stringify({ senha: 'errada' }) }).then((r) => r.status));
+  const codigos = await Promise.all(tentativas);
+  assert.equal(codigos.filter((c) => c === 401).length, 5);
+  assert.equal(codigos.filter((c) => c === 429).length, 15);
+});
+
+test('senha certa não gasta tentativa: o dono entra várias vezes seguidas', async () => {
+  for (let i = 0; i < 7; i++) {
+    const r = await fetch(base + '/adm/api/entrar', { method: 'POST', headers: { 'X-Forwarded-For': '8.8.4.4' }, body: JSON.stringify({ senha: 'senha-de-teste' }) });
+    assert.equal(r.status, 200);
+  }
+});
+
 test('IP do visitante é o último do X-Forwarded-For (o que o nginx acrescenta)', () => {
   assert.equal(ipCliente({ headers: { 'x-forwarded-for': '6.6.6.6, 200.1.2.3' }, socket: {} }), '200.1.2.3');
   assert.equal(ipCliente({ headers: {}, socket: { remoteAddress: '10.0.0.5' } }), '10.0.0.5');
@@ -263,4 +277,19 @@ test('IP real do visitante atrás do Cloudflare, sem aceitar cabeçalho forjado'
   assert.equal(viaNginx({ 'x-forwarded-for': '200.1.2.3', 'cf-connecting-ip': '9.9.9.9' }), '200.1.2.3');
   // Conexão que não passou pelo nginx local: cabeçalhos não valem.
   assert.equal(ipCliente({ headers: { 'x-forwarded-for': '9.9.9.9' }, socket: { remoteAddress: '203.0.113.7' } }), '203.0.113.7');
+});
+
+test('contador agrupa IPv6 pelo bloco /64 real, mesmo com "::"', async () => {
+  const { rede } = await import('../lib/interesse.js');
+  assert.notEqual(rede('2001:db8::1:2:3:4:5'), rede('2001:db8::1:2:3:4'));
+  assert.equal(rede('2001:db8::1:2:3:4'), rede('2001:0db8:0000:0000:1:2:3:4'));
+  assert.equal(rede('2001:db8::1:2:3:4'), rede('2001:db8:0:0:ffff::9'));
+  assert.equal(rede('::ffff:200.1.2.3'), '200.1.2.3');
+  assert.equal(rede('200.1.2.3'), '200.1.2.3');
+});
+
+test('máquina vendida não gera página, nem entra no maquinas.json ou no sitemap', async () => {
+  const { semVendidas } = await import('../lib/paginas.js');
+  const lista = [{ referencia: 'GOUL-291', titulo: 'Vendida' }, { referencia: 'GOUL-273', titulo: 'À venda' }];
+  assert.deepEqual(semVendidas(lista).map((m) => m.referencia), ['GOUL-273']);
 });

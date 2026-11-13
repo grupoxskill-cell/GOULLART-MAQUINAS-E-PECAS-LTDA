@@ -1,0 +1,18 @@
+/* Fonte única da GOULLART (Montserrat, a mesma da arte "Máquina boa tem história") para as páginas
+ * que não carregam site-typography.css: guias, peças, apresentação e catálogo antigo. */
+@font-face{
+ font-family:"Montserrat GOULLART";
+ src:url('/assets/fonts/montserrat-latin-variable.woff2') format('woff2');
+ font-style:normal;
+ font-weight:100 900;
+ font-display:swap;
+}
+:root{--goullart-font:"Montserrat GOULLART",Montserrat,Arial,sans-serif}
+@layer goullart-typography{
+ html,body,body *:not(svg,svg *){font-family:var(--goullart-font)!important}
+ body{font-weight:500}
+ :is(h1,h2,h3,h4,h5,h6){font-weight:800;letter-spacing:-.02em}
+ h1{font-weight:900}
+ :is(strong,b,button,.btn,.button){font-weight:700}
+ :is(input,textarea)::placeholder{font-family:var(--goullart-font)!important}
+}

@@ -1,7 +1,8 @@
 :root { --ink: #061e42; --brand: #f5b301; --bg: #f3f6fa; --border: #dde3ea; --muted: #5f6b7a; --ok: #126b38; --erro: #b42318; }
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
-body { margin: 0; font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: #1e1e1e; line-height: 1.45; }
+@font-face { font-family: "Montserrat GOULLART"; src: url("/assets/fonts/montserrat-latin-variable.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
+body { margin: 0; font-family: "Montserrat GOULLART", Montserrat, Arial, sans-serif; font-weight: 500; background: var(--bg); color: #1e1e1e; line-height: 1.45; }
 h1, h2, h3 { margin: 0 0 8px; }
 .login { min-height: 100vh; display: grid; place-items: center; padding: 16px; background: var(--ink); }
 .cartao { background: #fff; border-radius: 12px; padding: 20px; display: grid; gap: 12px; width: min(380px, 100%); }
