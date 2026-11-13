@@ -86,6 +86,22 @@ test('telefone do vendedor sem formatação não entra no título', () => {
   assert.equal(lerAnuncio('CAMINHÃO VW 31.330 6X4 2018/2019\nR$ 420.000').titulo, 'CAMINHÃO VW 31.330 6X4 2018/2019');
 });
 
+test('preço de origem nunca entra no título, em nenhum formato', () => {
+  for (const linha of ['À vista R$ 250.000', 'Por apenas R$ 250.000', 'Valor: 250 mil no pix', 'Só R$250.000,00']) {
+    const a = lerAnuncio(`ESCAVADEIRA JOHN DEERE 210G\n${linha}\nAno 2018`);
+    assert.equal(a.titulo, 'ESCAVADEIRA JOHN DEERE 210G', linha);
+    assert.doesNotMatch(a.titulo, /250/);
+  }
+  assert.equal(lerAnuncio('ESCAVADEIRA JOHN DEERE 210G\nÀ vista R$ 250.000').precoOrigem, 250000);
+});
+
+test('data de publicação não vira ano da máquina', () => {
+  const a = lerAnuncio('ESCAVADEIRA JOHN DEERE 210G\nR$ 250.000\nPublicado em 03/11/2026');
+  assert.equal(a.ano, '');
+  assert.equal(a.dataAnuncio, '2026-11-03');
+  assert.equal(lerAnuncio('CAMINHÃO VW 15-180 2008\nR$ 150.000').ano, '2008');
+});
+
 test('preço riscado na mesma linha não apaga o preço novo', () => {
   assert.equal(lerAnuncio('ESCAVADEIRA JOHN DEERE 210G\n~R$ 400.000~ R$ 250.000').precoOrigem, 250000);
   assert.equal(lerAnuncio('ESCAVADEIRA JOHN DEERE 210G\n~R$400.000,00~\nR$ 250.000,00').precoOrigem, 250000);
