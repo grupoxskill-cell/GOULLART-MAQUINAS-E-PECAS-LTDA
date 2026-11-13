@@ -6,7 +6,7 @@ O servidor do site conversa direto com o WhatsApp da empresa. Código em `lib/wh
 
 1. O **aprovador** (Júnior) encaminha o anúncio (fotos + texto) para o **número da empresa**.
 2. A Meta entrega as mensagens em `POST /adm/entrada/whatsapp`. O servidor confere a assinatura (`X-Hub-Signature-256`, App Secret).
-3. Mensagens seguidas do aprovador (até 90 s de intervalo) viram **uma oferta** no Radar do ADM ("Aguardando você"), com a ficha interna (texto original, link, preço de origem).
+3. Cada anúncio vira **uma oferta** no Radar do ADM ("Aguardando você"), com a ficha interna (texto original, link, preço de origem). **O texto fecha o anúncio:** as fotos que chegam antes dele (ou a foto com o texto na legenda) são dele; um texto novo começa o anúncio seguinte. Por isso, encaminhe **as fotos primeiro e o texto depois**. Fotos sozinhas geram um aviso pedindo o texto. O anúncio em montagem fica salvo em disco: um reinício do servidor não o perde.
 4. Se a oferta passa nas regras (`lib/radar.js`: preço, cidade e estado, foto real, pelo menos 15% abaixo das parecidas do catálogo), o aprovador recebe **a foto com o código** `RADAR-AAMMDD-NN`, a origem, o preço do site (origem + margem do ADM) e o desconto. Senão, recebe o motivo; a oferta fica no ADM.
 5. O aprovador responde **`SIM RADAR-AAMMDD-NN`** → a máquina é publicada no site na hora (mesmas regras do botão Publicar do ADM: precisa de foto própria e preço). **`NÃO RADAR-AAMMDD-NN`** → descartada.
 
@@ -15,6 +15,9 @@ Regras que o código garante:
 - Nada vai para o site sem o SIM com o código exato, vindo do aprovador.
 - Fonte, vendedor, link e preço de origem ficam só no ADM. O site recebe título, ano, horas, foto e preço do site.
 - A mesma mensagem entregue duas vezes não repete a oferta; o mesmo anúncio (título + preço) em 7 dias também não.
+- O código `RADAR-AAMMDD-NN` nunca se repete no dia, mesmo se a oferta for apagada no ADM.
+- Telefone ou nome do vendedor no texto não entra no título público.
+- A referência de mercado calculada fica na ficha: depois do SIM, a máquina ganha o selo de oferta no site quando está abaixo do mercado.
 - O token e o App Secret ficam só em `DATA_DIR/config.json` (0600). O painel nunca os mostra de volta. Nada disso vai para o GitHub.
 - Respostas livres do WhatsApp só podem ser enviadas até 24 h depois da última mensagem do aprovador para o número da empresa. Como o fluxo começa com ele encaminhando um anúncio, a janela está sempre aberta.
 

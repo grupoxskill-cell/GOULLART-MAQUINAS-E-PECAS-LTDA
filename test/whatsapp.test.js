@@ -38,6 +38,8 @@ await writeFile(join(dataDir, 'config.json'), JSON.stringify({
   margem: 20000, segredo: 'b'.repeat(64), ...hashSenha('senha-de-teste'),
   whatsapp: { phoneNumberId: PHONE_ID, token: 't'.repeat(40), appSecret: APP_SECRET, verifyToken: 'verifica-123', aprovador: APROVADOR },
 }));
+// Anúncio que estava esperando quando o servidor reiniciou: tem de ser retomado.
+await writeFile(join(dataDir, 'whatsapp-pendente.json'), JSON.stringify({ [APROVADOR]: { textos: ['CAMINHÃO VOLKSWAGEN 15-180\nAno 2008\nR$ 150.000\nAnápolis - GO'], midias: [] } }));
 const child = spawn(process.execPath, ['server.js'], {
   env: { ...process.env, PORT: '4331', DATA_DIR: dataDir, WHATSAPP_API_BASE: 'http://127.0.0.1:4329', WHATSAPP_JUNTAR_MS: '300' },
   stdio: ['ignore', 'pipe', 'pipe'],
@@ -61,6 +63,7 @@ async function postar(obj, assinar = true) {
   return fetch(base + '/adm/entrada/whatsapp', { method: 'POST', headers, body: corpo });
 }
 const radar = async () => JSON.parse(await readFile(join(dataDir, 'radar.json'), 'utf8').catch(() => '[]'));
+const deere2018 = async () => (await radar()).filter((r) => r.titulo === 'ESCAVADEIRA JOHN DEERE 210G' && r.ano === '2018');
 async function ate(cond, ms = 5000) { const fim = Date.now() + ms; while (Date.now() < fim) { if (await cond()) return true; await espera(100); } return false; }
 
 const ANUNCIO = '*VENDO*\n\nESCAVADEIRA JOHN DEERE 210G\nAno 2018\nHorímetro 7.000 horas\nNF DE ORIGEM\n\n~R$400.000,00~\nR$ 250.000,00\nENTRADA R$100.000,00\n📍 Goiânia - GO\nVendedor Fulano (62) 98888-7777';
@@ -72,6 +75,18 @@ test('lê título, ano, horas, preço (sem riscado e sem entrada) e cidade do an
   assert.equal(a.horas, '7.000 h');
   assert.equal(a.precoOrigem, 250000);
   assert.equal(a.local, 'Goiânia - GO');
+});
+
+test('telefone do vendedor sem formatação não entra no título', () => {
+  for (const linha of ['João +55 62 99999 8888', 'Pedro 62999998888', 'Ana (62) 9 9999-8888', 'falar com Zé 62 99999-8888']) {
+    const a = lerAnuncio(`ESCAVADEIRA JOHN DEERE 210G\n${linha}\nAno 2018\nR$ 250.000`);
+    assert.equal(a.titulo, 'ESCAVADEIRA JOHN DEERE 210G', linha);
+  }
+  assert.equal(lerAnuncio('CAMINHÃO VW 31.330 6X4 2018/2019\nR$ 420.000').titulo, 'CAMINHÃO VW 31.330 6X4 2018/2019');
+});
+
+test('anúncio que esperava durante um reinício é retomado', async () => {
+  assert.ok(await ate(async () => enviados.some((e) => e.type === 'text' && /15-180.*sem foto real da máquina/.test(e.text.body))), 'anúncio pendente não foi retomado');
 });
 
 test('verificação da Meta só responde com o token certo', async () => {
@@ -91,7 +106,7 @@ test('mensagem de cliente é ignorada: nada guardado, nada enviado', async () =>
   assert.equal((await postar(payload([texto(CLIENTE, ANUNCIO)]))).status, 200);
   await espera(900);
   assert.equal(enviados.length, antes);
-  assert.equal((await radar()).length, 0);
+  assert.equal((await deere2018()).length, 0);
 });
 
 let codigo;
@@ -103,8 +118,10 @@ test('anúncio encaminhado pelo aprovador vira oferta e a foto vai com o código
   assert.equal(msg.to, APROVADOR);
   codigo = /SIM (RADAR-\d{6}-\d{2})/.exec(msg.image.caption)[1];
   assert.match(msg.image.caption, /Origem R\$ 250\.000 · Site R\$ 270\.000/);
-  const [item] = await radar();
+  const [item] = await deere2018();
   assert.equal(item.codigo, codigo);
+  assert.ok(item.precoMercado > 300000, 'referência de mercado não foi guardada');
+  assert.match(item.classificacao, /Quente|Boa/);
   assert.equal(item.status, 'novo');
   assert.equal(item.origemEntrada, 'whatsapp');
   assert.equal(item.fotos.length, 1);
@@ -117,14 +134,14 @@ test('a mesma mensagem entregue duas vezes não repete a oferta', async () => {
   const m = texto(APROVADOR, ANUNCIO);
   await postar(payload([m])); await postar(payload([m]));
   await espera(900);
-  assert.equal((await radar()).length, 1);
+  assert.equal((await deere2018()).length, 1);
 });
 
 test('SIM com o código publica no site e confirma para o aprovador', async () => {
   await postar(payload([texto(APROVADOR, `SIM ${codigo}`)]));
-  assert.ok(await ate(async () => (await radar())[0].status === 'publicado'));
+  assert.ok(await ate(async () => (await deere2018())[0].status === 'publicado'));
   assert.ok(await ate(async () => enviados.some((e) => e.type === 'text' && e.text.body.includes(`${codigo} publicado`))));
-  const item = (await radar())[0];
+  const item = (await deere2018())[0];
   assert.equal(item.precoSite, 270000);
   const cat = await (await fetch(base + '/adm/catalogo.json')).json();
   const noSite = cat.items.find((i) => i.title.includes('JOHN DEERE 210G') && i.price === 270000);
@@ -155,4 +172,39 @@ test('NÃO com o código descarta a oferta', async () => {
   const outro = (await radar()).find((r) => r.codigo && r.codigo !== codigo);
   await postar(payload([texto(APROVADOR, `NÃO ${outro.codigo}`)]));
   assert.ok(await ate(async () => (await radar()).find((r) => r.id === outro.id).status === 'descartado'));
+});
+
+test('código nunca se repete, mesmo depois de apagar a oferta no ADM', async () => {
+  // Apaga direto do arquivo a oferta com o maior código do dia (como o botão Excluir faz).
+  const lista = await radar();
+  const comCodigo = lista.filter((r) => r.codigo).sort((a, b) => a.codigo.localeCompare(b.codigo));
+  const apagado = comCodigo.at(-1).codigo;
+  await writeFile(join(dataDir, 'radar.json'), JSON.stringify(lista.filter((r) => r.codigo !== apagado)));
+  await postar(payload([foto(APROVADOR, '44444', 'ESCAVADEIRA JOHN DEERE 200G LC\nAno 2022\nR$ 330.000\nCatalão - GO')]));
+  assert.ok(await ate(async () => (await radar()).some((r) => /200G/.test(r.titulo) && r.codigo)));
+  const novo = (await radar()).find((r) => /200G/.test(r.titulo));
+  assert.notEqual(novo.codigo, apagado);
+  assert.ok(novo.codigo > apagado);
+});
+
+test('dois anúncios encaminhados em seguida viram duas ofertas separadas', async () => {
+  await postar(payload([foto(APROVADOR, '55555')]));
+  await postar(payload([texto(APROVADOR, 'ESCAVADEIRA JOHN DEERE 180G\nAno 2019\nR$ 280.000\nItumbiara - GO')]));
+  await postar(payload([foto(APROVADOR, '66666')]));
+  await postar(payload([texto(APROVADOR, 'ESCAVADEIRA DOOSAN DX220 LC\nAno 2023\nR$ 360.000\nJataí - GO')]));
+  assert.ok(await ate(async () => { const l = await radar(); return l.some((r) => /180G/.test(r.titulo)) && l.some((r) => /DOOSAN/.test(r.titulo) && /2023/.test(r.ano) && r.local === 'Jataí - GO'); }), 'anúncios não foram separados');
+  const l = await radar();
+  const deere = l.find((r) => /180G/.test(r.titulo));
+  const doosan = l.find((r) => r.local === 'Jataí - GO');
+  assert.equal(deere.titulo, 'ESCAVADEIRA JOHN DEERE 180G');
+  assert.equal(deere.precoOrigem, 280000);
+  assert.equal(deere.fotos.length, 1);
+  assert.equal(doosan.titulo, 'ESCAVADEIRA DOOSAN DX220 LC');
+  assert.equal(doosan.precoOrigem, 360000);
+  assert.equal(doosan.fotos.length, 1);
+});
+
+test('fotos sem texto: o aprovador é avisado para mandar o texto', async () => {
+  await postar(payload([foto(APROVADOR, '77777')]));
+  assert.ok(await ate(async () => enviados.some((e) => e.type === 'text' && /foto\(s\) sem o texto do anúncio/.test(e.text.body))));
 });
