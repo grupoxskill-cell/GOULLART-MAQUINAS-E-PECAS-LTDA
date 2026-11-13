@@ -103,6 +103,12 @@ test('nome e preço na mesma linha: fica o nome, sai o preço', () => {
   }
 });
 
+test('título curto de marca + modelo é aceito', () => {
+  assert.equal(lerAnuncio('CAT 320D\nAno 2012\nR$ 280.000\nGoiânia - GO').titulo, 'CAT 320D');
+  assert.equal(lerAnuncio('CASE 580N\nAno 2018\nR$ 250.000').titulo, 'CASE 580N');
+  assert.equal(lerAnuncio('CAT 320D R$ 280.000\nAno 2012').titulo, 'CAT 320D');
+});
+
 test('data de publicação não vira ano da máquina', () => {
   const a = lerAnuncio('ESCAVADEIRA JOHN DEERE 210G\nR$ 250.000\nPublicado em 03/11/2026');
   assert.equal(a.ano, '');
