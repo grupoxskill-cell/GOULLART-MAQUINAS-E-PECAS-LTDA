@@ -27,5 +27,11 @@ for (const path of await readdir('_site', {recursive: true})) {
   if (updated !== html) await writeFile(file, updated);
 }
 await writeFile("_site/sitemap.xml", sitemap(maquinas, await tiposDeMaquina()));
+// Mesma fonte em todas as páginas: as que não vêm do espelho recebem fonte-goullart.css.
+for (const rel of (await readdir("_site", { recursive: true })).filter((n) => n.endsWith(".html"))) {
+  const f = `_site/${rel}`, html = await readFile(f, "utf-8");
+  if (/href="\/(?:site-typography|fonte-goullart)\.css/.test(html) || !/<\/head>/i.test(html)) continue;
+  await writeFile(f, html.replace(/<\/head>/i, '<link rel="stylesheet" href="/fonte-goullart.css?v=20261113"></head>'));
+}
 await writeFile("_site/robots.txt", `User-agent: *\nDisallow: /adm\nDisallow: /previa-visual/\nSitemap: ${SITE}/sitemap.xml\n`);
 console.log(`Site estático gerado em _site (${maquinas.length} páginas de máquinas)`);
