@@ -52,6 +52,8 @@ async function servirPaginaMaquina(req, res, slug) {
 }
 
 async function contarInteresse(req, res) {
+  // Só o próprio site conta: outra página não consegue enviar JSON sem pré-voo CORS (que aqui não existe).
+  if (!/^application\/json\b/i.test(req.headers["content-type"] || "") || req.headers["sec-fetch-site"] === "cross-site") return res.writeHead(403).end();
   let corpo = "";
   for await (const parte of req) { corpo += parte; if (corpo.length > 1024) return res.writeHead(413).end(); }
   let dados;
