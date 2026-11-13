@@ -40,7 +40,8 @@ export async function prepareCatalogue(directory,now=Date.now()){
    const type=filename.startsWith('maquinas/')?filename.slice(9,-5):'',offers=filename==='ofertas.html';
    const items=eligibleItems.filter(i=>i.category==='maquinas'&&(!type||types.matches(i,type))&&(!offers||i.offer?.verified===true&&i.offer.price===i.price&&i.offer.discountPercent>=20)).sort((a,b)=>(a.price??Infinity)-(b.price??Infinity));
    const nav=types.entries.filter(([id])=>counts[id]>0).map(([id,label])=>`<a href="/maquinas/${id}"${id===type?' aria-current="page"':''}><span>${esc(label)}</span><strong>${counts[id]}</strong></a>`).join('');
-   html=html.replace(/(<div id="catalog-page-categories">)[\s\S]*?(<\/div><\/nav>)/,'$1'+nav+'$2');
+   if(type)html=html.replace(/<nav\b[^>]*class="catalog-page-categories"[^>]*>[\s\S]*?<\/nav>/,'');
+   else html=html.replace(/(<div id="catalog-page-categories">)[\s\S]*?(<\/div><\/nav>)/,'$1'+nav+'$2');
    html=html.replace(/(<p id="catalog-page-count">)[\s\S]*?(<\/p>)/,'$1'+(items.length?items.length+(items.length===1?' anúncio encontrado':' anúncios encontrados'):'Consulte outras máquinas disponíveis')+'$2');
    const cards=items.map(i=>{
     const link='/?area=maquinas&item='+encodeURIComponent(i.id),contact='https://wa.me/5562999427276?text='+encodeURIComponent('Olá, tenho interesse no anúncio '+i.publicCode+': '+i.title+'. Pode confirmar preço e disponibilidade? https://www.goullartmaquinaspesadas.com.br'+link);
