@@ -661,5 +661,37 @@
   "textoSite": "Escavadeira SANY SY135C, ano 2021, com 6.000 horas informadas. Belo Horizonte/MG. Valor GOULLART: R$ 315.000.",
   "artwork": true,
   "slug": "escavadeira-sany-sy135c-2021"
+ },
+ {
+  "ficha": "arte-2026-11-12",
+  "referencia": "GOUL-HY-2021-10000",
+  "titulo": "Escavadeira Hyundai R220LC-9",
+  "categoria": "Escavadeiras",
+  "ano": "2021",
+  "horas": "10.000 h",
+  "preco": "R$ 380.000",
+  "local": "Belo Horizonte/MG",
+  "fotos": [
+   "assets/listings/h-2021-10000.jpg"
+  ],
+  "textoSite": "Escavadeira Hyundai R220LC-9, ano 2021, 10.000 horas informadas. Belo Horizonte/MG. Máquina informada como revisada, com manutenção em dia e NF de origem. Documentação, estado e disponibilidade sujeitos à conferência antes da negociação.",
+  "artwork": true,
+  "slug": "escavadeira-hyundai-r220lc-9-2021"
+ },
+ {
+  "ficha": "arte-2026-11-12",
+  "referencia": "GOUL-HY-2020-12000",
+  "titulo": "Escavadeira Hyundai R220LC-9",
+  "categoria": "Escavadeiras",
+  "ano": "2020",
+  "horas": "12.000 h",
+  "preco": "R$ 350.000",
+  "local": "Belo Horizonte/MG",
+  "fotos": [
+   "assets/listings/h-2020-12000.jpg"
+  ],
+  "textoSite": "Escavadeira Hyundai R220LC-9, ano 2020, 12.000 horas informadas. Belo Horizonte/MG. Máquina informada como revisada, com manutenção em dia e NF de origem. Documentação, estado e disponibilidade sujeitos à conferência antes da negociação.",
+  "artwork": true,
+  "slug": "escavadeira-hyundai-r220lc-9-2020"
  }
 ]
