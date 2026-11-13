@@ -229,3 +229,12 @@ test('Colar do ChatGPT: importa várias ofertas com as regras do Radar', async (
   const publico = await (await fetch(base + '/maquinas.json')).json();
   assert.ok(!publico.some((m) => /colada/.test(m.titulo)));
 });
+
+test('trocar senha: senha atual errada repetida é travada como no login', async () => {
+  const cookie = await entrar();
+  const tentativa = () => enviar(cookie, '/adm/api/senha', 'POST', { atual: 'chute', nova: 'outra-senha-bem-longa' }, { 'X-Forwarded-For': '198.51.100.9' });
+  for (let i = 0; i < 5; i++) assert.equal((await tentativa()).status, 401);
+  assert.equal((await tentativa()).status, 429);
+  // A senha verdadeira continua valendo a partir de outro endereço.
+  assert.ok(await entrar());
+});

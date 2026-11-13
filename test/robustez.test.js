@@ -7,7 +7,7 @@ import net from 'node:net';
 import { mkdtemp, writeFile, readFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { hashSenha, ipCliente } from '../lib/auth.js';
+import { hashSenha, ipCliente, ehCloudflare } from '../lib/auth.js';
 
 const dataDir = await mkdtemp(join(tmpdir(), 'goullart-robustez-'));
 await writeFile(join(dataDir, 'config.json'), JSON.stringify({ margem: 20000, segredo: 'b'.repeat(64), ...hashSenha('senha-de-teste') }));
@@ -250,4 +250,17 @@ test('sessão: cookie no formato antigo não vale e cookie parado há mais de 2 
   const [exp, ult, ass] = novo.replace('adm=', '').split('.');
   assert.equal(lerSessao({ headers: { cookie: `adm=${exp}.${Number(ult) - 3 * 3600000}.${ass}` } }, segredo), null, 'alterar a hora quebra a assinatura');
   assert.equal((await fetch(base + '/adm/api/resumo', { headers: { Cookie: `adm=${Date.now() + 3600000}.${'a'.repeat(64)}` } })).status, 401);
+});
+
+test('IP real do visitante atrás do Cloudflare, sem aceitar cabeçalho forjado', () => {
+  const viaNginx = (headers) => ipCliente({ headers, socket: { remoteAddress: '127.0.0.1' } });
+  assert.equal(ehCloudflare('172.70.1.2'), true);
+  assert.equal(ehCloudflare('2606:4700:10::1'), true);
+  assert.equal(ehCloudflare('200.1.2.3'), false);
+  // Veio do Cloudflare: vale o CF-Connecting-IP.
+  assert.equal(viaNginx({ 'x-forwarded-for': '189.5.5.5, 172.70.1.2', 'cf-connecting-ip': '189.5.5.5' }), '189.5.5.5');
+  // Veio direto (sem Cloudflare): o CF-Connecting-IP é forjado e é ignorado.
+  assert.equal(viaNginx({ 'x-forwarded-for': '200.1.2.3', 'cf-connecting-ip': '9.9.9.9' }), '200.1.2.3');
+  // Conexão que não passou pelo nginx local: cabeçalhos não valem.
+  assert.equal(ipCliente({ headers: { 'x-forwarded-for': '9.9.9.9' }, socket: { remoteAddress: '203.0.113.7' } }), '203.0.113.7');
 });
