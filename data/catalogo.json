@@ -1,6 +1,6 @@
 [
  {
-  "nome": "ARO MOTRIX XCMG"
+  "nome": "ARO MOTRIZ XCMG"
  },
  {
   "nome": "ARO MOTRIZ"
@@ -25,13 +25,10 @@
   "codigo": "FYB60001992"
  },
  {
-  "nome": "BOMBA HIDRAULICA HPV118 JOHN DEERE 210G / 210GLC FYB60001992 - ZW"
- },
- {
   "nome": "BOMBA HIDRAULICA VOLVO EC220D"
  },
  {
-  "nome": "Bomba Hidráulica Jhon Deere",
+  "nome": "Bomba Hidráulica John Deere",
   "codigo": "yb60001363/hpv118",
   "aplicacao": "John Deere: JD210G; JD250G; 200DLC Tag: 9262320; FYB60000045; YB60001363"
  },
@@ -262,7 +259,7 @@
   "nome": "ROLETES SIMPLES DO D5E"
  },
  {
-  "nome": "ROLETES SUPPERIOR D5E"
+  "nome": "ROLETES SUPERIOR D5E"
  },
  {
   "nome": "ROSARIO D6D",

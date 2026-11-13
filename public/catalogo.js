@@ -5,11 +5,11 @@ const info = document.getElementById("catalogo-info");
 
 document.getElementById("ano").textContent = new Date().getFullYear();
 
-const normalizar = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+const normalizar = (s) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 let pecas = [];
 
 function linkOrcamento(peca) {
-  const texto = `Gostaria de um orçamento da peça:${peca.nome}${peca.codigo ? ` (código ${peca.codigo})` : ""}`;
+  const texto = `Gostaria de um orçamento da peça: ${peca.nome}${peca.codigo ? ` (código ${peca.codigo})` : ""}`;
   return `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(texto)}`;
 }
 
@@ -48,7 +48,8 @@ fetch("/api/catalogo")
   .then((r) => (r.ok ? r.json() : Promise.reject()))
   .catch(() => fetch("catalogo.json").then((r) => r.json()))
   .then((dados) => {
-    pecas = dados.map((p) => ({ ...p, indice: normalizar([p.nome, p.codigo, p.aplicacao].join(" ")) }));
+    if (!Array.isArray(dados)) throw new Error("Catálogo inválido");
+    pecas = dados.map((p) => ({ ...p, indice: normalizar([p.nome, p.codigo, p.aplicacao].filter(Boolean).join(" ")) }));
     render();
   })
   .catch(() => (info.textContent = "Não foi possível carregar o catálogo."));

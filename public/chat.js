@@ -8,15 +8,15 @@ const list = document.getElementById("chat-messages");
 const WHATSAPP_URL = "https://wa.me/5562999427276";
 const history = [];
 
-// Sem o servidor (ex.: site estático no GitHub Pages) a Sophia atende pelo WhatsApp.
-let chatOnline = false;
-fetch("/health")
-  .then((r) => r.ok && r.json())
-  .then((d) => (chatOnline = Boolean(d && d.ok)))
-  .catch(() => {});
+// Sem o servidor (ex.: site estático no GitHub Pages) ou sem a chave da OpenAI,
+// a Sophia atende pelo WhatsApp.
+const chatOnline = fetch("/health")
+  .then((r) => (r.ok ? r.json() : null))
+  .then((d) => Boolean(d && d.ok && d.chat))
+  .catch(() => false);
 
-function setOpen(open) {
-  if (open && !chatOnline) {
+async function setOpen(open) {
+  if (open && !(await chatOnline)) {
     window.open(WHATSAPP_URL, "_blank", "noopener");
     return;
   }
@@ -56,8 +56,8 @@ form.addEventListener("submit", async (e) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ messages: history }),
     });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Erro ao enviar mensagem.");
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.reply) throw new Error(data.error || "Não consegui responder agora.");
     pending.className = "msg assistant";
     pending.textContent = data.reply;
     history.push({ role: "assistant", content: data.reply });

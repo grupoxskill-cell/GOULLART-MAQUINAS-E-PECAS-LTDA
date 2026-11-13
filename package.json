@@ -5,7 +5,8 @@
   "type": "module",
   "description": "Site da Goullart Máquinas e Peças com chat de atendimento via ChatGPT",
   "scripts": {
-    "start": "node --env-file-if-exists=.env server.js"
+    "start": "node --env-file-if-exists=.env server.js",
+    "test": "node --test"
   },
   "engines": {
     "node": ">=22.9"

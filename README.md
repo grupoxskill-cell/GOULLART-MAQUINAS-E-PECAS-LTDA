@@ -22,9 +22,9 @@ O site funciona de dois jeitos:
    npm start
    ```
 
-4. Abra http://localhost:3000 e clique em **💬 Atendimento**.
+4. Abra http://localhost:3000 e clique em **💬 Sophia**.
 
-Não há dependências para instalar.
+Não há dependências para instalar. Para rodar os testes: `npm test`.
 
 ## Publicar na internet (Render, plano gratuito)
 
@@ -50,5 +50,9 @@ para acordar na próxima visita.
 ## Segurança
 
 - A chave da OpenAI fica só no servidor; o navegador conversa apenas com `/api/chat`.
-- Cada IP pode enviar até 20 mensagens por minuto.
+- Cada IP pode enviar até 20 mensagens por minuto (o IP é lido do fim do `X-Forwarded-For`, que o Render preenche, para não ser burlado).
+- Cada resposta do assistente é limitada a 600 tokens e a chamada à OpenAI tem tempo máximo de 30 segundos.
+- O servidor envia cabeçalhos de segurança (CSP, `nosniff`, bloqueio de iframe) e bloqueia acesso a arquivos fora de `public/`.
+- Sem a chave da OpenAI, o botão da Sophia leva direto ao WhatsApp em vez de abrir um chat que não responde.
+- O GitHub roda `npm test` antes de publicar o site.
 - Nunca faça commit do arquivo `.env`.
