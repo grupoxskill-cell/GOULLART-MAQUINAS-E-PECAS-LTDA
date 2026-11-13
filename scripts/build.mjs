@@ -18,6 +18,6 @@ await writeFile("_site/.nojekyll", "");
 await writeFile("_site/maquinas.json", JSON.stringify(maquinas, null, 1));
 await writeFile("_site/paginas-maquinas.js", `window.GoullartMachinePages=${JSON.stringify(globalThis.GoullartMachinePagesMap)};\n`);
 for (const m of maquinas) await writeFile(`_site/maquina/${m.slug}.html`, await paginaMaquina(m, maquinas));
-await writeFile("_site/sitemap.xml", sitemap(maquinas, await tiposDeMaquina()).replace("</urlset>", `  <url><loc>${SITE}/sobre.html</loc></url>\n</urlset>`));
+await writeFile("_site/sitemap.xml", sitemap(maquinas, await tiposDeMaquina()));
 await writeFile("_site/robots.txt", `User-agent: *\nDisallow: /adm\nDisallow: /previa-visual/\nSitemap: ${SITE}/sitemap.xml\n`);
 console.log(`Site estático gerado em _site (${maquinas.length} páginas de máquinas)`);

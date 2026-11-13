@@ -15,6 +15,8 @@
  const title=area==='magazine'?'NOTÍCIAS GOULLART MAGAZINE':area==='ofertas'?'OFERTAS ABAIXO DO MERCADO':area==='implementos'?'IMPLEMENTOS / OUTROS':window.GoullartMachineTypes?.label(params.get('tipo'))||entries.find(e=>e[0]===area)[1];
  document.title=title.toUpperCase()+' | GOULLART';
  page.innerHTML='<a class="area-back" href="/">← VOLTAR AO INÍCIO</a><h1>'+title+'</h1>';
+ // Só um h1 por página: o título oculto do carrossel vira h2 enquanto a área está aberta.
+ document.querySelectorAll('h1.machine-banner-heading,h1.banner-accessible-title').forEach(h=>{const h2=document.createElement('h2');h2.className=h.className;h2.textContent=h.textContent;h.replaceWith(h2);});
  if(area==='ofertas')page.insertAdjacentHTML('beforeend','<p class="offers-intro">MÁQUINAS COM PREÇO ABAIXO DO MERCADO E COMPARAÇÃO CONFERIDA PELA EQUIPE.</p>');
  if(area==='magazine'){const template=document.getElementById('magazine-news-template');if(template)page.append(template.content.cloneNode(true));}
  else if(area==='texas')page.insertAdjacentHTML('beforeend','<article class="texas-info"><img src="/assets/banners/horizontal-botas-texas.jpeg" alt="Botas GOULLART Texas — estudo de personalização"><h2>GOULLART TEXAS</h2><p>Estudo de personalização de botas GOULLART Texas.</p><p>Consulte modelos, tamanhos, valores e disponibilidade com a equipe.</p><a class="button" href="https://wa.me/5562999427276?text=Quero%20informa%C3%A7%C3%B5es%20sobre%20GOULLART%20Texas" target="_blank" rel="noopener">CONSULTAR TEXAS</a></article>');
