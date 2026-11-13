@@ -258,3 +258,19 @@ test('página de máquina gerada pelo servidor sai com CSP e sem moldura externa
   assert.match(csp, /form-action 'self' https:\/\/wa\.me https:\/\/api\.whatsapp\.com/); // formulário de contato abre o WhatsApp
   assert.doesNotMatch(csp, /script-src[^;]*unsafe-inline/);
 });
+
+test('lista de máquinas, sitemap e página da máquina respondem 304 quando nada mudou', async () => {
+  for (const caminho of ['/maquinas.json', '/sitemap.xml']) {
+    const r = await fetch(base + caminho);
+    const etag = r.headers.get('etag');
+    assert.ok(etag, caminho);
+    await r.arrayBuffer();
+    assert.equal((await fetch(base + caminho, { headers: { 'If-None-Match': etag } })).status, 304, caminho);
+  }
+  const m = (await (await fetch(base + '/maquinas.json')).json())[0];
+  const p = await fetch(`${base}/maquina/${m.slug}`);
+  assert.equal(p.status, 200);
+  assert.ok(p.headers.get('content-security-policy'));
+  const r304 = await fetch(`${base}/maquina/${m.slug}`, { headers: { 'If-None-Match': p.headers.get('etag') } });
+  assert.equal(r304.status, 304);
+});
