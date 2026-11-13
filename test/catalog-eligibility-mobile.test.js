@@ -27,6 +27,7 @@ class FixedDate extends Date {constructor(...args){super(...(args.length?args:[n
 
 async function client(items,{type='escavadeira',offers=false,fail=false}={}){
  const nodes=Object.fromEntries(['catalog-page-list','catalog-page-count','catalog-page-categories','catalog-page-sort','page-order'].map(id=>[id,{dataset:{},innerHTML:'',value:'low',addEventListener(){}}]));
+ if(type)delete nodes['catalog-page-categories'];
  const root={dataset:{catalogType:type,catalogOffers:String(offers)}};
  const context={URL,URLSearchParams,Date:FixedDate,location:new URL('https://example.com/maquinas/escavadeira'),history:{replaceState(){}},setInterval(){},CustomEvent:class{},document:{hidden:false,querySelector:()=>root,getElementById:id=>nodes[id],addEventListener(){},dispatchEvent(){}},fetch:async()=>{if(fail)throw Error('offline');return {ok:true,json:async()=>({items})};}};
  context.window=context;context.GoullartRuntime={timeout(){}};vm.createContext(context);
@@ -36,13 +37,11 @@ async function client(items,{type='escavadeira',offers=false,fail=false}={}){
 }
 
 test('live category cards and counts use the homepage eligibility policy',async()=>{
- const before=JSON.stringify(inventory),nodes=await client(inventory),cards=nodes['catalog-page-list'].innerHTML,nav=nodes['catalog-page-categories'].innerHTML;
+ const before=JSON.stringify(inventory),nodes=await client(inventory),cards=nodes['catalog-page-list'].innerHTML;
  assert.equal(nodes['catalog-page-count'].textContent,'2 anúncios encontrados');
  for(const id of ['RECENT','OWNER'])assert.ok(cards.includes(id),id);
  for(const item of inventory.filter(i=>!['RECENT','OWNER'].includes(i.id)))assert.ok(!cards.includes(item.id),item.id);
- assert.match(nav,/Escavadeira<\/span><strong>2<\/strong>/);
- assert.match(nav,/Caminhão Pipa<\/span><strong>1<\/strong>/);
- assert.doesNotMatch(nav,/Pá Carregadeira/);
+ assert.equal(nodes['catalog-page-categories'],undefined);
  assert.match(cards,/src="\/original.jpg"/);assert.match(cards,/https:\/\/wa.me\/5562999427276\?text=/);
  assert.equal(JSON.stringify(inventory),before);
 });
@@ -53,13 +52,14 @@ test('live offers require eligibility as well as a verified matching discount',a
  assert.equal(nodes['catalog-page-count'].textContent,'1 anúncio encontrado');
  assert.match(nodes['catalog-page-list'].innerHTML,/VALID-OFFER/);
  assert.doesNotMatch(nodes['catalog-page-list'].innerHTML,/NO-PHOTO|OLD-OFFER|UNVERIFIED|CHANGED-PRICE/);
+ assert.match(nodes['catalog-page-categories'].innerHTML,/Escavadeira/);
 });
 
 test('an ineligible category is empty; a network failure retains the static snapshot',async()=>{
  const empty=await client([machine('NO-PHOTO',{image:''})]);
  assert.equal(empty['catalog-page-count'].textContent,'0 anúncios encontrados');
  assert.match(empty['catalog-page-list'].innerHTML,/No momento sem unidades/);
- assert.equal(empty['catalog-page-categories'].innerHTML,'');
+ assert.equal(empty['catalog-page-categories'],undefined);
  const offline=await client(inventory,{fail:true});
  assert.equal(offline['catalog-page-list'].dataset.rendered,undefined);
 });
@@ -70,12 +70,13 @@ test('static category and offer snapshots filter eligibility without deleting so
   await mkdir(join(dir,'api'));await mkdir(join(dir,'maquinas'));
   const items=inventory.map(i=>({...i,offer:{verified:true,price:i.price,discountPercent:20}}));
   await writeFile(join(dir,'api/catalog.json'),JSON.stringify({items}));
-  const html='<nav><div id="catalog-page-categories"></div></nav><p id="catalog-page-count"></p><section id="catalog-page-list"></section>';
+  const html='<nav class="catalog-page-categories"><div id="catalog-page-categories"></div></nav><p id="catalog-page-count"></p><section id="catalog-page-list"></section>';
   for(const file of ['index.html','ofertas.html','maquinas/escavadeira.html','maquinas/pa-carregadeira.html'])await writeFile(join(dir,file),html);
   await prepareCatalogue(dir,now);
   const category=await readFile(join(dir,'maquinas/escavadeira.html'),'utf8');
   assert.match(category,/2 anúncios encontrados/);assert.match(category,/RECENT/);assert.match(category,/OWNER/);
   assert.doesNotMatch(category,/NO-PHOTO|BLANK-PHOTO|EXPIRED|UNDATED|INVALID-DATE|FUTURE|OTHER-TYPE|EMPTY-TYPE/);
+  assert.doesNotMatch(category,/catalog-page-categories/);
   const offers=await readFile(join(dir,'ofertas.html'),'utf8');assert.match(offers,/3 anúncios encontrados/);assert.doesNotMatch(offers,/NO-PHOTO|EXPIRED|FUTURE/);
   assert.match(await readFile(join(dir,'maquinas/pa-carregadeira.html'),'utf8'),/No momento sem unidades/);
   const saved=JSON.parse(await readFile(join(dir,'api/catalog.json'),'utf8')).items;
@@ -114,7 +115,8 @@ test('the production build loads the shared policy before every category client'
    const policy=scripts.findIndex(s=>s.startsWith('/listing-policy.js'));
    const client=scripts.findIndex(s=>s.startsWith('/catalog-page-client.js'));
    assert.ok(policy>=0&&policy<client,filename);
-   assert.match(scripts[client],/v=artes-20261105/);
+   assert.match(scripts[client],/v=categorias-diretas-20261112/);
+   if(page.startsWith('maquinas/'))assert.doesNotMatch(html,/catalog-page-categories|Máquinas por categoria/);
    const runtime=scripts.findIndex(s=>s.startsWith('/runtime-compat.js'));
    assert.ok(runtime>=0&&runtime<client,filename);
    assert.match(scripts[runtime],/v=catalog-fallback-20261105/);

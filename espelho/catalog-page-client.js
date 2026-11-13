@@ -9,7 +9,7 @@
   if(!items)return;
   const eligibleItems=items.filter(i=>policy.eligibleListing(i));
   const counts=types.counts(eligibleItems);
-  nav.innerHTML=types.entries.filter(([id])=>counts[id]>0).map(([id,label])=>'<a href="/maquinas/'+id+'"'+(id===type?' aria-current="page"':'')+'><span>'+esc(label)+'</span><strong>'+counts[id]+'</strong></a>').join('');
+  if(nav)nav.innerHTML=types.entries.filter(([id])=>counts[id]>0).map(([id,label])=>'<a href="/maquinas/'+id+'"'+(id===type?' aria-current="page"':'')+'><span>'+esc(label)+'</span><strong>'+counts[id]+'</strong></a>').join('');
   const list=eligibleItems.filter(i=>i.category==='maquinas'&&(!type||types.matches(i,type))&&(!offers||i.offer?.verified===true&&i.offer.price===i.price&&i.offer.discountPercent>=20));
   const order=select.value;
   list.sort((a,b)=>order==='recent'?String(b.publishedAt||'').localeCompare(String(a.publishedAt||'')):a.price==null?b.price==null?0:1:b.price==null?-1:order==='high'?b.price-a.price:a.price-b.price);
@@ -19,7 +19,7 @@
    const contact='https://wa.me/5562999427276?text='+encodeURIComponent('Olá, tenho interesse no anúncio '+i.publicCode+': '+i.title+'. Pode confirmar preço e disponibilidade? '+url);
    return '<article class="catalog-page-card'+(i.artwork?' approved-artwork':'')+'"><a href="'+esc(link)+'" aria-label="Ver '+esc(i.title)+'"><img src="'+esc(i.image)+'" alt="'+esc(i.title)+'" width="640" height="440" loading="lazy"></a><div><p class="catalog-page-code">'+esc(i.publicCode)+' · '+esc(i.state||'Estado a confirmar')+'</p><h2><a href="'+esc(link)+'">'+esc(i.title)+'</a></h2><p class="catalog-page-code">'+esc(window.GoullartCatalogData.facts(i))+'</p><p class="catalog-page-price">'+(i.price==null?'Consulte':money(i.price))+'</p>'+(i.artwork?'<p class="item-description">'+esc(i.publicText)+'</p>':'<details><summary>Ver detalhes</summary><p>'+esc(i.publicText)+'</p></details>')+'<a class="catalog-page-contact" href="'+esc(contact)+'" target="_blank" rel="noopener noreferrer">Consultar máquina</a>'+((window.GoullartMachinePages||{})[i.publicCode]?'<p class="catalog-page-code"><a href="'+esc(window.GoullartMachinePages[i.publicCode])+'">Ficha completa da máquina →</a></p>':'')+'</div></article>';
   }).join('');
-  const next=html||'<div class="catalog-page-empty"><h2>'+(offers?'Nenhuma oferta confirmada no momento.':'No momento sem unidades. Fale com a equipe que buscamos para você')+'</h2><p>Consulte as outras categorias acima ou fale com a equipe.</p><a class="catalog-page-contact" href="https://wa.me/5562999427276?text=Ol%C3%A1%21%20Vim%20pelo%20site%20da%20GOULLART.%20Quero%20uma%20m%C3%A1quina%3A%20pode%20me%20ajudar%3F" target="_blank" rel="noopener noreferrer">Consultar a GOULLART</a></div>';
+  const next=html||'<div class="catalog-page-empty"><h2>'+(offers?'Nenhuma oferta confirmada no momento.':'No momento sem unidades. Fale com a equipe que buscamos para você')+'</h2><p>Consulte outras categorias pelo menu ou fale com a equipe.</p><a class="catalog-page-contact" href="https://wa.me/5562999427276?text=Ol%C3%A1%21%20Vim%20pelo%20site%20da%20GOULLART.%20Quero%20uma%20m%C3%A1quina%3A%20pode%20me%20ajudar%3F" target="_blank" rel="noopener noreferrer">Consultar a GOULLART</a></div>';
   if(grid.dataset.rendered!==next){grid.innerHTML=next;grid.dataset.rendered=next;}
  }
  async function refresh(){
