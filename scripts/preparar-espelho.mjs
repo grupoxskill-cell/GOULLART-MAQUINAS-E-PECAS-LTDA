@@ -35,7 +35,7 @@ for await (const f of arquivos(SAIDA)) {
   if(f.endsWith(".html")) t=t.replace(/((?:listing-policy|app)\.js|site-typography\.css)\?v=[^"'<>\s]+/g, '$1?v=locacoes-20261101-2');
   if(f.endsWith(".html")) t=t.replace(/(area-pages\.js)\?v=[^"'<>\s]+/g, '$1?v=curso-home');
   if(f.endsWith(".html")) t=t.replace(/(src="\/(?:runtime-compat|app|catalog-page-client|hero-offers)\.js)(?:\?v=[^"'<>\s]+)?/g, '$1?v=catalog-fallback-20261105');
-  if(f.endsWith(".html")) t=t.replace(/((?:app|catalog-page-client)\.js|catalog-pages\.css)(?:\?v=[^"'<>\s]+)?/g, '$1?v=artes-20261105').replace(/(storefront-bundle\.css)(?:\?v=[^"'<>\s]+)?/g, '$1?v=botoes-dourados-20261112');
+  if(f.endsWith(".html")) t=t.replace(/((?:app|catalog-page-client)\.js|catalog-pages\.css)(?:\?v=[^"'<>\s]+)?/g, '$1?v=artes-20261105').replace(/(storefront-bundle\.css)(?:\?v=[^"'<>\s]+)?/g, '$1?v=cabecalho-clean-20261113');
   if(f.endsWith(".html")) t=t.replace(/(catalog-page-client\.js)\?v=[^"'<>\s]+/g, '$1?v=categorias-diretas-20261112');
   t = t.split(ORIGEM).join(DOMINIO);
   // Script de verificação da Cloudflare do servidor do ChatGPT: não existe no domínio próprio.
