@@ -95,6 +95,14 @@ test('preço de origem nunca entra no título, em nenhum formato', () => {
   assert.equal(lerAnuncio('ESCAVADEIRA JOHN DEERE 210G\nÀ vista R$ 250.000').precoOrigem, 250000);
 });
 
+test('nome e preço na mesma linha: fica o nome, sai o preço', () => {
+  for (const linha of ['ESCAVADEIRA JOHN DEERE 210G - R$ 250.000', 'ESCAVADEIRA JOHN DEERE 210G R$250.000,00 à vista', 'ESCAVADEIRA JOHN DEERE 210G por apenas 250 mil']) {
+    const a = lerAnuncio(`${linha}\nAno 2018\nGoiânia - GO`);
+    assert.equal(a.titulo, 'ESCAVADEIRA JOHN DEERE 210G', linha);
+    if (/R\$/.test(linha)) assert.equal(a.precoOrigem, 250000, linha); // sem R$, número solto não vira preço
+  }
+});
+
 test('data de publicação não vira ano da máquina', () => {
   const a = lerAnuncio('ESCAVADEIRA JOHN DEERE 210G\nR$ 250.000\nPublicado em 03/11/2026');
   assert.equal(a.ano, '');
@@ -252,6 +260,16 @@ test('anúncio com data antiga no texto não ganha código (regra dos 15 dias)',
 });
 
 test('foto PNG: o motivo diz para mandar como foto, não "sem foto"', async () => {
-  await postar(payload([foto(APROVADOR, '99999', 'ESCAVADEIRA JOHN DEERE 210G\nAno 2019\nR$ 300.000\nCaldas Novas - GO')]));
+  await postar(payload([foto(APROVADOR, '99999', 'ESCAVADEIRA JOHN DEERE 210G\nAno 2019\nR$ 310.000\nCaldas Novas - GO')]));
   assert.ok(await ate(async () => enviados.some((e) => e.type === 'text' && /foto não é JPEG/.test(e.text.body))));
+});
+
+test('álbum com legenda: as fotos seguintes sem legenda ficam no mesmo anúncio', async () => {
+  await postar(payload([foto(APROVADOR, '12121', 'ESCAVADEIRA JOHN DEERE 210G\nAno 2017\nR$ 230.000\nInhumas - GO')]));
+  await postar(payload([foto(APROVADOR, '13131')]));
+  await postar(payload([foto(APROVADOR, '14141')]));
+  assert.ok(await ate(async () => (await radar()).some((r) => r.local === 'Inhumas - GO')));
+  await espera(800);
+  const r = (await radar()).find((x) => x.local === 'Inhumas - GO');
+  assert.equal(r.fotos.length, 3);
 });
