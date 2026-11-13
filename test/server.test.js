@@ -135,7 +135,10 @@ test('cada máquina tem página própria com prévia para WhatsApp e Google', as
 test('contador conta visitas e cliques, ignora repetição e referência desconhecida', async () => {
   const cookie = await entrar();
   const m = (await (await fetch(base + '/maquinas.json')).json()).find((x) => /Volvo EC220DL/.test(x.titulo));
-  const contar = (ref, tipo) => fetch(base + '/api/interesse', { method: 'POST', body: JSON.stringify({ ref, tipo }) });
+  const contar = (ref, tipo, headers = { 'Content-Type': 'application/json' }) => fetch(base + '/api/interesse', { method: 'POST', body: JSON.stringify({ ref, tipo }), headers });
+  // Outra página (formulário ou fetch sem pré-voo) não infla o contador.
+  assert.equal((await contar(m.referencia, 'visita', { 'Content-Type': 'text/plain' })).status, 403);
+  assert.equal((await contar(m.referencia, 'visita', { 'Content-Type': 'application/json', 'Sec-Fetch-Site': 'cross-site' })).status, 403);
   assert.equal((await contar(m.referencia, 'visita')).status, 204);
   assert.equal((await contar(m.referencia, 'interesse')).status, 204);
   assert.equal((await contar(m.referencia, 'interesse')).status, 204);

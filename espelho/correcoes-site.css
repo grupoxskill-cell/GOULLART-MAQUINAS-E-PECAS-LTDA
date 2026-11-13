@@ -1,0 +1,13 @@
+/* Correções finais de layout (carregado por último em todas as páginas pelo build). */
+
+/* Botão "Participe do canal": ícone e texto lado a lado, centralizados (antes o texto caía para baixo do ícone). */
+body.goullart-storefront.approved-layout > header .goullart-header-tools .channel-invite{flex-direction:row;align-items:center;justify-content:center}
+
+/* Carrossel de máquinas: a margem lateral somava à largura total e cortava a borda direita no celular. */
+body.goullart-storefront.approved-layout #approved-banner.machine-banner{box-sizing:border-box;width:auto;max-width:min(1180px,calc(100% - 20px))}
+
+/* Cartões da página inicial: títulos nunca quebram no meio da palavra ("MAGAZIN-E", "LOCAÇÃ-O"). */
+body.goullart-storefront .business-cards>a>strong{overflow-wrap:normal;word-break:normal;hyphens:none;font-size:clamp(18px,1.6vw,24px)}
+@media(max-width:450px){
+ body.goullart-storefront .business-cards>a>strong{font-size:clamp(17px,5.4vw,22px);letter-spacing:.2px}
+}

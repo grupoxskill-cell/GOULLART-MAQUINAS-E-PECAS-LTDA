@@ -36,7 +36,7 @@ Em 29/10/2026, o domínio oficial respondeu por HTTPS com uma aplicação Larave
 
 ## Instalação existente no Azure / aaPanel
 
-A VM `goullart1` (IP `20.69.167.61`, aaPanel) é a origem de www.goullartmaquinaspesadas.com.br. Em 29/10/2026 (09:11 UTC) o script `scripts/instalar-no-servidor.sh` foi executado pelo portal da Azure (Executar comando → RunShellScript) e trocou a raiz do nginx de `/www/wwwroot/goullartmaquinaspesadas.com.br/public` (aplicação Laravel) para `/www/wwwroot/goullart-site` (este site estático). A aplicação Laravel, seus arquivos e o banco de dados não foram apagados, mas deixaram de responder nesse domínio.
+A VM `goullart1` (aaPanel) é a origem de www.goullartmaquinaspesadas.com.br. Em 29/10/2026 (09:11 UTC) o script `scripts/instalar-no-servidor.sh` foi executado pelo portal da Azure (Executar comando → RunShellScript) e trocou a raiz do nginx de `/www/wwwroot/goullartmaquinaspesadas.com.br/public` (aplicação Laravel) para `/www/wwwroot/goullart-site` (este site estático). A aplicação Laravel, seus arquivos e o banco de dados não foram apagados, mas deixaram de responder nesse domínio.
 
 Para voltar à aplicação Laravel, rode como root:
 

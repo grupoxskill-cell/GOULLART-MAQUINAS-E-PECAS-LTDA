@@ -79,6 +79,11 @@ for await (const file of arquivos(SAIDA)) {
  html=html.replace(/Falaa, Júnior!/gi,'Olá, equipe Goullart! Vim pelo site e quero conversar sobre uma máquina.');
  html=html.replace(/goullartmaquinaspesadas\.com\.br/g,'www.goullartmaquinaspesadas.com.br').replace(/www\.www\./g,'www.');
  if(file.includes('/adm/'))html=html.replace(/<head>/i,'<head><meta name="robots" content="noindex,nofollow">');
+ // Correções finais de layout, depois de todos os outros estilos.
+ if(!html.includes('href="/correcoes-site.css')) html=html.replace(/<\/head>/i,'<link rel="stylesheet" href="/correcoes-site.css?v=20261113"></head>');
+ // Imagens abaixo do topo só carregam quando o visitante chega perto delas (as 6 primeiras ficam como estão).
+ let imagens=0;
+ html=html.replace(/<img\b(?![^>]*\bloading=)(?![^>]*\bfetchpriority=)/gi,(tag)=>++imagens>6?tag+' loading="lazy" decoding="async"':tag);
  if(html!==original)await writeFile(file,html);
 }
 // Rota direta de cliente envia ao catálogo sem depender de JavaScript.
