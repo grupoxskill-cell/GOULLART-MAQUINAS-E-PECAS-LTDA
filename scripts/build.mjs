@@ -1,6 +1,6 @@
 // Gera o site estático em _site: arquivos públicos, catálogo de peças, uma página por máquina,
 // sitemap.xml e robots.txt. Usado pelo GitHub Actions (branch gh-pages) e pelo servidor via cron.
-import { cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { cp, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { comSlugs, paginaMaquina, sitemap, tiposDeMaquina, SITE } from "../lib/paginas.js";
 
 await rm("_site", { recursive: true, force: true });
@@ -18,6 +18,14 @@ await writeFile("_site/.nojekyll", "");
 await writeFile("_site/maquinas.json", JSON.stringify(maquinas, null, 1));
 await writeFile("_site/paginas-maquinas.js", `window.GoullartMachinePages=${JSON.stringify(globalThis.GoullartMachinePagesMap)};\n`);
 for (const m of maquinas) await writeFile(`_site/maquina/${m.slug}.html`, await paginaMaquina(m, maquinas));
+// Renovar o script em todas as páginas, incluindo as copiadas de public/.
+for (const path of await readdir('_site', {recursive: true})) {
+  if (!path.endsWith('.html')) continue;
+  const file = '_site/' + path;
+  const html = await readFile(file, 'utf8');
+  const updated = html.replace(/(customer-contact\.js)(?:\?v=[^"'<>\s]+)?/g, '$1?v=contato-manual-20261113');
+  if (updated !== html) await writeFile(file, updated);
+}
 await writeFile("_site/sitemap.xml", sitemap(maquinas, await tiposDeMaquina()));
 await writeFile("_site/robots.txt", `User-agent: *\nDisallow: /adm\nDisallow: /previa-visual/\nSitemap: ${SITE}/sitemap.xml\n`);
 console.log(`Site estático gerado em _site (${maquinas.length} páginas de máquinas)`);
