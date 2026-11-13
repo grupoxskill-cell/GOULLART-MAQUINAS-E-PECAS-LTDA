@@ -15,11 +15,10 @@ assert.equal(Number(String(existing2018.hours).replace(/\D/g, '')), 9895);
 assert.match(existing2018.publicText, /trincado/i);
 
 const additions = [
-  { code: 'H-2021-10000', year: 2021, hours: '10.000', price: 380000, image: '/assets/listings/h-2021-10000.webp' },
-  { code: 'H-2020-12000', year: 2020, hours: '12.000', price: 350000, image: '/assets/listings/h-2020-12000.webp' }
+  { code: 'GOUL-HY-2021-10000', year: 2021, hours: '10.000', price: 380000, image: '/assets/listings/h-2021-10000.jpg' },
+  { code: 'GOUL-HY-2020-12000', year: 2020, hours: '12.000', price: 350000, image: '/assets/listings/h-2020-12000.jpg' }
 ];
 const digits = value => Number(String(value ?? '').replace(/\D/g, ''));
-const normalized = value => String(value ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 const prepared = [];
 for (const item of additions) {
   for (const root of ['public', 'espelho']) await access(root + item.image);
