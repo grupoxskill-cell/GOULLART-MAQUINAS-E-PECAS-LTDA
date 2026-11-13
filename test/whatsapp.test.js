@@ -9,7 +9,7 @@ import { mkdtemp, writeFile, readFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { hashSenha } from '../lib/auth.js';
-import { lerAnuncio } from '../lib/whatsapp.js';
+import { lerAnuncio, dataDoAnuncio } from '../lib/whatsapp.js';
 
 const APROVADOR = '5562900000001';
 const CLIENTE = '5562911112222';
@@ -25,6 +25,7 @@ const graph = createServer(async (req, res) => {
   const u = new URL(req.url, 'http://x');
   if (req.headers.authorization !== `Bearer ${'t'.repeat(40)}`) { res.writeHead(401).end('{}'); return; }
   if (req.method === 'GET' && /^\/v23\.0\/\d+$/.test(u.pathname)) { res.end(JSON.stringify({ url: `http://127.0.0.1:4329/midia/${u.pathname.split('/').pop()}`, mime_type: 'image/jpeg' })); return; }
+  if (req.method === 'GET' && u.pathname === '/midia/99999') { res.writeHead(200, { 'Content-Type': 'image/png' }).end(Buffer.concat([Buffer.from([0x89, 0x50, 0x4e, 0x47]), Buffer.alloc(300, 1)])); return; }
   if (req.method === 'GET' && u.pathname.startsWith('/midia/')) { res.writeHead(200, { 'Content-Type': 'image/jpeg' }).end(JPEG); return; }
   if (req.method === 'POST' && u.pathname === `/v23.0/${PHONE_ID}/media`) { enviados.push({ tipo: 'media', tamanho: corpo.length }); res.end(JSON.stringify({ id: '777' })); return; }
   if (req.method === 'POST' && u.pathname === `/v23.0/${PHONE_ID}/messages`) { enviados.push({ tipo: 'msg', ...JSON.parse(corpo) }); res.end(JSON.stringify({ messages: [{ id: 'wamid.x' }] })); return; }
@@ -83,6 +84,24 @@ test('telefone do vendedor sem formatação não entra no título', () => {
     assert.equal(a.titulo, 'ESCAVADEIRA JOHN DEERE 210G', linha);
   }
   assert.equal(lerAnuncio('CAMINHÃO VW 31.330 6X4 2018/2019\nR$ 420.000').titulo, 'CAMINHÃO VW 31.330 6X4 2018/2019');
+});
+
+test('preço riscado na mesma linha não apaga o preço novo', () => {
+  assert.equal(lerAnuncio('ESCAVADEIRA JOHN DEERE 210G\n~R$ 400.000~ R$ 250.000').precoOrigem, 250000);
+  assert.equal(lerAnuncio('ESCAVADEIRA JOHN DEERE 210G\n~R$400.000,00~\nR$ 250.000,00').precoOrigem, 250000);
+});
+
+test('link de contato do vendedor não vira link do anúncio', () => {
+  assert.equal(lerAnuncio('ESCAVADEIRA X\nR$ 1.000\nhttps://wa.me/5562999998888').link, '');
+  assert.equal(lerAnuncio('ESCAVADEIRA X\nhttps://instagram.com/loja\nhttps://www.olx.com.br/anuncio/123').link, 'https://www.olx.com.br/anuncio/123');
+});
+
+test('data do anúncio vem do texto quando existe; linha de ano não conta', () => {
+  const hoje = new Date('2026-11-13T15:00:00-03:00');
+  assert.equal(dataDoAnuncio(['Publicado 21/10 às 12:44'], hoje), '2026-10-21');
+  assert.equal(dataDoAnuncio(['Postado em 03/11/2026'], hoje), '2026-11-03');
+  assert.equal(dataDoAnuncio(['ANO 08/09', 'R$ 100.000'], hoje), '');
+  assert.equal(dataDoAnuncio(['20/12'], hoje), '2025-12-20'); // sem ano e no futuro: ano passado
 });
 
 test('anúncio que esperava durante um reinício é retomado', async () => {
@@ -207,4 +226,16 @@ test('dois anúncios encaminhados em seguida viram duas ofertas separadas', asyn
 test('fotos sem texto: o aprovador é avisado para mandar o texto', async () => {
   await postar(payload([foto(APROVADOR, '77777')]));
   assert.ok(await ate(async () => enviados.some((e) => e.type === 'text' && /foto\(s\) sem o texto do anúncio/.test(e.text.body))));
+});
+
+test('anúncio com data antiga no texto não ganha código (regra dos 15 dias)', async () => {
+  await postar(payload([foto(APROVADOR, '88888', 'ESCAVADEIRA JOHN DEERE 210G\nAno 2019\nR$ 300.000\nMorrinhos - GO\nPublicado 02/01/2026')]));
+  assert.ok(await ate(async () => enviados.some((e) => e.type === 'text' && /Não virou oferta: .*mais de 15 dias/.test(e.text.body))), 'anúncio antigo passou');
+  const r = (await radar()).find((x) => x.local === 'Morrinhos - GO');
+  assert.equal(r.codigo, undefined);
+});
+
+test('foto PNG: o motivo diz para mandar como foto, não "sem foto"', async () => {
+  await postar(payload([foto(APROVADOR, '99999', 'ESCAVADEIRA JOHN DEERE 210G\nAno 2019\nR$ 300.000\nCaldas Novas - GO')]));
+  assert.ok(await ate(async () => enviados.some((e) => e.type === 'text' && /foto não é JPEG/.test(e.text.body))));
 });
