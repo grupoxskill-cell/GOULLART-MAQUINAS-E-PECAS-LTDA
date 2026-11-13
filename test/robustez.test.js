@@ -287,3 +287,9 @@ test('contador agrupa IPv6 pelo bloco /64 real, mesmo com "::"', async () => {
   assert.equal(rede('::ffff:200.1.2.3'), '200.1.2.3');
   assert.equal(rede('200.1.2.3'), '200.1.2.3');
 });
+
+test('máquina vendida não gera página, nem entra no maquinas.json ou no sitemap', async () => {
+  const { semVendidas } = await import('../lib/paginas.js');
+  const lista = [{ referencia: 'GOUL-291', titulo: 'Vendida' }, { referencia: 'GOUL-273', titulo: 'À venda' }];
+  assert.deepEqual(semVendidas(lista).map((m) => m.referencia), ['GOUL-273']);
+});
