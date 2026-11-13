@@ -1864,28 +1864,40 @@ body.approved-layout .product.approved-artwork .product-photo>img{height:auto;as
 }
 
 
-/* Botões dourados do cabeçalho */
-body.goullart-storefront.approved-layout > header .goullart-header-tools .channel-invite,
-body.goullart-storefront.approved-layout > header .goullart-header-tools .mobile-menu-toggle {
-  min-height: 44px;
+/* Ações do cabeçalho */
+body.goullart-storefront.approved-layout > header .goullart-header-tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 8px;
-  border: 1px solid #b78328 !important;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #ffea9e, #ecc055 62%, #d89c29) !important;
-  color: #101d37 !important;
-  box-shadow: 0 3px 7px #714a1522;
 }
-body.goullart-storefront.approved-layout > header .goullart-header-tools .channel-invite::before {
-  content: "";
-  flex: 0 0 18px;
-  height: 18px;
-  background: currentColor;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M3 9h5l10-5v16l-10-5H7l2 5H6l-2-5H3a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2Zm17 1 4-2v2l-4 2Zm0 3 4 2v2l-4-2Z'/%3E%3C/svg%3E") center / contain no-repeat;
+body.goullart-storefront.approved-layout > header .goullart-header-tools :is(.channel-invite, .mobile-menu-toggle) {
+  box-sizing: border-box;
+  min-height: 44px;
+  gap: 7px;
+  padding: 8px 12px !important;
+  border-radius: 10px;
+  box-shadow: none;
+}
+body.goullart-storefront.approved-layout > header .goullart-header-tools .channel-invite {
+  background: #f7e7bc !important;
+  border: 1px solid #d8b873 !important;
+  color: #172641 !important;
+  text-align: center;
+}
+body.goullart-storefront.approved-layout > header .goullart-header-tools .mobile-menu-toggle {
+  flex: 0 0 auto;
+  background: #fff;
+  border: 1px solid #cbd3dd;
+  color: #172641;
+  letter-spacing: .2px;
 }
 body.goullart-storefront.approved-layout > header .goullart-header-tools .mobile-menu-toggle span {
   color: inherit;
 }
-body.goullart-storefront.approved-layout > header .goullart-header-tools .channel-invite:hover,
+body.goullart-storefront.approved-layout > header .goullart-header-tools .channel-invite:hover {
+  background: #f2dda3 !important;
+}
 body.goullart-storefront.approved-layout > header .goullart-header-tools .mobile-menu-toggle:hover {
-  background: linear-gradient(135deg, #fff1b9, #edbc4f) !important;
+  background: #f1f4f8;
 }
