@@ -278,3 +278,12 @@ test('IP real do visitante atrás do Cloudflare, sem aceitar cabeçalho forjado'
   // Conexão que não passou pelo nginx local: cabeçalhos não valem.
   assert.equal(ipCliente({ headers: { 'x-forwarded-for': '9.9.9.9' }, socket: { remoteAddress: '203.0.113.7' } }), '203.0.113.7');
 });
+
+test('contador agrupa IPv6 pelo bloco /64 real, mesmo com "::"', async () => {
+  const { rede } = await import('../lib/interesse.js');
+  assert.notEqual(rede('2001:db8::1:2:3:4:5'), rede('2001:db8::1:2:3:4'));
+  assert.equal(rede('2001:db8::1:2:3:4'), rede('2001:0db8:0000:0000:1:2:3:4'));
+  assert.equal(rede('2001:db8::1:2:3:4'), rede('2001:db8:0:0:ffff::9'));
+  assert.equal(rede('::ffff:200.1.2.3'), '200.1.2.3');
+  assert.equal(rede('200.1.2.3'), '200.1.2.3');
+});
