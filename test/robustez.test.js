@@ -264,3 +264,9 @@ test('IP real do visitante atrás do Cloudflare, sem aceitar cabeçalho forjado'
   // Conexão que não passou pelo nginx local: cabeçalhos não valem.
   assert.equal(ipCliente({ headers: { 'x-forwarded-for': '9.9.9.9' }, socket: { remoteAddress: '203.0.113.7' } }), '203.0.113.7');
 });
+
+test('máquina vendida não gera página, nem entra no maquinas.json ou no sitemap', async () => {
+  const { semVendidas } = await import('../lib/paginas.js');
+  const lista = [{ referencia: 'GOUL-291', titulo: 'Vendida' }, { referencia: 'GOUL-273', titulo: 'À venda' }];
+  assert.deepEqual(semVendidas(lista).map((m) => m.referencia), ['GOUL-273']);
+});
