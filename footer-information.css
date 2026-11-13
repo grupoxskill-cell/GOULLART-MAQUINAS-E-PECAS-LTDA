@@ -1,0 +1,17 @@
+/* Informações públicas no rodapé azul com a foto original ao fundo. */
+#atendimento .footer-company {width:100%;min-width:0}
+#atendimento .footer-company,#atendimento .footer-company * {text-transform:none}
+#atendimento .footer-company h3 {margin:0 0 26px;font-size:clamp(24px,4vw,32px);color:#fff}
+#atendimento .footer-info-grid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px 36px}
+#atendimento .footer-info-grid>section {min-width:0}
+#atendimento .footer-info-grid h4 {margin:0 0 16px;color:#ffd02e;font-size:18px;line-height:1.4}
+#atendimento .footer-info-list {display:grid;gap:14px;list-style:none;margin:0;padding:0;color:#e4eaf4;font-size:15px;line-height:1.6}
+#atendimento .footer-info-list li {min-width:0}
+#atendimento .footer-info-list strong,#atendimento .footer-info-list span {display:block}
+#atendimento .footer-info-list strong {color:#fff}
+#atendimento .footer-info-list a {display:flex;align-items:center;min-height:44px;width:fit-content;max-width:100%;padding:4px 0;color:#e4eaf4;text-decoration:underline;text-underline-offset:4px;overflow-wrap:anywhere}
+#atendimento .footer-info-list a:hover {color:#ffd02e}
+#atendimento .footer-info-list a:focus-visible {outline:2px solid #ffd02e;outline-offset:4px}
+#atendimento .footer-address-contact {margin-top:16px;max-width:100%;line-height:1.5}
+#atendimento .footer-legal {margin-top:30px}
+@media(max-width:800px){#atendimento .footer-info-grid{grid-template-columns:1fr;gap:30px}}

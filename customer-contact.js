@@ -7,26 +7,21 @@
  const form = document.getElementById('goullart-contact-form');
  const message = document.getElementById('goullart-contact-message');
  const close = root.querySelector('.goullart-contact-close');
- const sessionKey = 'goullart-contact-greeted-v1';
- let interacted = false;
- const remember = () => { try { sessionStorage.setItem(sessionKey, '1'); } catch {} };
  function setOpen(open, focus = false) {
   panel.hidden = !open;
   launcher.setAttribute('aria-expanded', String(open));
   document.body.classList.toggle('goullart-contact-open', open);
-  if (open) remember();
   if (!open) document.body.classList.remove('goullart-contact-keyboard');
   if (focus) (open ? close : launcher).focus({preventScroll:true});
  }
  launcher.addEventListener('click', event => {
   if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
   event.preventDefault();
-  interacted = true;
   setOpen(panel.hidden, true);
  });
- close.addEventListener('click', () => { interacted = true; remember(); setOpen(false, true); });
+ close.addEventListener('click', () => { setOpen(false, true); });
  document.addEventListener('keydown', event => {
-  if (event.key === 'Escape' && !panel.hidden) { interacted = true; setOpen(false, root.contains(document.activeElement)); }
+  if (event.key === 'Escape' && !panel.hidden) { setOpen(false, root.contains(document.activeElement)); }
  });
  message.addEventListener('input', () => message.setCustomValidity(''));
  form.addEventListener('submit', event => {
@@ -37,16 +32,9 @@
    return;
   }
   message.value = message.value.trim();
-  interacted = true;
-  remember();
   // Native GET opens WhatsApp with the visitor's text. It does not send it.
  });
- let greeted = false;
- try { greeted = sessionStorage.getItem(sessionKey) === '1'; } catch {}
- if (!greeted) window.setTimeout(() => {
-  const busy = document.activeElement?.matches('input,textarea,select,[contenteditable=true]') || document.querySelector('dialog[open],[aria-modal="true"]:not([hidden])');
-  if (!interacted && !busy && !document.hidden) setOpen(true);
- }, 5000);
+ // O painel só abre quando o visitante clica no botão de contato.
  let walking = false;
  window.addEventListener('scroll', () => {
   if (walking || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
