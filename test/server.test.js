@@ -238,3 +238,19 @@ test('trocar senha: senha atual errada repetida é travada como no login', async
   // A senha verdadeira continua valendo a partir de outro endereço.
   assert.ok(await entrar());
 });
+
+test('contador de interesse recusa corpo forjado sem erro 500', async () => {
+  for (const corpo of ['{"ref":{"toString":1}}', '{"ref":"x","tipo":{"toString":1}}', '{"ref":[1,2]}']) {
+    const r = await fetch(base + '/api/interesse', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: corpo });
+    assert.equal(r.status, 400, corpo);
+  }
+});
+test('página de máquina gerada pelo servidor sai com CSP e sem moldura externa', async () => {
+  const m = (await (await fetch(base + '/maquinas.json')).json())[0];
+  const r = await fetch(`${base}/maquina/${m.slug}.html`);
+  assert.equal(r.status, 200);
+  const csp = r.headers.get('content-security-policy') || '';
+  assert.match(csp, /script-src 'self'/);
+  assert.match(csp, /frame-ancestors 'none'/);
+  assert.doesNotMatch(csp, /script-src[^;]*unsafe-inline/);
+});

@@ -1,4 +1,6 @@
 # Atualiza a cópia pública em uma branch; a publicação acontece somente após juntar no master.
+# Segurança: o código baixado do site do ChatGPT roda (testes e build) num job SEM permissão de escrita
+# e sem token no .git. Só o segundo job grava, e ele não executa nada do que foi baixado.
 name: Importar site do ChatGPT
 on:
   push:
@@ -6,7 +8,7 @@ on:
     paths: [".github/workflows/importar-chatgpt.yml", "scripts/espelhar-chatgpt.mjs", "scripts/preparar-espelho.mjs"]
   workflow_dispatch:
 permissions:
-  contents: write
+  contents: read
 concurrency:
   group: importar-${{ github.ref }}
   cancel-in-progress: true
@@ -14,12 +16,16 @@ jobs:
   importar:
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v4
       - name: Nunca gravar direto no master
         # Código copiado de um site de terceiros só entra no master por PR revisado.
         run: |
           case "$GITHUB_REF_NAME" in importar-chatgpt|importar-chatgpt-*) ;; *) echo "::error::Rode este fluxo numa branch importar-chatgpt-*, nunca em $GITHUB_REF_NAME."; exit 1;; esac
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -35,12 +41,35 @@ jobs:
           test -s _site/texas/index.html
           test -s _site/texas/botas-cano-alto-texas.jpg
           test -s _site/assets/fonts/montserrat-latin-variable.woff2
-      - name: Salvar cópia na branch
+      - uses: actions/upload-artifact@v4
+        with:
+          name: espelho
+          path: espelho/
+          include-hidden-files: true
+          retention-days: 1
+
+  gravar:
+    needs: importar
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Nunca gravar direto no master
+        run: |
+          case "$GITHUB_REF_NAME" in importar-chatgpt|importar-chatgpt-*) ;; *) echo "::error::Branch não permitida: $GITHUB_REF_NAME."; exit 1;; esac
+      - uses: actions/checkout@v4
+      - run: rm -rf espelho
+      - uses: actions/download-artifact@v4
+        with:
+          name: espelho
+          path: espelho/
+      - name: Salvar cópia na branch (sem executar nada do que foi baixado)
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@users.noreply.github.com"
-          git add espelho
+          git add -A espelho
           if ! git diff --cached --quiet; then
             git commit -m "Atualiza catálogo público para o domínio GOULLART"
-            git push
+            git push origin "HEAD:refs/heads/$GITHUB_REF_NAME"
           fi
