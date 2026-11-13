@@ -1,0 +1,82 @@
+name: Preparar tres Hyundai autorizadas
+on:
+  push:
+    branches: ['catalogo/hyundai-tres-maquinas-20261113']
+    paths:
+      - 'espelho/assets/listings/h-2021-10000.webp'
+      - 'espelho/assets/listings/h-2020-12000.webp'
+      - 'scripts/publicar-hyundai-20261113.mjs'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: preparar-hyundai-20261113
+  cancel-in-progress: false
+jobs:
+  preparar:
+    if: github.ref == 'refs/heads/catalogo/hyundai-tres-maquinas-20261113'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/publicar-hyundai-20261113.mjs
+      - run: npm test
+      - run: node scripts/build.mjs
+      - name: Conferir anuncios gerados
+        run: |
+          node --input-type=module <<'NODE'
+          import {readFile} from 'node:fs/promises';
+          import assert from 'node:assert/strict';
+          const feed=JSON.parse(await readFile('_site/api/catalog.json','utf8'));
+          const machines=JSON.parse(await readFile('_site/maquinas.json','utf8'));
+          for (const [code,price] of [['H-2018-9895',360000],['H-2021-10000',380000],['H-2020-12000',350000]]) {
+            const listings=feed.items.filter(i=>i.publicCode===code);
+            assert.equal(listings.length,1,code+' duplicado ou ausente');
+            assert.equal(listings[0].price,price);
+            const page=machines.find(i=>i.referencia===code);
+            assert(page && page.slug,code+' sem ficha propria');
+            const html=await readFile('_site/maquina/'+page.slug+'.html','utf8');
+            assert(html.includes('5562999427276'),'Contato comercial ausente');
+          }
+          console.log('Tres Hyundai unicas, precos preservados e fichas verificadas.');
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: catalogos-hyundai-validados
+          path: |
+            public/maquinas.json
+            espelho/api/catalog.json
+          retention-days: 3
+  salvar:
+    needs: preparar
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: catalogo/hyundai-tres-maquinas-20261113
+      - name: Conferir concorrencia
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+      - uses: actions/download-artifact@v4
+        with:
+          name: catalogos-hyundai-validados
+          path: /tmp/catalogos-hyundai
+      - name: Salvar somente os catalogos validados
+        run: |
+          cp /tmp/catalogos-hyundai/public/maquinas.json public/maquinas.json
+          cp /tmp/catalogos-hyundai/espelho/api/catalog.json espelho/api/catalog.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add public/maquinas.json espelho/api/catalog.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'Publica Hyundai 2021 e 2020 autorizadas; preserva Hyundai 2018'
+            git push origin HEAD:catalogo/hyundai-tres-maquinas-20261113
+          fi
