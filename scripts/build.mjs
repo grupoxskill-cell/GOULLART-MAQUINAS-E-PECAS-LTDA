@@ -1,13 +1,13 @@
 // Gera o site estático em _site: arquivos públicos, catálogo de peças, uma página por máquina,
 // sitemap.xml e robots.txt. Usado pelo GitHub Actions (branch gh-pages) e pelo servidor via cron.
 import { cp, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
-import { comSlugs, paginaMaquina, sitemap, tiposDeMaquina, SITE } from "../lib/paginas.js";
+import { comSlugs, semVendidas, paginaMaquina, sitemap, tiposDeMaquina, SITE } from "../lib/paginas.js";
 
 await rm("_site", { recursive: true, force: true });
 await mkdir("_site/maquina", { recursive: true });
 await cp("public", "_site", { recursive: true });
 // Mapa código público -> página individual da máquina (/maquina/<slug>.html), usado pelos cards do catálogo novo.
-const maquinas = comSlugs(JSON.parse(await readFile("public/maquinas.json", "utf-8")));
+const maquinas = comSlugs(semVendidas(JSON.parse(await readFile("public/maquinas.json", "utf-8"))));
 globalThis.GoullartMachinePagesMap = Object.fromEntries(maquinas.filter((m) => m.referencia && m.slug).map((m) => [m.referencia, `/maquina/${m.slug}.html`]));
 // Layout aprovado (cópia do site do ChatGPT em espelho/) por cima dos arquivos públicos antigos.
 await import("./preparar-espelho.mjs");

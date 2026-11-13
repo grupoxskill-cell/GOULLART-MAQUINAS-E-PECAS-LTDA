@@ -19,6 +19,8 @@ test('publicar.mjs grava a máquina aprovada com até 3 fotos, preço do site e 
   // Cópia mínima do repositório: scripts, lib e um catálogo vazio.
   await cp('scripts', join(raiz, 'scripts'), { recursive: true });
   await cp('lib', join(raiz, 'lib'), { recursive: true });
+  await mkdir(join(raiz, 'espelho'), { recursive: true });
+  await cp('espelho/catalog-data.js', join(raiz, 'espelho', 'catalog-data.js'));
   await mkdir(join(raiz, 'public', 'maquinas'), { recursive: true });
   await writeFile(join(raiz, 'public', 'maquinas.json'), '[]');
   const foto = 'public/maquinas/radar-komatsu-pc200-2018-1.jpg';
