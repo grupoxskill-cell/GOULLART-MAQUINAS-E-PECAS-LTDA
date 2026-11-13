@@ -45,7 +45,9 @@ async function servirPaginaMaquina(req, res, slug) {
   const todas = await maquinasPublicas();
   const m = todas.find((x) => x.slug === slug);
   if (!m) return res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" }).end("Máquina não encontrada");
-  res.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-cache" });
+  res.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-cache",
+    // Só recursos do próprio site (o formulário de contato abre o WhatsApp); o JSON-LD (type=application/ld+json) não é executado e não precisa de exceção.
+    "Content-Security-Policy": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' https://wa.me https://api.whatsapp.com; frame-ancestors 'none'" });
   res.end(req.method === "HEAD" ? undefined : await paginaMaquina(m, todas));
 }
 
@@ -56,7 +58,8 @@ async function contarInteresse(req, res) {
   try { dados = JSON.parse(corpo); } catch { return res.writeHead(400).end(); }
   const refs = new Map((await maquinasPublicas()).map((m) => [m.referencia, m.titulo]));
   const ip = ipCliente(req);
-  const ok = registrar(String(dados?.ref || ""), String(dados?.tipo || ""), ip, refs);
+  const texto = (v) => (typeof v === "string" ? v : "");
+  const ok = registrar(texto(dados?.ref), texto(dados?.tipo), ip, refs);
   res.writeHead(ok ? 204 : 400).end();
 }
 
