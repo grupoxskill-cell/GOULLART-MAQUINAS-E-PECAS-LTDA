@@ -77,7 +77,8 @@ for await (const file of arquivos(SAIDA)) {
  html=html.replace(/Estudo de personalização\. Consulte modelos e tamanhos\./g,'Bordado country. Consulte modelos e tamanhos.');
  html=html.replace(/<a\b[^>]*>[^<]*(?:Solicitar link oficial|Área do administrador)[^<]*<\/a>/gi,'');
  html=html.replace(/Falaa, Júnior!/gi,'Olá, equipe Goullart! Vim pelo site e quero conversar sobre uma máquina.');
- html=html.replace(/goullartmaquinaspesadas\.com\.br/g,'www.goullartmaquinaspesadas.com.br').replace(/www\.www\./g,'www.');
+ // Canonicalizar apenas URLs do domínio principal; preservar e-mails e subdomínios.
+ html=html.replace(/((?:https?:)?\/\/)goullartmaquinaspesadas\.com\.br(?=[/:?#"'\s<]|$)/g,'$1www.goullartmaquinaspesadas.com.br');
  if(file.includes('/adm/'))html=html.replace(/<head>/i,'<head><meta name="robots" content="noindex,nofollow">');
  if(html!==original)await writeFile(file,html);
 }
