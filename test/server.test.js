@@ -274,3 +274,15 @@ test('lista de máquinas, sitemap e página da máquina respondem 304 quando nad
   const r304 = await fetch(`${base}/maquina/${m.slug}`, { headers: { 'If-None-Match': p.headers.get('etag') } });
   assert.equal(r304.status, 304);
 });
+
+test('cópia de segurança do ADM: só com login, sem senha nem segredo', async () => {
+  assert.equal((await fetch(base + '/adm/api/backup')).status, 401);
+  const cookie = await entrar();
+  const r = await enviar(cookie, '/adm/api/backup', 'GET');
+  assert.equal(r.status, 200);
+  assert.match(r.headers.get('content-disposition'), /attachment; filename="goullart-adm-\d{4}-\d{2}-\d{2}\.json"/);
+  const texto = await r.text();
+  const dados = JSON.parse(texto);
+  assert.ok(Array.isArray(dados.radar));
+  assert.ok(!/segredo|"hash"|tokenEntrada|senha-de-teste/.test(texto));
+});
