@@ -70,6 +70,23 @@ test("fotos do Radar perdem EXIF, IPTC e comentários e mantêm a imagem", () =>
   assert.throws(() => semMetadados(Buffer.from([0xff, 0xd8, 0x00, 0x01, 0x02])), /inválida/);
 });
 
+test("foto de celular em pé mantém só a orientação do EXIF", () => {
+  // EXIF little-endian com GPS (0x8825) e orientação 6 (girar 90°).
+  const tiff = Buffer.alloc(8 + 2 + 2 * 12 + 4);
+  tiff.write("II", 0, "latin1"); tiff.writeUInt16LE(42, 2); tiff.writeUInt32LE(8, 4); tiff.writeUInt16LE(2, 8);
+  tiff.writeUInt16LE(0x8825, 10); tiff.writeUInt16LE(4, 12); tiff.writeUInt32LE(1, 14); tiff.writeUInt32LE(999, 18);
+  tiff.writeUInt16LE(0x0112, 22); tiff.writeUInt16LE(3, 24); tiff.writeUInt32LE(1, 26); tiff.writeUInt16LE(6, 30);
+  const corpo = Buffer.concat([Buffer.from("Exif\0\0", "latin1"), tiff]);
+  const app1 = Buffer.concat([Buffer.from([0xff, 0xe1, 0, corpo.length + 2]), corpo]);
+  const imagem = Buffer.from([0xff, 0xda, 0, 2, 9, 0xff, 0xd9]);
+  const saida = semMetadados(Buffer.concat([Buffer.from([0xff, 0xd8]), app1, imagem]));
+  assert.equal(saida.length, 2 + 36 + imagem.length, "EXIF mínimo de 36 bytes no lugar do original");
+  assert.equal(saida.readUInt16BE(2), 0xffe1);
+  assert.equal(saida.readUInt16BE(2 + 20), 0x0112);
+  assert.equal(saida.readUInt16BE(2 + 28), 6);
+  assert.ok(!saida.includes(Buffer.from([0x25, 0x88])) && !saida.includes(Buffer.from([0x88, 0x25])), "GPS sumiu");
+});
+
 test("muitas conferências de senha ao mesmo tempo: o excesso recebe OCUPADO sem travar o site", async () => {
   const cfg = hashSenha("senha-de-teste-longa", undefined, 2 ** 10);
   const resultados = await Promise.all(Array.from({ length: 14 }, () => senhaConfere("errada", cfg)));
