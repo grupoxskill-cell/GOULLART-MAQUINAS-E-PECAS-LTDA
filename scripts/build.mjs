@@ -33,5 +33,8 @@ for (const rel of (await readdir("_site", { recursive: true })).filter((n) => n.
   if (/href="\/(?:site-typography|fonte-goullart)\.css/.test(html) || !/<\/head>/i.test(html)) continue;
   await writeFile(f, html.replace(/<\/head>/i, '<link rel="stylesheet" href="/fonte-goullart.css?v=20261113"></head>'));
 }
+// Por último: cada CSS/JS ganha ?v=<resumo do conteúdo>, para mudanças aparecerem na hora (sem cache velho).
+const { versionarArquivos } = await import("./versionar-arquivos.mjs");
+await versionarArquivos("_site");
 await writeFile("_site/robots.txt", `User-agent: *\nDisallow: /adm\nDisallow: /previa-visual/\nSitemap: ${SITE}/sitemap.xml\n`);
 console.log(`Site estático gerado em _site (${maquinas.length} páginas de máquinas)`);
