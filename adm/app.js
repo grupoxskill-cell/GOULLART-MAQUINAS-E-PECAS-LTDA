@@ -511,7 +511,7 @@ function formPublicacao(item, aoSalvar, aoCancelar) {
   };
   let imagens = [...item.imagens];
   const prev = h("div", { class: "fotos-prev" });
-  const desenharFotos = () => prev.replaceChildren(...imagens.map((src, i) => h("span", {}, h("img", { src, alt: "" }),
+  const desenharFotos = () => prev.replaceChildren(...imagens.map((src, i) => h("span", {}, h("img", { src: src.startsWith("/fotos/") ? `/adm${src}` : src, alt: "" }),
     h("button", { type: "button", class: "btn sec", onclick: () => { imagens.splice(i, 1); desenharFotos(); } }, "Tirar"))));
   desenharFotos();
   const arquivo = h("input", { type: "file", accept: "image/*", multiple: true });

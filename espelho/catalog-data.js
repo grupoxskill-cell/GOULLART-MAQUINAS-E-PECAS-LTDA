@@ -32,6 +32,6 @@
  // mesmo que o ADM ainda as tenha como "no site". GOUL-291: Hyundai R220 LC-9 2022, vendida (Trello, 04/11/2026).
  const vendidas=new Set(['GOUL-291']);
  const visivel=item=>!vendidas.has(item.publicCode)&&(item.category!=='pecas'||temFoto(item));
- function feed(data){return {...data,items:(data.items||[]).map(normalize).filter(visivel),opportunities:(data.opportunities||[]).map(normalize)};}
+ function feed(data){return {...data,items:(data.items||[]).map(normalize).filter(visivel),opportunities:(data.opportunities||[]).map(normalize).filter(i=>!vendidas.has(i.publicCode))};}
  globalThis.GoullartCatalogData={normalize,feed,facts,asset,clean,visivel};
 })();
