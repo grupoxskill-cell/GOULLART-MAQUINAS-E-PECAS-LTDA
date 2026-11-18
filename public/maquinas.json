@@ -659,5 +659,22 @@
    "assets/listings/forza-fzbr-928k-2024-350-04-painel.jpg"
   ],
   "textoSite": "Pá carregadeira Forza FZBR 928K, ano 2024, com 350 horas informadas. Minas Gerais. Único dono, NF de origem e totalmente operacional, conforme informações fornecidas à GOULLART. Valor: R$ 199.500,00. Falar agora com Jr. Goullart. Confirme disponibilidade e condições com a equipe."
+ },
+ {
+  "ficha": "catalogo-2026-11-18",
+  "referencia": "GOUL-LONKING-2024-1455",
+  "titulo": "Pá carregadeira Lonking CDM835",
+  "categoria": "Pás-carregadeiras",
+  "ano": "2024",
+  "horas": "1.455 horas informadas",
+  "preco": "R$ 350.000,00",
+  "local": "Vitória/ES",
+  "fotos": [
+   "assets/listings/lonking-cdm835-2024-1455-01-frontal.jpg",
+   "assets/listings/lonking-cdm835-2024-1455-02-lateral.jpg",
+   "assets/listings/lonking-cdm835-2024-1455-03-traseira.jpg"
+  ],
+  "textoSite": "Pá carregadeira Lonking CDM835, ano 2024, com 1.455 horas informadas. Máquina robusta. Localização: Vitória/ES. Valor: R$ 350.000,00. Falar agora com Jr. Goullart. Confirme disponibilidade e condições com a equipe GOULLART.",
+  "artwork": true
  }
 ]
