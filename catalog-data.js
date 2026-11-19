@@ -18,6 +18,12 @@
   const patch=corrections[item.publicCode]||{},copy={...item,...patch,title:clean(patch.title||item.title),publicText:clean(patch.publicText||item.publicText)};
   if(item.publicCode==='GOUL-293'&&item.price==null)copy.price=600000;
   copy.image=asset(copy.image);if(Array.isArray(copy.images))copy.images=copy.images.map(asset);
+  if(item.publicCode==='GOUL-ART-261105-01'){
+   const photo=value=>typeof value==='string'&&value.split('?')[0]==='/assets/listings/goul-art-261105-01.jpg'?'/assets/listings/john-deere-524k-ii-americana-f1530876.jpg':value;
+   copy.image=photo(copy.image);
+   if(Array.isArray(copy.images))copy.images=copy.images.map(photo);
+   if(copy.image==='/assets/listings/john-deere-524k-ii-americana-f1530876.jpg')copy.artwork=false;
+  }
   if(item.publicCode==='GOUL-405'){
    // Repair the missing imported photograph without replacing later photos chosen in the ADM.
    const photo='/assets/listings/maquina-pub149.webp',legacy='/assets/publicacoes/00003434-PHOTO-2026-09-15-15-13-34.webp';
