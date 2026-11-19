@@ -747,5 +747,26 @@
   "textoSite": "Retroescavadeira Caterpillar 416, ano 2024, com 2.000 horas informadas. NF de origem, 100% operacional e ar condicionado, conforme informações fornecidas à GOULLART. Valor: R$ 370.000,00. Localização sob consulta. Falar agora com Jr. Goullart.",
   "artwork": true,
   "slug": "retroescavadeira-caterpillar-416-2024"
+ },
+ {
+  "ficha": "catalogo-2026-11-19",
+  "referencia": "GOUL-CAT416-2025-1600",
+  "titulo": "Retroescavadeira Caterpillar 416 4x4",
+  "categoria": "Retroescavadeiras",
+  "ano": "2025",
+  "horas": "1.600 horas informadas",
+  "preco": "R$ 350.000,00",
+  "local": "Localização sob consulta",
+  "fotos": [
+   "assets/listings/cat-416-4x4-2025-1600-01-geral.jpg",
+   "assets/listings/cat-416-4x4-2025-1600-02-lateral.jpg",
+   "assets/listings/cat-416-4x4-2025-1600-03-cabine.jpg",
+   "assets/listings/cat-416-4x4-2025-1600-04-cacamba-frontal.jpg",
+   "assets/listings/cat-416-4x4-2025-1600-05-pneu.jpg",
+   "assets/listings/cat-416-4x4-2025-1600-06-braco-traseiro.jpg"
+  ],
+  "textoSite": "Retroescavadeira Caterpillar 416 4x4, ano 2025, com 1.600 horas informadas. NF de origem, cabine fechada, 100% operacional, único dono e ar condicionado, conforme informações fornecidas à GOULLART. Valor: R$ 350.000,00. Localização sob consulta. Falar agora com Jr. Goullart.",
+  "artwork": true,
+  "slug": "retroescavadeira-caterpillar-416-4x4-2025"
  }
 ]
