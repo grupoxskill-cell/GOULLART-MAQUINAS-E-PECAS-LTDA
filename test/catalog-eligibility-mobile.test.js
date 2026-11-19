@@ -108,8 +108,8 @@ test('static category prices stay literal and every card remains inside the cata
  }finally{await rm(dir,{recursive:true,force:true});}
 });
 
-test('the built retro catalogue has all five approved cards in its grid and no leftover imported markup',async()=>{
- const codes=['GOUL-341','GOUL-296','GOUL-297','GOUL-405','GOUL-CAT416-2024-2000'];
+test('the built retro catalogue has all approved cards in its grid and no leftover imported markup',async()=>{
+ const codes=['GOUL-341','GOUL-296','GOUL-297','GOUL-405','GOUL-CAT416-2024-2000','GOUL-CAT416-2025-1600'];
  for(const file of ['_site/maquinas/retroescavadeira.html','_site/maquinas/retroescavadeira/index.html']){
   const html=await readFile(file,'utf8'),match=html.match(/<section id="catalog-page-list"[^>]*>([\s\S]*?)<\/section>/);
   assert.ok(match,file);
