@@ -17,7 +17,16 @@
  function normalize(item){
   const patch=corrections[item.publicCode]||{},copy={...item,...patch,title:clean(patch.title||item.title),publicText:clean(patch.publicText||item.publicText)};
   if(item.publicCode==='GOUL-293'&&item.price==null)copy.price=600000;
-  copy.image=asset(item.image);if(Array.isArray(item.images))copy.images=item.images.map(asset);
+  copy.image=asset(copy.image);if(Array.isArray(copy.images))copy.images=copy.images.map(asset);
+  if(item.publicCode==='GOUL-405'){
+   // Repair the missing imported photograph without replacing later photos chosen in the ADM.
+   const photo='/assets/listings/maquina-pub149.webp',legacy='/assets/publicacoes/00003434-PHOTO-2026-09-15-15-13-34.webp';
+   const repair=value=>value===legacy?photo:value;
+   copy.image=repair(copy.image);if(Array.isArray(copy.images))copy.images=copy.images.map(repair);
+   if(!String(copy.image||'').trim())copy.image=copy.images?.find(value=>typeof value==='string'&&value.trim())||photo;
+   if(!copy.images?.some(value=>typeof value==='string'&&value.trim()))copy.images=[copy.image];
+   if(copy.title==='2 RETROESCAVADEIRA • JCB 3CX')copy.title='RETROESCAVADEIRA • JCB 3CX • 2025';
+  }
   return copy;
  }
  function facts(item){
