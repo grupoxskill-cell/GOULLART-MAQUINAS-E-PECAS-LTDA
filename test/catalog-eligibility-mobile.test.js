@@ -108,13 +108,14 @@ test('static category prices stay literal and every card remains inside the cata
  }finally{await rm(dir,{recursive:true,force:true});}
 });
 
-test('the built retro catalogue has four cards in its grid and no leftover imported markup',async()=>{
+test('the built retro catalogue has all five approved cards in its grid and no leftover imported markup',async()=>{
+ const codes=['GOUL-341','GOUL-296','GOUL-297','GOUL-405','GOUL-CAT416-2024-2000'];
  for(const file of ['_site/maquinas/retroescavadeira.html','_site/maquinas/retroescavadeira/index.html']){
   const html=await readFile(file,'utf8'),match=html.match(/<section id="catalog-page-list"[^>]*>([\s\S]*?)<\/section>/);
   assert.ok(match,file);
-  assert.equal((html.match(/<article\b/g)||[]).length,4,file);
-  assert.equal((match[1].match(/<article\b/g)||[]).length,4,file);
-  for(const code of ['GOUL-341','GOUL-296','GOUL-297','GOUL-405'])assert.ok(match[1].includes(code),code);
+  assert.equal((html.match(/<article\b/g)||[]).length,codes.length,file);
+  assert.equal((match[1].match(/<article\b/g)||[]).length,codes.length,file);
+  for(const code of codes)assert.ok(match[1].includes(code),code);
   assert.ok(match[1].includes('R$250.000,00'),file);
   assert.match(match[1],/src="\/assets\/listings\/maquina-pub149\.webp"/);
   assert.match(html.slice(match.index+match[0].length),/^\s*<a class="catalog-page-back"/,file);
