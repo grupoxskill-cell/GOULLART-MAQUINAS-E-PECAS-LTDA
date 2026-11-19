@@ -713,5 +713,24 @@
   ],
   "textoSite": "Retroescavadeira Caterpillar 416 4x4, ano 2025, com 1.600 horas informadas. NF de origem, cabine fechada, 100% operacional, único dono e ar condicionado, conforme informações fornecidas à GOULLART. Valor: R$ 350.000,00. Localização sob consulta. Falar agora com Jr. Goullart.",
   "artwork": true
+ },
+ {
+  "ficha": "catalogo-2026-11-19",
+  "referencia": "GOUL-SANY135-2024-2000",
+  "titulo": "Escavadeira SANY SY135C",
+  "categoria": "Escavadeiras",
+  "ano": "2024",
+  "horas": "2.000 horas informadas",
+  "preco": "R$ 425.000,00",
+  "local": "Campinas/SP",
+  "fotos": [
+   "assets/listings/sany-sy135c-2024-2000-01-geral.jpg",
+   "assets/listings/sany-sy135c-2024-2000-02-lateral.jpg",
+   "assets/listings/sany-sy135c-2024-2000-03-cabine.jpg",
+   "assets/listings/sany-sy135c-2024-2000-04-rodante.jpg",
+   "assets/listings/sany-sy135c-2024-2000-05-cacamba.jpg"
+  ],
+  "textoSite": "Escavadeira SANY SY135C, ano 2024, com 2.000 horas informadas. Localização: Campinas/SP. Valor: R$ 425.000,00. Falar agora com Jr. Goullart.",
+  "artwork": true
  }
 ]
