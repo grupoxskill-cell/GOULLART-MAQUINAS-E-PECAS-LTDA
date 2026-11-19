@@ -729,5 +729,23 @@
   "textoSite": "Pá carregadeira Lonking CDM835, ano 2024, com 1.455 horas informadas. Máquina robusta. Localização: Vitória/ES. Valor: R$ 350.000,00. Falar agora com Jr. Goullart. Confirme disponibilidade e condições com a equipe GOULLART.",
   "artwork": true,
   "slug": "pa-carregadeira-lonking-cdm835-2024"
+ },
+ {
+  "ficha": "catalogo-2026-11-19",
+  "referencia": "GOUL-CAT416-2024-2000",
+  "titulo": "Retroescavadeira Caterpillar 416",
+  "categoria": "Retroescavadeiras",
+  "ano": "2024",
+  "horas": "2.000 horas informadas",
+  "preco": "R$ 370.000,00",
+  "local": "Localização sob consulta",
+  "fotos": [
+   "assets/listings/cat-416-2024-2000-01-perfil.jpg",
+   "assets/listings/cat-416-2024-2000-02-lateral.jpg",
+   "assets/listings/cat-416-2024-2000-03-frontal.jpg"
+  ],
+  "textoSite": "Retroescavadeira Caterpillar 416, ano 2024, com 2.000 horas informadas. NF de origem, 100% operacional e ar condicionado, conforme informações fornecidas à GOULLART. Valor: R$ 370.000,00. Localização sob consulta. Falar agora com Jr. Goullart.",
+  "artwork": true,
+  "slug": "retroescavadeira-caterpillar-416-2024"
  }
 ]
