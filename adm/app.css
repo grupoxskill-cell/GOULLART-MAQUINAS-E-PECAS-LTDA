@@ -59,3 +59,9 @@ details summary { cursor: pointer; font-weight: 600; font-size: 0.9rem; }
 .foto-marca img { width: 88px; height: 66px; object-fit: cover; border-radius: 6px; }
 
 .linha-inteira { grid-column: 1 / -1; }
+
+.pedidos-radar, .pedido-radar { display: grid; gap: 10px; min-width: 0; overflow-wrap: anywhere; }
+.pedidos-radar select { min-width: 0; max-width: 100%; }
+.pedido-radar { padding: 12px; border-left: 3px solid var(--brand); background: var(--bg); }
+.pedido-radar ul, .pedidos-radar p { margin: 0; }
+.pedido-radar li + li { margin-top: 8px; }

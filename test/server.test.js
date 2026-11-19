@@ -115,6 +115,35 @@ test('Encontros cruzam pedido do CRM com máquina do Radar', async () => {
   assert.ok(e.achados.some((a) => /PC200/.test(a.maquina.titulo)));
 });
 
+test('Radares privados mantêm pedidos abertos, inclusive enquanto aguardam oferta', async () => {
+  const cookie = await entrar();
+  const criar = (nome) => enviar(cookie, '/adm/api/radares', 'POST', { nome });
+  const perfil = await (await criar('Perfil de teste')).json();
+  assert.equal((await (await criar('Perfil de teste')).json()).id, perfil.id);
+  const rota = `/adm/api/radares/${perfil.id}/pedidos`;
+  const pedidos = ['p-a', 'p-b', 'p-c'].map((id) => ({ id, kind: 'Compra', stage: 'Aberto', title: 'Máquina de teste' }));
+  pedidos[2].stage = 'Cancelado';
+  const baseCrm = { contacts: [], deals: pedidos };
+  await enviar(cookie, '/adm/api/crm', 'POST', baseCrm);
+  assert.equal((await fetch(base + rota, { method: 'PUT' })).status, 401);
+  const ligar = (pedidoId) => enviar(cookie, rota, 'PUT', { pedidoId });
+  const respostas = await Promise.all([ligar('p-a'), ligar('p-b'), ligar('p-a')]);
+  assert.ok(respostas.every((r) => r.ok));
+  assert.equal((await ligar('p-c')).status, 409);
+  assert.equal((await ligar('ausente')).status, 409);
+  const perfis = async () => (await enviar(cookie, '/adm/api/radares', 'GET')).json();
+  assert.deepEqual(new Set((await perfis()).find((r) => r.id === perfil.id).pedidoIds), new Set(['p-a', 'p-b']));
+  const importar = () => enviar(cookie, '/adm/api/publicacoes', 'POST', { items: [], radars: [{ id: 'perfil-importado', name: 'Importado' }] });
+  await importar();
+  await enviar(cookie, '/adm/api/radares/perfil-importado/pedidos', 'PUT', { pedidoId: 'p-b' });
+  await importar();
+  assert.deepEqual((await perfis()).find((r) => r.id === 'perfil-importado').pedidoIds, ['p-b']);
+  assert.ok((await perfis()).some((r) => r.id === perfil.id));
+  assert.deepEqual((await (await enviar(cookie, rota, 'DELETE', { pedidoId: 'p-a' })).json()).pedidoIds, ['p-b']);
+  const catalogo = await (await fetch(base + '/adm/catalogo.json')).text();
+  assert.ok(!catalogo.includes('perfil-importado') && !catalogo.includes('pedidoIds'));
+});
+
 test('cada máquina tem página própria com prévia para WhatsApp e Google', async () => {
   const maquinas = await (await fetch(base + '/maquinas.json')).json();
   const m = maquinas.find((x) => /PC200/.test(x.titulo) && !x.referencia.startsWith('R-'));
