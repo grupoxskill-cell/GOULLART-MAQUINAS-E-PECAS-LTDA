@@ -511,7 +511,7 @@ function formPublicacao(item, aoSalvar, aoCancelar) {
   };
   let imagens = [...item.imagens];
   const prev = h("div", { class: "fotos-prev" });
-  const desenharFotos = () => prev.replaceChildren(...imagens.map((src, i) => h("span", {}, h("img", { src, alt: "" }),
+  const desenharFotos = () => prev.replaceChildren(...imagens.map((src, i) => h("span", {}, h("img", { src: src.startsWith("/fotos/") ? `/adm${src}` : src, alt: "" }),
     h("button", { type: "button", class: "btn sec", onclick: () => { imagens.splice(i, 1); desenharFotos(); } }, "Tirar"))));
   desenharFotos();
   const arquivo = h("input", { type: "file", accept: "image/*", multiple: true });
@@ -654,7 +654,7 @@ async function config() {
   const salvarMargem = h("button", { class: "btn" }, "Salvar margem");
   salvarMargem.addEventListener("click", () => acao(salvarMargem, async () => { resumo.margem = (await api("/config", { method: "PUT", body: { margem: margem.value } })).margem; }, "Margem salva."));
   const atual = h("input", { type: "password", autocomplete: "current-password" });
-  const nova = h("input", { type: "password", autocomplete: "new-password", minlength: 8 });
+  const nova = h("input", { type: "password", autocomplete: "new-password", minlength: 14 });
   const trocar = h("button", { class: "btn" }, "Trocar senha");
   trocar.addEventListener("click", () => acao(trocar, async () => { await api("/senha", { method: "POST", body: { atual: atual.value, nova: nova.value } }); atual.value = nova.value = ""; }, "Senha trocada."));
   const entrada = await api("/entrada");
@@ -667,6 +667,15 @@ async function config() {
   const aviso = h("input", { value: entrada.avisoWebhook, placeholder: "https://... (Zapier, Make ou iZap)" });
   const salvarAviso = h("button", { class: "btn" }, "Salvar aviso");
   salvarAviso.addEventListener("click", () => acao(salvarAviso, async () => { await api("/config", { method: "PUT", body: { avisoWebhook: aviso.value } }); }, "Aviso salvo."));
+  // Cópia de segurança no próprio celular/computador: Radar, Pátio, CRM, publicações e contador de interesse.
+  const baixar = h("button", { class: "btn sec" }, "Baixar cópia dos dados");
+  baixar.addEventListener("click", () => acao(baixar, async () => {
+    const dados = await api("/backup");
+    const link = h("a", { href: URL.createObjectURL(new Blob([JSON.stringify(dados, null, 1)], { type: "application/json" })),
+      download: `goullart-adm-${new Date().toISOString().slice(0, 10)}.json` });
+    document.body.append(link); link.click(); link.remove();
+    setTimeout(() => URL.revokeObjectURL(link.href), 10_000);
+  }, "Cópia baixada. Guarde o arquivo em local seguro: ele tem dados privados."));
   const sair = h("button", { class: "btn perigo" }, "Sair do ADM");
   sair.addEventListener("click", async () => { await api("/sair", { method: "POST" }).catch(() => {}); mostrarLogin(); });
   const painelWhats = await painelWhatsapp();
@@ -681,7 +690,10 @@ async function config() {
     h("div", { class: "painel" }, h("h2", {}, "Aviso de nova oferta"),
       h("p", { class: "muted" }, "Quando entra uma oferta, o ADM manda os dados (com o link para aprovar) para este endereço. Ligue-o a uma automação que mande para o seu WhatsApp."),
       h("label", {}, "Endereço do aviso", aviso), salvarAviso),
-    h("div", { class: "painel" }, h("h2", {}, "Trocar senha"), h("label", {}, "Senha atual", atual), h("label", {}, "Nova senha (8+ caracteres)", nova), trocar),
+    h("div", { class: "painel" }, h("h2", {}, "Trocar senha"), h("label", {}, "Senha atual", atual), h("label", {}, "Nova senha (14+ caracteres)", nova), trocar),
+    h("div", { class: "painel" }, h("h2", {}, "Cópia de segurança"),
+      h("p", { class: "muted" }, "O servidor já faz backup todo dia. Aqui você baixa uma cópia para guardar com você. O arquivo tem preços de origem e contatos: não envie para ninguém."),
+      baixar),
     h("div", { class: "painel" }, sair));
 }
 

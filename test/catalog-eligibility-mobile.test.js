@@ -64,6 +64,63 @@ test('an ineligible category is empty; a network failure retains the static snap
  assert.equal(offline['catalog-page-list'].dataset.rendered,undefined);
 });
 
+test('live JCB category cards keep the approved photograph when the ADM returns the old listing',async()=>{
+ const legacy='/assets/publicacoes/00003434-PHOTO-2026-09-15-15-13-34.webp';
+ const old=machine('PUB-149',{publicCode:'GOUL-405',title:'2 RETROESCAVADEIRA • JCB 3CX',price:355000,image:legacy,images:[legacy],publicText:'JCB 3CX, ano 2025, 1.800 horas.',retentionPolicy:'owner_confirmation'});
+ const before=JSON.stringify(old),nodes=await client([old],{type:'retroescavadeira'});
+ const cards=nodes['catalog-page-list'].innerHTML;
+ assert.equal(nodes['catalog-page-count'].textContent,'1 anúncio encontrado');
+ assert.match(cards,/src="\/assets\/listings\/maquina-pub149\.webp"/);
+ assert.match(cards,/RETROESCAVADEIRA • JCB 3CX • 2025/);
+ assert.ok(!cards.includes(legacy));assert.doesNotMatch(cards,/2 RETROESCAVADEIRA/);
+ assert.equal(JSON.stringify(old),before);
+ const normalize=globalThis.GoullartCatalogData.normalize,repaired=normalize(old);
+ assert.deepEqual(repaired.images,['/assets/listings/maquina-pub149.webp']);
+ assert.deepEqual(normalize(repaired),repaired);
+ assert.equal(normalize({...old,image:'',images:[]}).image,repaired.image);
+ const updated={...old,title:'RETROESCAVADEIRA • JCB 3CX • 2025 ATUALIZADA',image:'/fotos/jcb-atualizada.jpg',images:['/fotos/jcb-atualizada.jpg']};
+ assert.deepEqual(normalize(updated),updated);
+ const refreshed=await client([updated],{type:'retroescavadeira'});
+ assert.match(refreshed['catalog-page-list'].innerHTML,/src="\/fotos\/jcb-atualizada\.jpg"/);
+ assert.match(refreshed['catalog-page-list'].innerHTML,/2025 ATUALIZADA/);
+});
+
+test('static category prices stay literal and every card remains inside the catalogue grid',async()=>{
+ const dir=await mkdtemp(join(tmpdir(),'goullart-price-markup-'));
+ try{
+  await mkdir(join(dir,'api'));await mkdir(join(dir,'maquinas'));
+  const items=[
+   machine('GOUL-341',{title:'RETROESCAVADEIRA • CAT 416E • 2015',price:250000,publicText:'VENDO\nR$250.000,00\n📍Pará'}),
+   machine('GOUL-296',{title:'RETROESCAVADEIRA • CASE 580N • 2018',price:300000,publicText:'R$300.000,00'}),
+   machine('GOUL-405',{title:'RETROESCAVADEIRA • JCB 3CX • 2025',price:355000,publicText:'Preço por unidade: R$355.000,00'})
+  ];
+  await writeFile(join(dir,'api/catalog.json'),JSON.stringify({items}));
+  const html='<p id="catalog-page-count"></p><section id="catalog-page-list"></section><footer>Fim</footer>';
+  for(const file of ['index.html','ofertas.html','maquinas/retroescavadeira.html'])await writeFile(join(dir,file),html);
+  await prepareCatalogue(dir,now);
+  const category=await readFile(join(dir,'maquinas/retroescavadeira.html'),'utf8');
+  const grid=category.match(/<section id="catalog-page-list">([\s\S]*?)<\/section>/)?.[1];
+  assert.ok(grid,'A grade do catálogo deve existir.');
+  assert.equal((category.match(/<\/section>/g)||[]).length,1);
+  assert.equal((grid.match(/<article\b/g)||[]).length,items.length);
+  for(const item of items){assert.ok(grid.includes(item.publicCode),item.publicCode);assert.ok(grid.includes(item.publicText),item.publicText);}
+  assert.match(category,/<\/section><footer>Fim<\/footer>$/);
+ }finally{await rm(dir,{recursive:true,force:true});}
+});
+
+test('the built retro catalogue has four cards in its grid and no leftover imported markup',async()=>{
+ for(const file of ['_site/maquinas/retroescavadeira.html','_site/maquinas/retroescavadeira/index.html']){
+  const html=await readFile(file,'utf8'),match=html.match(/<section id="catalog-page-list"[^>]*>([\s\S]*?)<\/section>/);
+  assert.ok(match,file);
+  assert.equal((html.match(/<article\b/g)||[]).length,4,file);
+  assert.equal((match[1].match(/<article\b/g)||[]).length,4,file);
+  for(const code of ['GOUL-341','GOUL-296','GOUL-297','GOUL-405'])assert.ok(match[1].includes(code),code);
+  assert.ok(match[1].includes('R$250.000,00'),file);
+  assert.match(match[1],/src="\/assets\/listings\/maquina-pub149\.webp"/);
+  assert.match(html.slice(match.index+match[0].length),/^\s*<a class="catalog-page-back"/,file);
+ }
+});
+
 test('static category and offer snapshots filter eligibility without deleting source listings',async()=>{
  const dir=await mkdtemp(join(tmpdir(),'goullart-eligibility-'));
  try{

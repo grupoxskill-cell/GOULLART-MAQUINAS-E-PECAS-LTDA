@@ -15,7 +15,7 @@ const APROVADOR = '5562900000001';
 const CLIENTE = '5562911112222';
 const PHONE_ID = '123456789012';
 const APP_SECRET = 'ab'.repeat(16);
-const JPEG = Buffer.concat([Buffer.from([0xff, 0xd8, 0xff, 0xe0]), Buffer.alloc(300, 7), Buffer.from([0xff, 0xd9])]);
+const JPEG = await readFile(new URL('./radar-whatsapp.jpg', import.meta.url));
 
 // Graph API falsa: registra o que o servidor manda.
 const enviados = [];
@@ -174,6 +174,9 @@ test('anúncio encaminhado pelo aprovador vira oferta e a foto vai com o código
   assert.equal(item.status, 'novo');
   assert.equal(item.origemEntrada, 'whatsapp');
   assert.equal(item.fotos.length, 1);
+  const fotoSalva = await readFile(join(dataDir, item.fotos[0]));
+  assert.ok(JPEG.includes("origem-privada-de-teste"));
+  assert.ok(!fotoSalva.includes("origem-privada-de-teste"));
   // Ainda não está no site.
   const cat = await (await fetch(base + '/adm/catalogo.json')).json();
   assert.ok(!cat.items.some((i) => i.price === 270000 && i.title.includes('JOHN DEERE 210G')), 'apareceu no site antes do SIM');

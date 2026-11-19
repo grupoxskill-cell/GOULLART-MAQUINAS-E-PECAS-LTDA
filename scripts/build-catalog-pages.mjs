@@ -49,7 +49,8 @@ export async function prepareCatalogue(directory,now=Date.now()){
    }).join('');
    const alternatives=eligibleItems.filter(i=>i.category==='maquinas'&&types.classify(i)!==type).slice(0,6).map(i=>`<article class="catalog-page-card${i.artwork?' approved-artwork':''}"><a href="/?area=maquinas&item=${encodeURIComponent(i.id)}"><img src="${esc(i.image)}" alt="${esc(i.title)}" loading="lazy"></a><div><h2>${esc(i.title)}</h2><p>${esc(dataTools.facts(i))}</p><strong>${i.price==null?'Valor sob consulta':money(i.price)}</strong></div></article>`).join('');
    const fallback=`<div class="catalog-page-empty"><h2>${empty}</h2><a href="https://wa.me/5562999427276" target="_blank" rel="noopener noreferrer">Falar com a equipe pelo WhatsApp</a><p>Veja outras máquinas disponíveis:</p>${alternatives}</div>`;
-   html=html.replace(/(<section id="catalog-page-list"[^>]*>)[\s\S]*?(<\/section>)/,'$1'+(cards||fallback)+'$2');
+   // Keep prices such as R$250.000 literal; replacement strings would interpret $2 as </section>.
+   html=html.replace(/(<section id="catalog-page-list"[^>]*>)[\s\S]*?(<\/section>)/,(_,start,end)=>start+(cards||fallback)+end);
   }
   html=html.replace(/<a\b[^>]*href="\/maquinas\/([a-z-]+)\/?"[^>]*>[\s\S]*?<\/a>/g,(tag,id)=>counts[id]===0?tag.replace('<a ','<a hidden '):tag);
   html=html.replace(/<details class="sidebar-group"[^>]*>[\s\S]*?<\/details>/g,tag=>/<a(?! hidden )/.test(tag)?tag:tag.replace('<details ','<details hidden '));

@@ -1,5 +1,6 @@
 // Site GOULLART: catálogo e contato humano. A IA permanece desativada.
 import http from "node:http";
+import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { extname, resolve, relative, isAbsolute } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -41,14 +42,22 @@ async function serveStatic(req, res, pathname) {
   }
 }
 
+// Respostas que mudam pouco (lista de máquinas, sitemap, página da máquina) levam ETag: o navegador, o
+// WhatsApp e o Google recebem só "304 — nada mudou" em vez do arquivo inteiro a cada visita.
+function responderComEtag(req, res, tipo, corpo, extra = {}) {
+  const etag = `"${createHash("sha1").update(corpo).digest("base64url")}"`;
+  if (req.headers["if-none-match"] === etag) return res.writeHead(304, { ETag: etag, "Cache-Control": "no-cache", ...extra }).end();
+  res.writeHead(200, { "Content-Type": tipo, "Cache-Control": "no-cache", ETag: etag, ...extra });
+  res.end(req.method === "HEAD" ? undefined : corpo);
+}
+
 async function servirPaginaMaquina(req, res, slug) {
   const todas = await maquinasPublicas();
   const m = todas.find((x) => x.slug === slug);
   if (!m) return res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" }).end("Máquina não encontrada");
-  res.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-cache",
+  responderComEtag(req, res, "text/html; charset=utf-8", await paginaMaquina(m, todas), {
     // Só recursos do próprio site (o formulário de contato abre o WhatsApp); o JSON-LD (type=application/ld+json) não é executado e não precisa de exceção.
     "Content-Security-Policy": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' https://wa.me https://api.whatsapp.com; frame-ancestors 'none'" });
-  res.end(req.method === "HEAD" ? undefined : await paginaMaquina(m, todas));
 }
 
 async function contarInteresse(req, res) {
@@ -100,12 +109,11 @@ async function atender(req, res) {
   if (pathname === "/api/empresa") return sendJson(res, 200, EMPRESA);
   if (pathname.startsWith("/fotos/")) return servirFoto(req, res, pathname);
   // Catálogo do site + máquinas publicadas pelo ADM (Radar com margem e Pátio).
-  if (pathname === "/maquinas.json") return sendJson(res, 200, await maquinasPublicas());
+  if (pathname === "/maquinas.json") return responderComEtag(req, res, "application/json; charset=utf-8", JSON.stringify(await maquinasPublicas()));
   const pagina = /^\/maquina\/([a-z0-9-]+?)(?:\.html)?$/.exec(pathname);
   if (pagina) return servirPaginaMaquina(req, res, pagina[1]);
   if (pathname === "/sitemap.xml") {
-    res.writeHead(200, { "Content-Type": "application/xml; charset=utf-8" });
-    return res.end(sitemap(await maquinasPublicas(), await tiposDeMaquina()));
+    return responderComEtag(req, res, "application/xml; charset=utf-8", sitemap(await maquinasPublicas(), await tiposDeMaquina()));
   }
   if (pathname === "/api/catalogo" || pathname === "/catalogo.json") return sendJson(res, 200, CATALOGO);
   return serveStatic(req, res, pathname);
@@ -121,4 +129,16 @@ const server = http.createServer((req, res) => {
   });
 });
 process.on("unhandledRejection", (err) => console.error("promessa sem tratamento:", err));
+// Conexões lentas de propósito não prendem o servidor: cabeçalhos em até 20 s e o pedido inteiro em até
+// 3 min (folga para enviar fotos pelo celular).
+server.headersTimeout = 20_000;
+server.requestTimeout = 180_000;
+// Ao reiniciar (atualização a cada 10 min), termina os pedidos em andamento antes de sair.
+for (const sinal of ["SIGTERM", "SIGINT"]) {
+  process.once(sinal, () => {
+    server.close(() => process.exit(0));
+    server.closeIdleConnections?.();
+    setTimeout(() => process.exit(0), 10_000).unref();
+  });
+}
 server.listen(PORT, HOST, () => console.log(`GOULLART em http://localhost:${PORT} — atendimento humano; IA desativada.`));

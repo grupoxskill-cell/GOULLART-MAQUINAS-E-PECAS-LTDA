@@ -22,6 +22,8 @@ jobs:
         with:
           # A fila pode receber eventos fora de ordem ou reexecuções antigas.
           ref: master
+          # O token de escrita não fica em .git enquanto o build e os testes rodam código do repositório.
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -32,10 +34,14 @@ jobs:
       - name: Conferir versão antes de publicar
         id: versao
         shell: bash
+        env:
+          TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           local_sha=$(git rev-parse HEAD)
-          remote_ref=$(git ls-remote --exit-code origin refs/heads/master)
+          # Token só neste comando (continua funcionando quando o repositório ficar privado).
+          auth=$(printf 'x-access-token:%s' "$TOKEN" | base64 -w0)
+          remote_ref=$(git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $auth" ls-remote --exit-code origin refs/heads/master)
           remote_sha=${remote_ref%%$'\t'*}
           echo "sha=$local_sha" >> "$GITHUB_OUTPUT"
           if [[ "$local_sha" == "$remote_sha" ]]; then
@@ -46,7 +52,7 @@ jobs:
           fi
       - name: Publicar versão atual
         if: steps.versao.outputs.atual == 'true'
-        uses: peaceiris/actions-gh-pages@v4
+        uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4.1.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./_site

@@ -1,7 +1,6 @@
 /* Public catalogue corrections approved by GOULLART on 31/10/2026. */
 (() => {
  const corrections={
-  'GOUL-291':{title:'ESCAVADEIRA • HYUNDAI R220 LC-9 • 2022',year:2022,hours:'8.753',publicText:'Hyundai R220 LC-9. Ano: 2022. Horímetro: 8.753 h. Confirme localização, disponibilidade e condições com a equipe.'},
   'GOUL-293':{title:'TRATOR DE ESTEIRA • KOMATSU D51 • 2019',year:2019,hours:'7.900'},
   'GOUL-331':{title:'CAVALO MECÂNICO • MERCEDES-BENZ 2035 S • 2009',year:2009,km:'241.220'},
   'GOUL-330':{title:'CAMINHÃO PIPA • VW 31.330 6X4 • 2022',year:2022,hours:'13.100',km:'61.498'},
@@ -17,7 +16,22 @@
  function normalize(item){
   const patch=corrections[item.publicCode]||{},copy={...item,...patch,title:clean(patch.title||item.title),publicText:clean(patch.publicText||item.publicText)};
   if(item.publicCode==='GOUL-293'&&item.price==null)copy.price=600000;
-  copy.image=asset(item.image);if(Array.isArray(item.images))copy.images=item.images.map(asset);
+  copy.image=asset(copy.image);if(Array.isArray(copy.images))copy.images=copy.images.map(asset);
+  if(item.publicCode==='GOUL-ART-261105-01'){
+   const photo=value=>typeof value==='string'&&value.split('?')[0]==='/assets/listings/goul-art-261105-01.jpg'?'/assets/listings/john-deere-524k-ii-americana-f1530876.jpg':value;
+   copy.image=photo(copy.image);
+   if(Array.isArray(copy.images))copy.images=copy.images.map(photo);
+   if(copy.image==='/assets/listings/john-deere-524k-ii-americana-f1530876.jpg')copy.artwork=false;
+  }
+  if(item.publicCode==='GOUL-405'){
+   // Repair the missing imported photograph without replacing later photos chosen in the ADM.
+   const photo='/assets/listings/maquina-pub149.webp',legacy='/assets/publicacoes/00003434-PHOTO-2026-09-15-15-13-34.webp';
+   const repair=value=>value===legacy?photo:value;
+   copy.image=repair(copy.image);if(Array.isArray(copy.images))copy.images=copy.images.map(repair);
+   if(!String(copy.image||'').trim())copy.image=copy.images?.find(value=>typeof value==='string'&&value.trim())||photo;
+   if(!copy.images?.some(value=>typeof value==='string'&&value.trim()))copy.images=[copy.image];
+   if(copy.title==='2 RETROESCAVADEIRA • JCB 3CX')copy.title='RETROESCAVADEIRA • JCB 3CX • 2025';
+  }
   return copy;
  }
  function facts(item){
@@ -30,8 +44,12 @@
  const temFoto=item=>Boolean((typeof item.image==='string'&&item.image.trim())||(Array.isArray(item.images)&&item.images.some(x=>typeof x==='string'&&x.trim())));
  // Máquinas que Júnior marcou como vendidas saem do site inteiro (home, ofertas, categorias e /adm/catalogo.json),
  // mesmo que o ADM ainda as tenha como "no site". GOUL-291: Hyundai R220 LC-9 2022, vendida (Trello, 04/11/2026).
- const vendidas=new Set(['GOUL-291']);
- const visivel=item=>!vendidas.has(item.publicCode)&&(item.category!=='pecas'||temFoto(item));
- function feed(data){return {...data,items:(data.items||[]).map(normalize).filter(visivel),opportunities:(data.opportunities||[]).map(normalize)};}
+ const vendidas=new Set(['GOUL-291','PUB-158']);
+ function vendida(item){
+  return vendidas.has(item.publicCode)||vendidas.has(item.id)||
+   (item.publicationId!=null&&vendidas.has('PUB-'+item.publicationId));
+ }
+ const visivel=item=>!vendida(item)&&(item.category!=='pecas'||temFoto(item));
+ function feed(data){return {...data,items:(data.items||[]).map(normalize).filter(visivel),opportunities:(data.opportunities||[]).map(normalize).filter(i=>!vendida(i))};}
  globalThis.GoullartCatalogData={normalize,feed,facts,asset,clean,visivel};
 })();
