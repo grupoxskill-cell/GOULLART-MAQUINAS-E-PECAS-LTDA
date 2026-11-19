@@ -6,7 +6,8 @@
  const reduced=matchMedia('(prefers-reduced-motion: reduce)');let current=0,paused=reduced.matches,timer,inView=true;
  function schedule(){clearTimeout(timer);if(slides.length>1&&!paused&&!reduced.matches&&!document.hidden&&inView&&!root.matches(':focus-within'))timer=setTimeout(()=>show(current+1),interval);}
  function preloadNext(){const image=slides[(current+1)%slides.length]?.querySelector('img');if(image)image.loading='eager';}
- function show(index){current=(index+slides.length)%slides.length;slides.forEach((slide,i)=>{slide.hidden=i!==current;slide.inert=i!==current;});dots.forEach((dot,i)=>dot.setAttribute('aria-pressed',String(i===current)));preloadNext();schedule();}
+ function updatePosition(){const position=root.querySelector('[data-banner-position]');if(position)position.textContent=(current+1)+' / '+slides.length;}
+ function show(index){current=(index+slides.length)%slides.length;slides.forEach((slide,i)=>{slide.hidden=i!==current;slide.inert=i!==current;});dots.forEach((dot,i)=>dot.setAttribute('aria-pressed',String(i===current)));updatePosition();preloadNext();schedule();}
  function sync(){pause.textContent=paused?'▶':'Ⅱ';pause.setAttribute('aria-pressed',String(paused));pause.setAttribute('aria-label',paused?'Continuar banners':'Pausar banners');schedule();}
  root.querySelector('[data-banner-next]').onclick=()=>show(current+1);root.querySelector('[data-banner-prev]').onclick=()=>show(current-1);
  dots.forEach((dot,i)=>dot.onclick=()=>show(i));pause.onclick=()=>{paused=!paused;sync();};
@@ -18,5 +19,5 @@
  root.addEventListener('touchend',e=>{if(!touch)return;const x=e.changedTouches[0].clientX-touch.x,y=e.changedTouches[0].clientY-touch.y;if(Math.abs(x)>45&&Math.abs(x)>Math.abs(y))show(current+(x<0?1:-1));else schedule();touch=null;},{passive:true});
  root.addEventListener('touchcancel',()=>{touch=null;schedule();});
  document.querySelector('.approved-presentation')?.addEventListener('toggle',()=>window.dispatchEvent(new Event('resize')));
- preloadNext();sync();
+ updatePosition();preloadNext();sync();
 })();
