@@ -354,3 +354,20 @@ test('foto enviada pelo ADM perde EXIF/GPS no servidor', async () => {
   assert.equal(salva[0], 0xff);
   assert.ok(!salva.toString('latin1').includes('GPS-SECRETO'));
 });
+
+test('catálogo e lista de máquinas vão comprimidos (gzip) para quem aceita', async () => {
+  const { gunzipSync } = await import('node:zlib');
+  const { request } = await import('node:http');
+  const pedir = (caminho, headers) => new Promise((ok, falha) => request(base + caminho, { headers }, (r) => {
+    const partes = []; r.on('data', (p) => partes.push(p)); r.on('end', () => ok({ r, corpo: Buffer.concat(partes) }));
+  }).on('error', falha).end());
+  for (const caminho of ['/adm/catalogo.json', '/maquinas.json']) {
+    const { r, corpo } = await pedir(caminho, { 'Accept-Encoding': 'gzip' });
+    assert.equal(r.headers['content-encoding'], 'gzip', caminho);
+    assert.match(r.headers.vary, /Accept-Encoding/);
+    assert.ok(JSON.parse(gunzipSync(corpo).toString()), caminho);
+    const semGzip = await pedir(caminho, {});
+    assert.equal(semGzip.r.headers['content-encoding'], undefined);
+    assert.ok(JSON.parse(semGzip.corpo.toString()));
+  }
+});
