@@ -115,6 +115,61 @@ test('Encontros cruzam pedido do CRM com máquina do Radar', async () => {
   assert.ok(e.achados.some((a) => /PC200/.test(a.maquina.titulo)));
 });
 
+test('Encontros incluem publicação aprovada no ADM e deixam de sugeri-la após retirada', async () => {
+  const cookie = await entrar();
+  const arquivos = ['crm', 'publicacoes'];
+  const anteriores = await Promise.all(arquivos.map((nome) => readFile(join(dataDir, `${nome}.json`), 'utf8').catch(() => null)));
+  try {
+    const id = 'catalogo-encontros-teste';
+    await enviar(cookie, '/adm/api/publicacoes', 'POST', { items: [{
+      id, title: 'Escavadeira ZZ900 teste catálogo', price: 123000,
+      image: '/assets/listings/teste.jpg', publishedAt: '2026-11-19',
+    }] });
+    assert.equal((await enviar(cookie, `/adm/api/publicacoes/${id}`, 'PUT', { noSite: true })).status, 200);
+    await enviar(cookie, '/adm/api/crm', 'POST', { contacts: [], deals: [{
+      id: 'pedido-catalogo', title: 'Escavadeira ZZ900 até R$130mil', category: 'Escavadeiras', kind: 'Compra', stage: 'Aberto',
+    }] });
+    const achados = async () => (await (await enviar(cookie, '/adm/api/encontros', 'GET')).json())
+      .flatMap((e) => e.achados);
+    assert.ok((await achados()).some((a) => a.maquina.id === id && a.maquina.preco === 'R$ 123.000'));
+    assert.equal((await enviar(cookie, `/adm/api/publicacoes/${id}`, 'PUT', { noSite: false })).status, 200);
+    assert.ok(!(await achados()).some((a) => a.maquina.id === id));
+  } finally {
+    await Promise.all(arquivos.map((nome, i) => anteriores[i] == null
+      ? rm(join(dataDir, `${nome}.json`), { force: true })
+      : writeFile(join(dataDir, `${nome}.json`), anteriores[i])));
+  }
+});
+
+test('Radares privados mantêm pedidos abertos, inclusive enquanto aguardam oferta', async () => {
+  const cookie = await entrar();
+  const criar = (nome) => enviar(cookie, '/adm/api/radares', 'POST', { nome });
+  const perfil = await (await criar('Perfil de teste')).json();
+  assert.equal((await (await criar('Perfil de teste')).json()).id, perfil.id);
+  const rota = `/adm/api/radares/${perfil.id}/pedidos`;
+  const pedidos = ['p-a', 'p-b', 'p-c'].map((id) => ({ id, kind: 'Compra', stage: 'Aberto', title: 'Máquina de teste' }));
+  pedidos[2].stage = 'Cancelado';
+  const baseCrm = { contacts: [], deals: pedidos };
+  await enviar(cookie, '/adm/api/crm', 'POST', baseCrm);
+  assert.equal((await fetch(base + rota, { method: 'PUT' })).status, 401);
+  const ligar = (pedidoId) => enviar(cookie, rota, 'PUT', { pedidoId });
+  const respostas = await Promise.all([ligar('p-a'), ligar('p-b'), ligar('p-a')]);
+  assert.ok(respostas.every((r) => r.ok));
+  assert.equal((await ligar('p-c')).status, 409);
+  assert.equal((await ligar('ausente')).status, 409);
+  const perfis = async () => (await enviar(cookie, '/adm/api/radares', 'GET')).json();
+  assert.deepEqual(new Set((await perfis()).find((r) => r.id === perfil.id).pedidoIds), new Set(['p-a', 'p-b']));
+  const importar = () => enviar(cookie, '/adm/api/publicacoes', 'POST', { items: [], radars: [{ id: 'perfil-importado', name: 'Importado' }] });
+  await importar();
+  await enviar(cookie, '/adm/api/radares/perfil-importado/pedidos', 'PUT', { pedidoId: 'p-b' });
+  await importar();
+  assert.deepEqual((await perfis()).find((r) => r.id === 'perfil-importado').pedidoIds, ['p-b']);
+  assert.ok((await perfis()).some((r) => r.id === perfil.id));
+  assert.deepEqual((await (await enviar(cookie, rota, 'DELETE', { pedidoId: 'p-a' })).json()).pedidoIds, ['p-b']);
+  const catalogo = await (await fetch(base + '/adm/catalogo.json')).text();
+  assert.ok(!catalogo.includes('perfil-importado') && !catalogo.includes('pedidoIds'));
+});
+
 test('cada máquina tem página própria com prévia para WhatsApp e Google', async () => {
   const maquinas = await (await fetch(base + '/maquinas.json')).json();
   const m = maquinas.find((x) => /PC200/.test(x.titulo) && !x.referencia.startsWith('R-'));
@@ -285,4 +340,34 @@ test('cópia de segurança do ADM: só com login, sem senha nem segredo', async 
   const dados = JSON.parse(texto);
   assert.ok(Array.isArray(dados.radar));
   assert.ok(!/segredo|"hash"|tokenEntrada|senha-de-teste/.test(texto));
+});
+
+test('foto enviada pelo ADM perde EXIF/GPS no servidor', async () => {
+  const cookie = await entrar();
+  const app1Dados = Buffer.concat([Buffer.from('Exif\0\0MM', 'latin1'), Buffer.from('GPS-SECRETO-PATIO'.repeat(4))]);
+  const app1 = Buffer.concat([Buffer.from([0xff, 0xe1, (app1Dados.length + 2) >> 8, (app1Dados.length + 2) & 255]), app1Dados]);
+  const jpeg = Buffer.concat([Buffer.from([0xff, 0xd8]), app1, Buffer.from([0xff, 0xda, 0, 8, 1, 1, 0, 0, 63, 0]), Buffer.alloc(80, 7), Buffer.from([0xff, 0xd9])]);
+  const r = await enviar(cookie, '/adm/api/fotos', 'POST', { dados: `data:image/jpeg;base64,${jpeg.toString('base64')}` });
+  assert.equal(r.status, 201);
+  const { foto } = await r.json();
+  const salva = Buffer.from(await (await fetch(`${base}/adm/${foto}`, { headers: { Cookie: cookie } })).arrayBuffer());
+  assert.equal(salva[0], 0xff);
+  assert.ok(!salva.toString('latin1').includes('GPS-SECRETO'));
+});
+
+test('catálogo e lista de máquinas vão comprimidos (gzip) para quem aceita', async () => {
+  const { gunzipSync } = await import('node:zlib');
+  const { request } = await import('node:http');
+  const pedir = (caminho, headers) => new Promise((ok, falha) => request(base + caminho, { headers }, (r) => {
+    const partes = []; r.on('data', (p) => partes.push(p)); r.on('end', () => ok({ r, corpo: Buffer.concat(partes) }));
+  }).on('error', falha).end());
+  for (const caminho of ['/adm/catalogo.json', '/maquinas.json']) {
+    const { r, corpo } = await pedir(caminho, { 'Accept-Encoding': 'gzip' });
+    assert.equal(r.headers['content-encoding'], 'gzip', caminho);
+    assert.match(r.headers.vary, /Accept-Encoding/);
+    assert.ok(JSON.parse(gunzipSync(corpo).toString()), caminho);
+    const semGzip = await pedir(caminho, {});
+    assert.equal(semGzip.r.headers['content-encoding'], undefined);
+    assert.ok(JSON.parse(semGzip.corpo.toString()));
+  }
 });

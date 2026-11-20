@@ -8,3 +8,24 @@ body.goullart-storefront .business-cards>a>strong{overflow-wrap:normal;word-brea
 @media(max-width:450px){
  body.goullart-storefront .business-cards>a>strong{font-size:clamp(16px,5vw,22px);letter-spacing:.2px}
 }
+
+/* Oferta de laudo no topo, em fluxo normal para não cobrir o menu ou a vitrine. */
+.technical-report-banner{
+ background:#082340;
+}
+.technical-report-banner__link{
+ display:block;
+ max-width:768px;
+ margin:0 auto;
+}
+.technical-report-banner__link img{
+ display:block;
+ width:100%;
+ height:auto;
+}
+.technical-report-banner__link:focus-visible{
+ outline:3px solid #ffcc00;
+ outline-offset:-3px;
+ position:relative;
+ z-index:1;
+}
