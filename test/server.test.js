@@ -115,6 +115,32 @@ test('Encontros cruzam pedido do CRM com máquina do Radar', async () => {
   assert.ok(e.achados.some((a) => /PC200/.test(a.maquina.titulo)));
 });
 
+test('Encontros incluem publicação aprovada no ADM e deixam de sugeri-la após retirada', async () => {
+  const cookie = await entrar();
+  const arquivos = ['crm', 'publicacoes'];
+  const anteriores = await Promise.all(arquivos.map((nome) => readFile(join(dataDir, `${nome}.json`), 'utf8').catch(() => null)));
+  try {
+    const id = 'catalogo-encontros-teste';
+    await enviar(cookie, '/adm/api/publicacoes', 'POST', { items: [{
+      id, title: 'Escavadeira ZZ900 teste catálogo', price: 123000,
+      image: '/assets/listings/teste.jpg', publishedAt: '2026-11-19',
+    }] });
+    assert.equal((await enviar(cookie, `/adm/api/publicacoes/${id}`, 'PUT', { noSite: true })).status, 200);
+    await enviar(cookie, '/adm/api/crm', 'POST', { contacts: [], deals: [{
+      id: 'pedido-catalogo', title: 'Escavadeira ZZ900 até R$130mil', category: 'Escavadeiras', kind: 'Compra', stage: 'Aberto',
+    }] });
+    const achados = async () => (await (await enviar(cookie, '/adm/api/encontros', 'GET')).json())
+      .flatMap((e) => e.achados);
+    assert.ok((await achados()).some((a) => a.maquina.id === id && a.maquina.preco === 'R$ 123.000'));
+    assert.equal((await enviar(cookie, `/adm/api/publicacoes/${id}`, 'PUT', { noSite: false })).status, 200);
+    assert.ok(!(await achados()).some((a) => a.maquina.id === id));
+  } finally {
+    await Promise.all(arquivos.map((nome, i) => anteriores[i] == null
+      ? rm(join(dataDir, `${nome}.json`), { force: true })
+      : writeFile(join(dataDir, `${nome}.json`), anteriores[i])));
+  }
+});
+
 test('Radares privados mantêm pedidos abertos, inclusive enquanto aguardam oferta', async () => {
   const cookie = await entrar();
   const criar = (nome) => enviar(cookie, '/adm/api/radares', 'POST', { nome });
