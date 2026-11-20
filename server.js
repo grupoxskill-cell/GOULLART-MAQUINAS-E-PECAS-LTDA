@@ -1,6 +1,5 @@
 // Site GOULLART: catálogo e contato humano. A IA permanece desativada.
 import http from "node:http";
-import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { extname, resolve, relative, isAbsolute } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -8,6 +7,7 @@ import { rotaAdm, servirFoto, maquinasPublicas } from "./lib/adm.js";
 import { paginaMaquina, sitemap, tiposDeMaquina } from "./lib/paginas.js";
 import { registrar } from "./lib/interesse.js";
 import { ipCliente } from "./lib/auth.js";
+import { responderComEtag } from "./lib/resposta.js";
 
 const PORT = Number(process.env.PORT) || 3000;
 const HOST = process.env.HOST || undefined;
@@ -40,15 +40,6 @@ async function serveStatic(req, res, pathname) {
   } catch {
     res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" }).end("Página não encontrada");
   }
-}
-
-// Respostas que mudam pouco (lista de máquinas, sitemap, página da máquina) levam ETag: o navegador, o
-// WhatsApp e o Google recebem só "304 — nada mudou" em vez do arquivo inteiro a cada visita.
-function responderComEtag(req, res, tipo, corpo, extra = {}) {
-  const etag = `"${createHash("sha1").update(corpo).digest("base64url")}"`;
-  if (req.headers["if-none-match"] === etag) return res.writeHead(304, { ETag: etag, "Cache-Control": "no-cache", ...extra }).end();
-  res.writeHead(200, { "Content-Type": tipo, "Cache-Control": "no-cache", ETag: etag, ...extra });
-  res.end(req.method === "HEAD" ? undefined : corpo);
 }
 
 async function servirPaginaMaquina(req, res, slug) {
