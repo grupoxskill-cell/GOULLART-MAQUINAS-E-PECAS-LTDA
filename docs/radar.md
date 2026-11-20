@@ -1,5 +1,7 @@
 # Radar GOULLART — rotina de 3 em 3 horas
 
+> **Novo (13/11/2026):** a iZap foi removida e as rotinas foram desligadas em 08/11. O fluxo passa a rodar no próprio servidor pela API oficial do WhatsApp: veja [WHATSAPP-RADAR.md](WHATSAPP-RADAR.md). As regras abaixo continuam valendo; o passo a passo com `mcp__Izap__*` fica só como histórico.
+
 O fluxo foi combinado com Júnior em 31/10/2026:
 
 1. Júnior (ou a equipe) **encaminha para o WhatsApp oficial (62) 99942-7276** os anúncios de máquinas dos grupos e do canal, a partir do número **o número pessoal do Júnior**.
