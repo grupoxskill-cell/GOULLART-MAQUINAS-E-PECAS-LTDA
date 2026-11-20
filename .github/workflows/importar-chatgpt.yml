@@ -59,11 +59,17 @@ jobs:
         run: |
           case "$GITHUB_REF_NAME" in importar-chatgpt|importar-chatgpt-*) ;; *) echo "::error::Branch não permitida: $GITHUB_REF_NAME."; exit 1;; esac
       - uses: actions/checkout@v4
-      - run: rm -rf espelho
       - uses: actions/download-artifact@v4
         with:
           name: espelho
-          path: espelho/
+          path: ${{ runner.temp }}/espelho-novo/
+      - name: Juntar a cópia sem apagar arquivos próprios do repositório
+        # Por cima do espelho atual: o que só existe no repositório (lista de vendidas, fotos novas, banners) fica.
+        # Os scripts que o SERVIDOR executa nunca vêm do site de terceiros: voltam à versão revisada do repositório.
+        run: |
+          cp -R "$RUNNER_TEMP/espelho-novo/." espelho/
+          git checkout HEAD -- espelho/catalog-data.js espelho/listing-policy.js
+          if find espelho -type l | grep -q .; then echo "::error::Link simbólico na cópia; abortado."; exit 1; fi
       - name: Salvar cópia na branch (sem executar nada do que foi baixado)
         run: |
           git config user.name "github-actions"

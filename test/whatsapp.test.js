@@ -288,3 +288,22 @@ test('álbum com legenda: as fotos seguintes sem legenda ficam no mesmo anúncio
   const r = (await radar()).find((x) => x.local === 'Inhumas - GO');
   assert.equal(r.fotos.length, 3);
 });
+
+test('foto: GPS escondido em APP3, MPF e numa 2ª imagem depois do fim é removido', async () => {
+  const { semMetadados } = await import('../lib/radar-entrada.js');
+  const seg = (m, txt) => { const p = Buffer.from(txt, 'latin1'); const h = Buffer.alloc(4); h[0] = 0xff; h[1] = m; h.writeUInt16BE(p.length + 2, 2); return Buffer.concat([h, p]); };
+  const base = await readFile(new URL('./radar-whatsapp.jpg', import.meta.url));
+  const comLixo = Buffer.concat([base.subarray(0, 2), seg(0xe3, 'GPS-ESCONDIDO-APP3'), seg(0xe2, 'MPF\0GPS-MPF'), seg(0xe2, 'ICC_PROFILE\0cor'), base.subarray(2),
+    Buffer.from([0xff, 0xd8]), seg(0xe1, 'Exif\0\0GPS-2a-FOTO'), Buffer.from([0xff, 0xd9])]);
+  const limpa = semMetadados(comLixo).toString('latin1');
+  assert.ok(!limpa.includes('GPS'), 'nenhum GPS pode sobrar');
+  assert.ok(limpa.includes('ICC_PROFILE'), 'perfil de cor fica');
+  assert.ok(limpa.endsWith('\xff\xd9'), 'termina no fim da imagem');
+});
+
+test('título do anúncio nunca leva o nome do vendedor ou da revenda', async () => {
+  const { lerAnuncio } = await import('../lib/whatsapp.js');
+  const a = lerAnuncio('Carlos Pereira Máquinas\nEscavadeira Hyundai R220LC-9\nAno 2019\nR$ 300.000\nGoiânia/GO');
+  assert.match(a.titulo, /Escavadeira Hyundai R220LC-9/);
+  assert.doesNotMatch(a.titulo, /Carlos|Pereira/);
+});
