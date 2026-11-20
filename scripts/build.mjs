@@ -9,6 +9,20 @@ await cp("public", "_site", { recursive: true });
 // Mapa código público -> página individual da máquina (/maquina/<slug>.html), usado pelos cards do catálogo novo.
 const maquinas = comSlugs(semVendidas(JSON.parse(await readFile("public/maquinas.json", "utf-8"))));
 globalThis.GoullartMachinePagesMap = Object.fromEntries(maquinas.filter((m) => m.referencia && m.slug).map((m) => [m.referencia, `/maquina/${m.slug}.html`]));
+// Códigos da vitrine que usam a mesma foto e oferta da ficha pública.
+const fichasDaVitrine = {
+  "GOUL-330": "GOUL-306",
+  "GOUL-331": "GOUL-307",
+  "GOUL-333": "GOUL-315",
+  "GOUL-334": "GOUL-316",
+  "GOUL-405": "GOUL-281",
+};
+const paginas = globalThis.GoullartMachinePagesMap;
+for (const [codigo, referencia] of Object.entries(fichasDaVitrine)) {
+  if (paginas[referencia] && !paginas[codigo] && globalThis.GoullartCatalogData.visivel({ publicCode: codigo, category: "maquinas" })) {
+    paginas[codigo] = paginas[referencia];
+  }
+}
 // Layout aprovado (cópia do site do ChatGPT em espelho/) por cima dos arquivos públicos antigos.
 await import("./preparar-espelho.mjs");
 await cp("site-novo", "_site", { recursive: true });
