@@ -341,3 +341,16 @@ test('cópia de segurança do ADM: só com login, sem senha nem segredo', async 
   assert.ok(Array.isArray(dados.radar));
   assert.ok(!/segredo|"hash"|tokenEntrada|senha-de-teste/.test(texto));
 });
+
+test('foto enviada pelo ADM perde EXIF/GPS no servidor', async () => {
+  const cookie = await entrar();
+  const app1Dados = Buffer.concat([Buffer.from('Exif\0\0MM', 'latin1'), Buffer.from('GPS-SECRETO-PATIO'.repeat(4))]);
+  const app1 = Buffer.concat([Buffer.from([0xff, 0xe1, (app1Dados.length + 2) >> 8, (app1Dados.length + 2) & 255]), app1Dados]);
+  const jpeg = Buffer.concat([Buffer.from([0xff, 0xd8]), app1, Buffer.from([0xff, 0xda, 0, 8, 1, 1, 0, 0, 63, 0]), Buffer.alloc(80, 7), Buffer.from([0xff, 0xd9])]);
+  const r = await enviar(cookie, '/adm/api/fotos', 'POST', { dados: `data:image/jpeg;base64,${jpeg.toString('base64')}` });
+  assert.equal(r.status, 201);
+  const { foto } = await r.json();
+  const salva = Buffer.from(await (await fetch(`${base}/adm/${foto}`, { headers: { Cookie: cookie } })).arrayBuffer());
+  assert.equal(salva[0], 0xff);
+  assert.ok(!salva.toString('latin1').includes('GPS-SECRETO'));
+});
