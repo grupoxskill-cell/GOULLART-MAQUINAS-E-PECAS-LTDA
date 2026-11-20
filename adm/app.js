@@ -72,11 +72,11 @@ document.getElementById("abas").addEventListener("click", (e) => {
   const b = e.target.closest("button[data-aba]");
   if (b) abrir(b.dataset.aba);
 });
-async function abrir(aba) {
+async function abrir(aba, pedidoId) {
   for (const b of document.querySelectorAll("#abas button")) b.toggleAttribute("aria-current", b.dataset.aba === aba);
   document.querySelectorAll("#abas button[aria-current]").forEach((b) => b.setAttribute("aria-current", "page"));
   conteudo.replaceChildren(h("p", { class: "muted" }, "Carregando…"));
-  try { await telas[aba](); } catch (e) { conteudo.replaceChildren(h("p", { class: "erro" }, e.message)); }
+  try { await telas[aba](pedidoId); } catch (e) { conteudo.replaceChildren(h("p", { class: "erro" }, e.message)); }
   scrollTo(0, 0);
 }
 
@@ -84,10 +84,10 @@ async function iniciar() {
   try { resumo = await api("/resumo"); } catch { return; }
   document.getElementById("tela-login").hidden = true;
   document.getElementById("app").hidden = false;
-  abrir(location.hash === "#radar" ? "radar" : "inicio");
+  abrir(["#radares", "#radar"].includes(location.hash) ? location.hash.slice(1) : "inicio");
 }
 // Link do aviso de nova oferta (/adm/#radar) também funciona com o ADM já aberto.
-addEventListener("hashchange", () => { if (location.hash === "#radar" && !document.getElementById("app").hidden) abrir("radar"); });
+addEventListener("hashchange", () => { if (["#radares", "#radar"].includes(location.hash) && !document.getElementById("app").hidden) abrir(location.hash.slice(1)); });
 
 // ---------- Início ----------
 async function inicio() {
@@ -585,23 +585,81 @@ async function publicacoes() {
   desenhar();
 }
 
-async function radares() {
-  const [lista, dados] = await Promise.all([api("/radares"), api("/publicacoes")]);
-  if (!dados) { conteudo.replaceChildren(importadorBackup(null, radares)); return; }
-  conteudo.replaceChildren(h("div", { class: "painel" }, h("h2", {}, "Radares"),
-    h("p", { class: "muted" }, "Perfis de busca de máquinas que vieram do painel do ChatGPT. Aqui ficam os critérios de cada radar para a equipe consultar e ajustar.")),
-    ...(lista.length ? lista.map((r) => {
+function pedidosDoPerfil(radar, pedidos, ofertas, selecionado) {
+  const area = h("section", { class: "pedidos-radar" });
+  const porId = new Map(pedidos.map((p) => [String(p.id), p]));
+  const rotulo = (p) => [p.cliente, p.pedido || p.id].filter(Boolean).join(" · ");
+  async function gravar(id, method) {
+    const r = await api(`/radares/${encodeURIComponent(radar.id)}/pedidos`, { method, body: { pedidoId: id } });
+    radar.pedidoIds = r.pedidoIds;
+    desenhar();
+  }
+  function desenhar() {
+    const ids = new Set(radar.pedidoIds || []);
+    const livres = pedidos.filter((p) => !ids.has(String(p.id)));
+    const escolher = h("select", {}, h("option", { value: "" }, "Escolha um pedido"),
+      livres.map((p) => h("option", { value: p.id, selected: String(p.id) === selecionado }, rotulo(p))));
+    const vincular = h("button", { class: "btn", disabled: !escolher.value }, "Vincular pedido");
+    escolher.addEventListener("change", () => { vincular.disabled = !escolher.value; });
+    vincular.addEventListener("click", () => acao(vincular, () => gravar(escolher.value, "PUT"), "Pedido vinculado."));
+    const cartoes = [...ids].map((id) => {
+      const p = porId.get(id);
+      const achados = p ? (ofertas.get(id) || []) : [];
+      const retirar = h("button", { class: "btn sec" }, "Desvincular");
+      retirar.addEventListener("click", () => acao(retirar, () => gravar(id, "DELETE"), "Vínculo removido."));
+      return h("article", { class: "pedido-radar" },
+        h("strong", {}, p ? rotulo(p) : "Pedido fora da lista de abertos"),
+        p && h("span", { class: "muted" }, [p.etapa, p.prioridade, p.orcamento && `Orçamento: ${p.orcamento}`].filter(Boolean).join(" · ")),
+        p && (achados.length ? h("ul", {}, achados.map(({ maquina: m, motivos }) => h("li", {},
+          h("strong", {}, m.titulo), " · ", [m.origem, m.ano, m.local, m.preco || "Preço a confirmar"].filter(Boolean).join(" · "),
+          h("div", { class: "muted" }, motivos.join(", ")))))
+          : h("span", { class: "muted" }, "Aguardando oferta compatível.")),
+        h("div", { class: "acoes" }, retirar));
+    });
+    area.replaceChildren(h("h3", {}, "Pedidos vinculados"),
+      ...(cartoes.length ? cartoes : [h("p", { class: "muted" }, "Nenhum pedido vinculado.")]),
+      ...(livres.length ? [h("label", {}, "Pedido aberto do CRM", escolher), h("div", { class: "acoes" }, vincular)] : []));
+  }
+  desenhar();
+  return area;
+}
+
+async function radares(pedidoId) {
+  const [lista, base, encontros] = await Promise.all([api("/radares"), api("/crm"), api("/encontros")]);
+  const pedidos = (base?.negociacoes || []).filter((p) => p.abertoParaRadar && p.id != null && String(p.id).trim());
+  const ofertas = new Map(encontros.map((e) => [String(e.pedidoId), e.achados]));
+  const nomeNovo = h("input", { required: true, maxlength: 120, list: "nomes-radares", placeholder: "Nome do radar" });
+  const criar = h("button", { type: "submit", class: "btn" }, "Adicionar radar");
+  const novo = h("form", { class: "pedidos-radar" }, h("label", {}, "Novo perfil de busca", nomeNovo),
+    h("datalist", { id: "nomes-radares" }, ["Máquinas Baratas", "Hyundai R220"].map((nome) => h("option", { value: nome }))),
+    h("div", { class: "acoes" }, criar));
+  novo.addEventListener("submit", (ev) => {
+    ev.preventDefault();
+    acao(criar, async () => {
+      await api("/radares", { method: "POST", body: { nome: nomeNovo.value } }); await radares(pedidoId);
+    }, "Perfil disponível.");
+  });
+  conteudo.replaceChildren(h("section", { class: "painel" }, h("h2", {}, "Radares e pedidos"),
+    h("p", { class: "muted" }, "Vincule pedidos aos perfis de busca. As sugestões de máquinas consideram o pedido do cliente. Confira disponibilidade e preço antes de oferecer."),
+    h("div", {}, base ? `CRM importado em ${data(base.importadoEm)} · ${pedidos.length} pedido(s) aberto(s) de máquinas.` : "Importe os pedidos do CRM para começar."),
+    h("div", { class: "acoes" }, h("button", { class: "btn sec", onclick: () => abrir("crm") }, "Abrir CRM")), novo),
+    ...lista.map((r) => {
       const nome = h("input", { value: r.nome });
       const status = h("select", {}, ["scheduled", "active", "paused", "done"].map((s) => h("option", { value: s, selected: r.status === s },
         { scheduled: "Agendado", active: "Ativo", paused: "Pausado", done: "Concluído" }[s])));
-      if (![...status.options].some((o) => o.selected)) status.prepend(h("option", { value: r.status, selected: true }, r.status));
-      const criterios = h("textarea", { rows: 8 }, r.criterios);
-      const salvar = h("button", { class: "btn" }, "Salvar radar");
-      salvar.addEventListener("click", () => acao(salvar, () => api(`/radares/${encodeURIComponent(r.id)}`, { method: "PUT",
-        body: { nome: nome.value, status: status.value, criterios: criterios.value } }), "Radar salvo."));
-      return h("div", { class: "painel" }, h("div", { class: "grade" }, h("label", {}, "Nome", nome), h("label", {}, "Situação", status)),
-        h("label", {}, "Critérios", criterios), salvar);
-    }) : [h("p", { class: "muted" }, "Nenhum radar no backup importado.")]));
+      if (r.status && ![...status.options].some((o) => o.value === r.status)) status.prepend(h("option", { value: r.status, selected: true }, r.status));
+      const criterios = h("textarea", { rows: 5 }, r.criterios);
+      const titulo = h("h2", {}, r.nome);
+      const salvar = h("button", { class: "btn sec" }, "Salvar perfil");
+      salvar.addEventListener("click", () => acao(salvar, async () => {
+        const perfil = await api(`/radares/${encodeURIComponent(r.id)}`, { method: "PUT", body: { nome: nome.value, status: status.value, criterios: criterios.value } });
+        titulo.textContent = nome.value = perfil.nome;
+      }, "Radar salvo."));
+      return h("section", { class: "painel" }, titulo, pedidosDoPerfil(r, pedidos, ofertas, pedidoId),
+        h("details", {}, h("summary", {}, "Editar perfil de busca"), h("div", { class: "pedidos-radar" },
+          h("div", { class: "grade" }, h("label", {}, "Nome", nome), h("label", {}, "Situação", status)),
+          h("label", {}, "Critérios", criterios), h("div", { class: "acoes" }, salvar))));
+    }));
 }
 
 // ---------- CRM ----------
@@ -626,7 +684,7 @@ async function crm() {
   const linhas = {
     "Negociações": [["Cliente", "Pedido", "Etapa", "Prioridade", "Próxima ação"], dados.negociacoes, (n) => [
       h("td", {}, n.cliente, h("br"), n.telefone ? h("a", { href: whats(n.telefone), target: "_blank", rel: "noopener" }, n.telefone) : ""),
-      h("td", {}, n.pedido), h("td", {}, n.etapa), h("td", {}, n.prioridade), h("td", {}, n.proxima || n.pendencia || "")]],
+      h("td", {}, n.pedido, n.abertoParaRadar && n.id != null ? h("div", {}, h("button", { class: "btn sec", onclick: () => abrir("radares", String(n.id)) }, "Ver nos radares")) : null), h("td", {}, n.etapa), h("td", {}, n.prioridade), h("td", {}, n.proxima || n.pendencia || "")]],
     "Retornos em aberto": [["Prazo", "Cliente", "O que fazer", "Prioridade"], dados.retornos, (r) => [
       h("td", {}, r.prazo && r.prazo < hoje ? h("span", { class: "selo atrasado" }, data(r.prazo)) : data(r.prazo)),
       h("td", {}, r.cliente), h("td", {}, r.acao), h("td", {}, r.prioridade)]],

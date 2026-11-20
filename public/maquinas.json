@@ -676,5 +676,61 @@
   ],
   "textoSite": "Pá carregadeira Lonking CDM835, ano 2024, com 1.455 horas informadas. Máquina robusta. Localização: Vitória/ES. Valor: R$ 350.000,00. Falar agora com Jr. Goullart. Confirme disponibilidade e condições com a equipe GOULLART.",
   "artwork": true
+ },
+ {
+  "ficha": "catalogo-2026-11-19",
+  "referencia": "GOUL-CAT416-2024-2000",
+  "titulo": "Retroescavadeira Caterpillar 416",
+  "categoria": "Retroescavadeiras",
+  "ano": "2024",
+  "horas": "2.000 horas informadas",
+  "preco": "R$ 370.000,00",
+  "local": "Localização sob consulta",
+  "fotos": [
+   "assets/listings/cat-416-2024-2000-01-perfil.jpg",
+   "assets/listings/cat-416-2024-2000-02-lateral.jpg",
+   "assets/listings/cat-416-2024-2000-03-frontal.jpg"
+  ],
+  "textoSite": "Retroescavadeira Caterpillar 416, ano 2024, com 2.000 horas informadas. NF de origem, 100% operacional e ar condicionado, conforme informações fornecidas à GOULLART. Valor: R$ 370.000,00. Localização sob consulta. Falar agora com Jr. Goullart.",
+  "artwork": true
+ },
+ {
+  "ficha": "catalogo-2026-11-19",
+  "referencia": "GOUL-CAT416-2025-1600",
+  "titulo": "Retroescavadeira Caterpillar 416 4x4",
+  "categoria": "Retroescavadeiras",
+  "ano": "2025",
+  "horas": "1.600 horas informadas",
+  "preco": "R$ 350.000,00",
+  "local": "Localização sob consulta",
+  "fotos": [
+   "assets/listings/cat-416-4x4-2025-1600-01-geral.jpg",
+   "assets/listings/cat-416-4x4-2025-1600-02-lateral.jpg",
+   "assets/listings/cat-416-4x4-2025-1600-03-cabine.jpg",
+   "assets/listings/cat-416-4x4-2025-1600-04-cacamba-frontal.jpg",
+   "assets/listings/cat-416-4x4-2025-1600-05-pneu.jpg",
+   "assets/listings/cat-416-4x4-2025-1600-06-braco-traseiro.jpg"
+  ],
+  "textoSite": "Retroescavadeira Caterpillar 416 4x4, ano 2025, com 1.600 horas informadas. NF de origem, cabine fechada, 100% operacional, único dono e ar condicionado, conforme informações fornecidas à GOULLART. Valor: R$ 350.000,00. Localização sob consulta. Falar agora com Jr. Goullart.",
+  "artwork": true
+ },
+ {
+  "ficha": "catalogo-2026-11-19",
+  "referencia": "GOUL-SANY135-2024-2000",
+  "titulo": "Escavadeira SANY SY135C",
+  "categoria": "Escavadeiras",
+  "ano": "2024",
+  "horas": "2.000 horas informadas",
+  "preco": "R$ 425.000,00",
+  "local": "Campinas/SP",
+  "fotos": [
+   "assets/listings/sany-sy135c-2024-2000-01-geral.jpg",
+   "assets/listings/sany-sy135c-2024-2000-02-lateral.jpg",
+   "assets/listings/sany-sy135c-2024-2000-03-cabine.jpg",
+   "assets/listings/sany-sy135c-2024-2000-04-rodante.jpg",
+   "assets/listings/sany-sy135c-2024-2000-05-cacamba.jpg"
+  ],
+  "textoSite": "Escavadeira SANY SY135C, ano 2024, com 2.000 horas informadas. Localização: Campinas/SP. Valor: R$ 425.000,00. Falar agora com Jr. Goullart.",
+  "artwork": true
  }
 ]
