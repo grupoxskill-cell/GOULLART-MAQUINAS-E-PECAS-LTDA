@@ -8,3 +8,50 @@ body.goullart-storefront .business-cards>a>strong{overflow-wrap:normal;word-brea
 @media(max-width:450px){
  body.goullart-storefront .business-cards>a>strong{font-size:clamp(16px,5vw,22px);letter-spacing:.2px}
 }
+
+/* Oferta de laudo no topo, em fluxo normal para não cobrir o menu ou a vitrine. */
+.technical-report-banner{
+ box-sizing:border-box;
+ width:100%;
+ background:#082040;
+ color:#fff;
+ border-bottom:3px solid #ffcc00;
+}
+.technical-report-banner__inner{
+ box-sizing:border-box;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:16px 24px;
+ max-width:1280px;
+ margin:0 auto;
+ padding:14px 24px;
+}
+.technical-report-banner__copy{margin:0;font-size:14px;line-height:1.5}
+.technical-report-banner__copy strong{display:block;font-size:17px;font-weight:800;line-height:1.4}
+.technical-report-banner__price{color:#ffcc00;white-space:nowrap}
+.technical-report-banner__button{
+ box-sizing:border-box;
+ display:inline-flex;
+ flex-shrink:0;
+ align-items:center;
+ justify-content:center;
+ min-height:44px;
+ padding:12px 20px;
+ border:2px solid #ffcc00;
+ border-radius:8px;
+ background:#ffcc00;
+ color:#082040;
+ font-size:14px;
+ font-weight:800;
+ line-height:1.25;
+ text-align:center;
+ text-decoration:none;
+}
+.technical-report-banner__button:hover{background:#ffe066;border-color:#ffe066;color:#082040}
+.technical-report-banner__button:focus-visible{outline:3px solid #fff;outline-offset:4px}
+@media(max-width:600px){
+ .technical-report-banner__inner{flex-direction:column;gap:12px;padding:14px 16px;text-align:center}
+ .technical-report-banner__copy strong{font-size:16px}
+ .technical-report-banner__button{width:100%;max-width:320px}
+}
