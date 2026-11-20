@@ -53,3 +53,11 @@ test('a escavadeira vendida sai das fontes estáticas e das importações do ADM
   assert.deepEqual(lista.map(i=>i.id),['PUB-159']);
  }
 });
+test('site público não traz telefones particulares, só o comercial (62) 99942-7276', async () => {
+ const {readdirSync,statSync}=await import('node:fs');const {join}=await import('node:path');
+ const proibidos=/99853-?1936|998531936|99252-?1936|992521936/;
+ const achados=[];
+ const varrer=pasta=>{for(const n of readdirSync(pasta)){const p=join(pasta,n);if(statSync(p).isDirectory()){if(!/^(assets|node_modules)$/.test(n))varrer(p);}else if(/\.(html|js|json|xml|txt)$/.test(n)&&proibidos.test(readFileSync(p,'utf8')))achados.push(p);}};
+ for(const pasta of ['espelho','public','lib','data'])varrer(new URL('../'+pasta,import.meta.url).pathname);
+ assert.deepEqual(achados,[],'telefone particular em arquivo público');
+});
