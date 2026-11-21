@@ -17,3 +17,4 @@ site-novo/
 *.zip
 backups-privados/
 credenciais/
+.versao
