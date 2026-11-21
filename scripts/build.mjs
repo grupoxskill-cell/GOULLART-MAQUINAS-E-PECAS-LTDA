@@ -1,7 +1,7 @@
 // Gera o site estático em _site: arquivos públicos, catálogo de peças, uma página por máquina,
 // sitemap.xml e robots.txt. Usado pelo GitHub Actions (branch gh-pages) e pelo servidor via cron.
 import { cp, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
-import { comSlugs, semVendidas, paginaMaquina, sitemap, tiposDeMaquina, SITE } from "../lib/paginas.js";
+import { comSlugs, semVendidas, paginaMaquina, sitemap, tiposDeMaquina, SITE, FICHAS_DA_VITRINE } from "../lib/paginas.js";
 
 await rm("_site", { recursive: true, force: true });
 await mkdir("_site/maquina", { recursive: true });
@@ -9,16 +9,9 @@ await cp("public", "_site", { recursive: true });
 // Mapa código público -> página individual da máquina (/maquina/<slug>.html), usado pelos cards do catálogo novo.
 const maquinas = comSlugs(semVendidas(JSON.parse(await readFile("public/maquinas.json", "utf-8"))));
 globalThis.GoullartMachinePagesMap = Object.fromEntries(maquinas.filter((m) => m.referencia && m.slug).map((m) => [m.referencia, `/maquina/${m.slug}.html`]));
-// Códigos da vitrine que usam a mesma foto e oferta da ficha pública.
-const fichasDaVitrine = {
-  "GOUL-330": "GOUL-306",
-  "GOUL-331": "GOUL-307",
-  "GOUL-333": "GOUL-315",
-  "GOUL-334": "GOUL-316",
-  "GOUL-405": "GOUL-281",
-};
+// Códigos da vitrine que usam a mesma foto e oferta da ficha pública (lista em lib/paginas.js).
 const paginas = globalThis.GoullartMachinePagesMap;
-for (const [codigo, referencia] of Object.entries(fichasDaVitrine)) {
+for (const [codigo, referencia] of Object.entries(FICHAS_DA_VITRINE)) {
   if (paginas[referencia] && !paginas[codigo] && globalThis.GoullartCatalogData.visivel({ publicCode: codigo, category: "maquinas" })) {
     paginas[codigo] = paginas[referencia];
   }
