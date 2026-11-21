@@ -107,6 +107,9 @@ async function inicio() {
       h("p", { class: "muted" }, "Só você deveria aparecer aqui. Entrada de um endereço estranho: troque a senha em Config. (um login de IP novo também gera aviso pela automação configurada)."),
       resumo.acessos?.length ? h("ul", {}, resumo.acessos.map((a) => h("li", {}, `${new Date(a.em).toLocaleString("pt-BR")} — ${({ login: "entrou", login_falhou: "senha errada", sair: "saiu", senha_trocada: "trocou a senha", token_gerado: "gerou token do Radar" })[a.tipo] || a.tipo}${a.ip ? ` — IP ${a.ip}` : ""}`)))
         : h("p", {}, "Nenhum acesso registrado ainda.")),
+    h("p", { class: "muted" }, resumo.servidor?.versao
+      ? `Servidor no ar com a versão ${resumo.servidor.versao}, atualizada em ${new Date(resumo.servidor.atualizadoEm).toLocaleString("pt-BR")} (ligado desde ${new Date(resumo.servidor.ligadoEm).toLocaleString("pt-BR")}).`
+      : `Servidor ligado desde ${resumo.servidor ? new Date(resumo.servidor.ligadoEm).toLocaleString("pt-BR") : "—"} (versão local, sem atualização automática).`),
     h("div", { class: "numeros" },
       n("Publicações no site", resumo.publicacoesImportadasEm ? resumo.publicacoesNoSite : "—", "publicacoes"),
       n("Novas no Radar (aguardando você)", resumo.radarNovos, "radar"),

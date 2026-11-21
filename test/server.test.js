@@ -371,3 +371,10 @@ test('catálogo e lista de máquinas vão comprimidos (gzip) para quem aceita', 
     assert.ok(JSON.parse(semGzip.corpo.toString()));
   }
 });
+
+test('ADM mostra desde quando o servidor está ligado (versão em produção)', async () => {
+  const cookie = await entrar();
+  const r = await (await enviar(cookie, '/adm/api/resumo', 'GET')).json();
+  assert.ok(r.servidor && !Number.isNaN(Date.parse(r.servidor.ligadoEm)));
+  assert.ok(r.servidor.versao === null || /^[0-9a-f]{7}$/.test(r.servidor.versao));
+});
