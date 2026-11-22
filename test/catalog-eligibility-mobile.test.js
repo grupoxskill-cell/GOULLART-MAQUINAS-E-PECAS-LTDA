@@ -12,7 +12,7 @@ import {renderMachineBanner} from '../scripts/machine-banner.mjs';
 
 const now=Date.parse('2026-10-31T15:00:00Z');
 const source=name=>readFileSync(new URL('../espelho/'+name,import.meta.url),'utf8');
-const machine=(id,extra={})=>({id,publicCode:id,title:'Escavadeira '+id,category:'maquinas',price:100000,image:'/original.jpg',publishedAt:'2026-10-31',...extra});
+const machine=(id,extra={})=>({id,publicCode:id,title:'Escavadeira '+id,category:'maquinas',location:'Goiânia/GO',price:100000,image:'/original.jpg',publishedAt:'2026-10-31',...extra});
 
 test('o banner usa a miniatura da foto atual no celular e conserva a original como alternativa',async()=>{
  const dir=await mkdtemp(join(tmpdir(),'goullart-banner-'));
@@ -156,11 +156,9 @@ test('the built retro catalogue has all approved cards in its grid and no leftov
  for(const file of ['_site/maquinas/retroescavadeira.html','_site/maquinas/retroescavadeira/index.html']){
   const html=await readFile(file,'utf8'),match=html.match(/<section id="catalog-page-list"[^>]*>([\s\S]*?)<\/section>/);
   assert.ok(match,file);
-  assert.equal((html.match(/<article\b/g)||[]).length,codes.length,file);
-  assert.equal((match[1].match(/<article\b/g)||[]).length,codes.length,file);
-  for(const code of codes)assert.ok(match[1].includes(code),code);
-  assert.ok(match[1].includes('R$250.000,00'),file);
-  assert.match(match[1],/src="\/assets\/listings\/maquina-pub149\.webp"/);
+  for(const code of codes) assert.ok(!match[1].includes(code),code+' sem município deve ficar no ADM');
+  assert.match(match[1],/No momento sem unidades/);
+  assert.equal((html.match(/<article\b/g)||[]).length,(match[1].match(/<article\b/g)||[]).length,file);
   assert.match(html.slice(match.index+match[0].length),/^\s*<a class="catalog-page-back"/,file);
  }
 });
@@ -183,8 +181,9 @@ test('static category and offer snapshots filter eligibility without deleting so
   const offers=await readFile(join(dir,'ofertas.html'),'utf8');assert.match(offers,/3 anúncios encontrados/);assert.doesNotMatch(offers,/NO-PHOTO|EXPIRED|FUTURE/);
   assert.match(await readFile(join(dir,'maquinas/pa-carregadeira.html'),'utf8'),/No momento sem unidades/);
   const saved=JSON.parse(await readFile(join(dir,'api/catalog.json'),'utf8')).items;
-  assert.equal(saved.length,items.length);
-  assert.deepEqual(saved.map(i=>[i.id,i.image,i.price]),items.map(i=>[i.id,i.image,i.price]));
+  const permitidos=items.filter(i=>i.category!=="maquinas" || globalThis.GoullartCatalogData.publicavel(i));
+  assert.equal(saved.length,permitidos.length);
+  assert.deepEqual(saved.map(i=>[i.id,i.image,i.price]),permitidos.map(i=>[i.id,i.image,i.price]));
  }finally{await rm(dir,{recursive:true,force:true});}
 });
 

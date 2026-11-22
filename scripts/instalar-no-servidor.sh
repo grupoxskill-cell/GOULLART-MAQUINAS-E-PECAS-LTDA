@@ -202,7 +202,7 @@ location ^~ /fotos/ {
     proxy_pass http://127.0.0.1:$PORTA;
     proxy_set_header Host \$host;
 }
-location = /maquinas.json {
+location ~ ^/(?:fichas-maquinas|maquinas)\.json$ {
     proxy_pass http://127.0.0.1:$PORTA;
     proxy_set_header Host \$host;
 }
@@ -216,9 +216,10 @@ location = /api/interesse {
     proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
     client_max_body_size 4k;
 }
-# Páginas das máquinas do catálogo existem como arquivos; as publicadas pelo ADM são geradas pelo serviço.
+# O serviço consulta a disponibilidade atual antes de servir cada ficha.
 location ^~ /maquina/ {
-    try_files \$uri @goullart_app;
+    proxy_pass http://127.0.0.1:$PORTA;
+    proxy_set_header Host \$host;
 }
 location @goullart_app {
     proxy_pass http://127.0.0.1:$PORTA;
