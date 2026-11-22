@@ -22,6 +22,11 @@ export async function prepareCatalogue(directory,now=Date.now()){
   const path=directory+'/'+filename;let html=await readFile(path,'utf8');
   if(filename==='index.html'){
    html=html.replace(/<section\b[^>]*id="approved-banner"[^>]*>[\s\S]*?<\/section>/,()=>renderMachineBanner(eligibleItems,globalThis.GoullartMachinePagesMap,directory));
+   const firstContact = html.match(/data-machine-whatsapp href="([^"]+)"/)?.[1];
+   if (firstContact) {
+    html = html.replace(/<a\b[^>]*\bclass="[^"]*\b(?:header-contact|dock-whatsapp)\b[^"]*"[^>]*>/g,
+     tag => tag.replace(/href="[^"]*"/, () => 'href="' + firstContact + '"'));
+   }
    if(!html.includes('href="/machine-banner.css'))html=html.replace('</head>','<link rel="stylesheet" href="/machine-banner.css?v=sem-faixa"></head>');
    // Uma foto original do próprio anúncio para cada categoria disponível.
    for(const [id,label] of types.entries){
