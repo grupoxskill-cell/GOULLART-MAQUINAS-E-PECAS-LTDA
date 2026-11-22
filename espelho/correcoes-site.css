@@ -66,12 +66,24 @@ body.goullart-storefront.approved-layout > header .brand-motion-toggle > span{di
  .brand-showcase .brand-marquee{overflow-x:auto;overscroll-behavior-inline:contain;scrollbar-width:thin}
 }
 
-/* Logos e pausa na mesma linha; menu e canal mantêm sua área de toque. */
+.goullart-header-tools > .header-brand-name{display:none}
+
+/* A marca acompanha o menu no celular, sem criar uma terceira linha. */
 @media(max-width:700px){
  body.goullart-storefront.approved-layout > header{min-height:0}
  body.goullart-storefront.approved-layout > header .brand-showcase{display:flex;align-items:center;gap:8px}
  body.goullart-storefront.approved-layout > header .brand-caption{flex:none;min-height:0;margin:0;padding:0}
- body.goullart-storefront.approved-layout > header .brand-caption > a{display:none}
+ .goullart-header-tools > .header-brand-name{
+  display:flex;
+  align-items:center;
+  flex:1 1 0;
+  min-width:0;
+  min-height:44px;
+  color:#082344;
+  font-size:11px;
+  font-weight:700;
+  line-height:1.2;
+ }
  body.goullart-storefront.approved-layout > header .brand-motion-toggle{width:44px;height:44px;min-height:44px;margin:0}
  body.goullart-storefront.approved-layout > header .brand-motion-toggle[hidden]{display:none}
 }
