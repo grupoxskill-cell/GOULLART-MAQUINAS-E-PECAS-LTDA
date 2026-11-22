@@ -77,3 +77,18 @@ test('índice usa somente a vitrine pública, preserva rotas e escapa os textos'
   assert.doesNotMatch(html, /nao-indexar|NAO-PUBLICADO/);
   assert.doesNotMatch(await paginaCatalogo([ficha], {items: []}), /class="indice-maquinas"/);
 });
+
+test('fichas com preço sob consulta preservam a ressalva no compartilhamento e nos dados de oferta', () => {
+  const fichas = JSON.parse(readFileSync('_site/maquinas.json', 'utf8'));
+  const sobConsulta = fichas.filter(ficha => /^Preço (por unidade )?sob consulta$/i.test(ficha.preco));
+  for (const ficha of sobConsulta) {
+    const { referencia } = ficha;
+    const pagina = readFileSync('_site/maquina/' + ficha.slug + '.html', 'utf8');
+    const produto = JSON.parse(pagina.match(/<script type="application\/ld\+json">([^<]+)<\/script>/)[1]);
+    const link = pagina.match(/href="(https:\/\/wa\.me\/\?text=[^"]+)"/)[1];
+    const texto = new URL(link).searchParams.get('text');
+    assert.ok(texto.includes(ficha.preco), referencia);
+    assert.ok(!texto.includes('R$'), referencia);
+    assert.ok(!produto.offers, referencia);
+  }
+});

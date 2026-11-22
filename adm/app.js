@@ -67,7 +67,7 @@ document.getElementById("form-login").addEventListener("submit", async (e) => {
 });
 
 // ---------- Abas ----------
-const telas = { inicio, publicacoes, radares, radar: () => telaMaquinas("radar"), patio: () => telaMaquinas("patio"), encontros, crm, config };
+const telas = { inicio, disponibilidade, publicacoes, radares, radar: () => telaMaquinas("radar"), patio: () => telaMaquinas("patio"), encontros, crm, config };
 document.getElementById("abas").addEventListener("click", (e) => {
   const b = e.target.closest("button[data-aba]");
   if (b) abrir(b.dataset.aba);
@@ -129,6 +129,33 @@ async function inicio() {
       h("p", {}, `Radar: cadastre a máquina com o preço de origem. O sistema soma ${reais(resumo.margem)} e mostra o preço do site. Ela só aparece no site quando você toca em Publicar.`),
       h("p", {}, "Pátio: máquinas que estão com a GOULLART. Publicadas, aparecem para o cliente na seção Pátio do site."),
       h("p", {}, resumo.crmImportadoEm ? `CRM importado em ${data(resumo.crmImportadoEm)}.` : "CRM ainda não importado: vá em CRM e envie o backup JSON.")));
+}
+
+async function disponibilidade() {
+  const resposta = await fetch("/adm/consulta-maquinas.json", { cache: "no-store" });
+  if (!resposta.ok) throw Error("Não foi possível carregar as fichas.");
+  const unidades = await resposta.json();
+  const unidade = h("select", {}, unidades.map(m => h("option", { value: m.referencia }, m.codigoVitrine + " · " + m.titulo)));
+  const estado = h("select", {}, ["A confirmar", "Disponível", "Reservada", "Vendida"].map(s => h("option", {}, s)));
+  const ultima = h("p", { class: "muted" });
+  const ficha = () => unidades.find(m => m.referencia === unidade.value);
+  function mostrar() {
+    const m = ficha();
+    estado.value = m?.situacao || "A confirmar";
+    ultima.textContent = m?.conferidaEm ? "Última conferência em " + new Date(m.conferidaEm).toLocaleString("pt-BR") : "Conferência pendente.";
+  }
+  unidade.addEventListener("change", mostrar);
+  const salvar = h("button", { class: "btn", disabled: !unidades.length }, "Confirmar situação");
+  salvar.addEventListener("click", () => acao(salvar, async () => {
+    const m = ficha();
+    const revisao = await api("/disponibilidade", { method: "PUT", body: {
+      referencia: m.referencia, situacao: estado.value, versaoAnterior: m.conferidaEm
+    } });
+    Object.assign(m, revisao); mostrar();
+  }, "Situação registrada."));
+  mostrar();
+  conteudo.replaceChildren(h("div", { class: "painel" }, h("h2", {}, "Disponibilidade"),
+    h("label", {}, "Máquina", unidade), h("label", {}, "Situação conferida pela equipe", estado), ultima, salvar));
 }
 
 // ---------- Radar e Pátio ----------
@@ -670,6 +697,61 @@ async function radares(pedidoId) {
 }
 
 // ---------- CRM ----------
+function historicoCliente(dados) {
+  const painel = h("details", { class:"painel" }, h("summary", {}, "Histórico de compras por cliente"));
+  const contato = h("select", {}, h("option", { value:"" }, "Escolha o cliente"),
+    dados.contatos.filter(c => c.id != null).map(c => h("option", { value:String(c.id) }, c.nome + " · " + (c.cidade || c.id))));
+  const detalhes = h("div", {});
+  contato.addEventListener("change", mostrar);
+  function mostrar() {
+    detalhes.replaceChildren();
+    if (!contato.value) return;
+    const compras = dados.compras.filter(c => c.contatoId === contato.value);
+    for (const c of compras) detalhes.append(h("p", {}, c.maquina + " · " + data(c.dia) + " · " + c.estado,
+      h("br"), "Responsável: " + c.responsavel + " · Revisão de troca: " + data(c.revisarEm),
+      c.previsao ? " · Próxima compra informada: " + data(c.previsao) : ""));
+    if (!compras.length) detalhes.append(h("p", {}, "Nenhuma compra comprovada registrada para este contato."));
+    const negocios = dados.negociacoes.filter(d => d.id != null && String(d.contatoId) === contato.value);
+    if (!negocios.length) return;
+    const selecao = h("select", {}, h("option", {value:""}, "Selecione a negociação"),
+      negocios.map(d => h("option", {value:d.id}, d.pedido + " · " + (d.etapa || "Etapa pendente"))));
+    const edicao = h("div", {});
+    selecao.addEventListener("change", () => {
+      edicao.replaceChildren();
+      if (!selecao.value) return;
+      const d = negocios.find(n => String(n.id) === selecao.value);
+      const v = compras.find(c => c.negocioId === selecao.value);
+      const campos = {};
+      const form = h("form", {class:"painel"});
+      for (const [nome, label, tipo, valor] of [
+        ["maquina","Máquina que o cliente comprou","text",v?.maquina],
+        ["dia","Data comprovada da compra","date",v?.dia],
+        ["comprovante","Referência do comprovante ou registro interno","text",v?.comprovante],
+        ["responsavel","Responsável pelo retorno","text",v?.responsavel || d.responsavel],
+        ["previsao","Próxima compra informada pelo cliente (opcional)","date",v?.previsao]
+      ]) {
+        campos[nome] = h("input", {type:tipo, value:valor || "", required:nome !== "previsao"});
+        form.append(h("label", {}, label, campos[nome]));
+      }
+      const estado = h("select", {}, ["Confirmada","Retorno realizado","Cancelada","Pausada"].map(s => h("option", {selected:v?.estado === s}, s)));
+      const salvar = h("button", {class:"btn"}, "Salvar registro da compra");
+      form.append(h("label", {}, "Situação", estado), salvar);
+      form.addEventListener("submit", event => {
+        event.preventDefault();
+        acao(salvar, async () => {
+          const body = Object.fromEntries(Object.entries(campos).map(([k,e]) => [k,e.value]));
+          const novo = await api("/crm/compra", {method:"PUT", body:{ ...body, estado:estado.value, negocioId:String(d.id), versaoAnterior:v?.atualizadoEm || null }});
+          dados.compras = dados.compras.filter(c => c.negocioId !== novo.negocioId).concat(novo); mostrar();
+        }, "Histórico atualizado.");
+      });
+      edicao.append(form);
+    });
+    detalhes.append(h("label", {}, "Registrar ou revisar uma compra", selecao), edicao);
+  }
+  painel.append(h("label", {}, "Cliente", contato), detalhes);
+  return painel;
+}
+
 async function crm() {
   const dados = await api("/crm");
   const arquivo = h("input", { type: "file", accept: "application/json,.json" });
@@ -708,7 +790,7 @@ async function crm() {
         h("tbody", {}, filtrados.slice(0, 300).map((x) => h("tr", {}, linha(x))))));
   }
   busca.addEventListener("input", desenhar); vista.addEventListener("change", desenhar);
-  conteudo.replaceChildren(importar, h("div", { class: "painel" }, h("div", { class: "grade" }, h("label", {}, "Ver", vista), h("label", {}, "Buscar", busca)), tabela));
+  conteudo.replaceChildren(importar, historicoCliente(dados), h("div", { class: "painel" }, h("div", { class: "grade" }, h("label", {}, "Ver", vista), h("label", {}, "Buscar", busca)), tabela));
   desenhar();
 }
 

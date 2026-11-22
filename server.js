@@ -19,7 +19,7 @@ const CATALOGO = await loadJson("./data/catalogo.json");
 const MIME = { ".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8",
   ".js": "text/javascript; charset=utf-8", ".json": "application/json; charset=utf-8",
   ".svg": "image/svg+xml", ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg",
-  ".webp": "image/webp", ".ico": "image/x-icon" };
+  ".pdf": "application/pdf", ".woff2": "font/woff2", ".webp": "image/webp", ".ico": "image/x-icon" };
 
 function sendJson(res, status, body) {
   res.writeHead(status, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" });
@@ -116,6 +116,9 @@ async function atender(req, res) {
     return responderComEtag(req, res, "application/xml; charset=utf-8", sitemap(await maquinasPublicas(), await tiposDeMaquina()));
   }
   if (pathname === "/api/catalogo" || pathname === "/catalogo.json") return sendJson(res, 200, CATALOGO);
+  if (pathname === "/financiamento-e-consorcio" || pathname === "/financiamento-e-consorcio/") {
+    return serveStatic(req, res, "/financiamento-e-consorcio/index.html");
+  }
   return serveStatic(req, res, pathname);
 }
 
