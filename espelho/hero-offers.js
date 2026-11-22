@@ -9,7 +9,7 @@ const positionLabel = document.getElementById('hero-offers-position');
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 const escape = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const money = value => new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 2 }).format(value);
-let listings = [], position = 1, paused = reduceMotion.matches, hovered = false, inView = true, moving = false, timer, settleTimer;
+let listings = [], position = 1, paused = reduceMotion.matches, hovered = false, inView = !('IntersectionObserver' in window), moving = false, timer, settleTimer;
 
 function slide(item, index, clone = false) {
   const name = machineName(item);
@@ -27,7 +27,7 @@ function updateAccessibility() {
   [...track.children].forEach((card, index) => {
     const visible = index === position;
     // Fetch only the current photo and its neighbours, including loop clones.
-    if (Math.abs(index - position) <= 1) {
+    if (inView && Math.abs(index - position) <= 1) {
       const photo = card.querySelector('img[data-src]');
       if (photo && !photo.getAttribute('src')) photo.src = photo.dataset.src;
     }
@@ -119,7 +119,11 @@ root.addEventListener('focusin', schedule);
 root.addEventListener('focusout', () => setTimeout(schedule, 0));
 document.addEventListener('visibilitychange', schedule);
 reduceMotion.addEventListener('change', () => { paused = reduceMotion.matches; syncPause(); });
-if ('IntersectionObserver' in window) new IntersectionObserver(entries => { inView = entries[0].isIntersecting; schedule(); }, { threshold: 0.15 }).observe(root);
+if ('IntersectionObserver' in window) new IntersectionObserver(entries => {
+  inView = entries[0].isIntersecting;
+  if (inView && listings.length) updateAccessibility();
+  schedule();
+}, { threshold: 0.15 }).observe(root);
 let touch = null, lastSwipe = 0;
 viewport.addEventListener('touchstart', event => { const p = event.touches[0]; touch = {x:p.clientX,y:p.clientY}; clearTimeout(timer); }, {passive:true});
 viewport.addEventListener('touchend', event => {

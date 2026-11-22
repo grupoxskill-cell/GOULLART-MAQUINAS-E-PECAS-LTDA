@@ -524,9 +524,13 @@ function formPublicacao(item, aoSalvar, aoCancelar) {
   });
   const salvar = h("button", { class: "btn" }, "Salvar");
   salvar.addEventListener("click", () => acao(salvar, async () => {
-    aoSalvar(await api(`/publicacoes/${encodeURIComponent(item.id)}`, { method: "PUT", body: {
-      titulo: c.titulo.value, categoria: c.categoria.value, preco: c.preco.value, textoPublico: c.textoPublico.value,
-      notasPrivadas: c.notasPrivadas.value, imagens } }));
+    const mudancas = {};
+    for (const [campo, controle] of Object.entries(c)) {
+      if (controle.value !== String(item[campo] ?? "")) mudancas[campo] = controle.value;
+    }
+    if (JSON.stringify(imagens) !== JSON.stringify(item.imagens)) mudancas.imagens = imagens;
+    if (!Object.keys(mudancas).length) return aoCancelar();
+    aoSalvar(await api(`/publicacoes/${encodeURIComponent(item.id)}`, { method: "PUT", body: mudancas }));
   }, "Publicação salva."));
   return h("div", { class: "painel" },
     h("div", { class: "grade" }, h("label", {}, "Título", c.titulo), h("label", {}, "Categoria", c.categoria), h("label", {}, "Preço (R$)", c.preco)),

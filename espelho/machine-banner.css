@@ -3,6 +3,7 @@ body.goullart-storefront.approved-layout #approved-banner.machine-banner{width:c
 #approved-banner.machine-banner .approved-machine-slide{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr);height:430px;min-height:0;max-height:none;padding:0;gap:0;background:#061e38;box-sizing:border-box}
 #approved-banner.machine-banner .approved-machine-slide[hidden]{display:none!important}
 #approved-banner.machine-banner .machine-banner-art{display:block;height:100%;min-width:0;min-height:0;background:#f5f7fa}
+#approved-banner.machine-banner .machine-banner-art picture{display:block;height:100%}
 #approved-banner.machine-banner .machine-banner-art img{display:block;position:static;width:100%;height:100%;max-height:none;object-fit:contain;opacity:1;margin:0;border-radius:0;transform:none}
 #approved-banner.machine-banner .machine-banner-copy{display:grid;gap:12px;min-width:0;align-self:center;padding:28px}
 #approved-banner.machine-banner .machine-banner-kicker{font-size:12px;letter-spacing:2px;color:#ffcc19;font-weight:800;margin:0}

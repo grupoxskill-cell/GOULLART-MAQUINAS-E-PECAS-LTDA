@@ -8,6 +8,10 @@ const context={window:{}};vm.createContext(context);vm.runInContext(await readFi
 const types=context.window.GoullartMachineTypes;
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const empty='No momento sem unidades. Fale com a equipe que buscamos para você';
+function setHidden(openingTag, hidden) {
+ const tag = openingTag.replace(/\s+hidden(?=[\s>])/g, '');
+ return hidden ? tag.replace(/^<\w+/, '$& hidden') : tag;
+}
 export async function prepareCatalogue(directory,now=Date.now()){
  const data=dataTools.feed(JSON.parse(await readFile(directory+'/api/catalog.json','utf8')));
  await writeFile(directory+'/api/catalog.json',JSON.stringify(data));
@@ -17,7 +21,7 @@ export async function prepareCatalogue(directory,now=Date.now()){
  for(const filename of files){
   const path=directory+'/'+filename;let html=await readFile(path,'utf8');
   if(filename==='index.html'){
-   html=html.replace(/<section\b[^>]*id="approved-banner"[^>]*>[\s\S]*?<\/section>/,renderMachineBanner(eligibleItems,globalThis.GoullartMachinePagesMap));
+   html=html.replace(/<section\b[^>]*id="approved-banner"[^>]*>[\s\S]*?<\/section>/,()=>renderMachineBanner(eligibleItems,globalThis.GoullartMachinePagesMap,directory));
    if(!html.includes('href="/machine-banner.css'))html=html.replace('</head>','<link rel="stylesheet" href="/machine-banner.css?v=sem-faixa"></head>');
    // Uma foto original do próprio anúncio para cada categoria disponível.
    for(const [id,label] of types.entries){
@@ -44,19 +48,21 @@ export async function prepareCatalogue(directory,now=Date.now()){
    html=html.replace(/(<p id="catalog-page-count">)[\s\S]*?(<\/p>)/,'$1'+(items.length?items.length+(items.length===1?' anúncio encontrado':' anúncios encontrados'):'Consulte outras máquinas disponíveis')+'$2');
    const cards=items.map(i=>{
     const link='/?area=maquinas&item='+encodeURIComponent(i.id),contact='https://wa.me/5562999427276?text='+encodeURIComponent('Olá, tenho interesse no anúncio '+i.publicCode+': '+i.title+'. Pode confirmar preço e disponibilidade? https://www.goullartmaquinaspesadas.com.br'+link);
-    return `<article class="catalog-page-card${i.artwork?' approved-artwork':''}"><a href="${esc(link)}" aria-label="Ver ${esc(i.title)}"><img src="${esc(i.image)}" alt="${esc(i.title)}" width="640" height="440" loading="lazy"></a><div><p class="catalog-page-code">${esc(i.publicCode)} · ${esc(i.state||'Localização a confirmar')}</p><h2><a href="${esc(link)}">${esc(i.title)}</a></h2><p class="catalog-page-code">${esc(dataTools.facts(i))}</p><p class="catalog-page-price">${dataTools.formatMachinePrice(i.price)}</p>${i.artwork?`<p class="item-description">${esc(i.publicText)}</p>`:`<details><summary>Ver detalhes</summary><p>${esc(i.publicText)}</p></details>`}<a class="catalog-page-contact" href="${esc(contact)}" target="_blank" rel="noopener noreferrer">Consultar máquina</a>${globalThis.GoullartMachinePagesMap?.[i.publicCode]?`<p class="catalog-page-code"><a href="${esc(globalThis.GoullartMachinePagesMap[i.publicCode])}">Ficha completa da máquina →</a></p>`:''}</div></article>`;
+    return `<article id="anuncio-${esc(i.publicCode)}" class="catalog-page-card${i.artwork?' approved-artwork':''}"><a href="${esc(link)}" aria-label="Ver ${esc(i.title)}"><img src="${esc(i.image)}" alt="${esc(i.title)}" width="640" height="440" loading="lazy"></a><div><p class="catalog-page-code">${esc(i.publicCode)} · ${esc(i.state||'Localização a confirmar')}</p><h2><a href="${esc(link)}">${esc(i.title)}</a></h2><p class="catalog-page-code">${esc(dataTools.facts(i))}</p><p class="catalog-page-price">${dataTools.formatMachinePrice(i.price)}</p>${i.artwork?`<p class="item-description">${esc(i.publicText)}</p>`:`<details><summary>Ver detalhes</summary><p>${esc(i.publicText)}</p></details>`}<a class="catalog-page-contact" href="${esc(contact)}" target="_blank" rel="noopener noreferrer">Consultar máquina</a>${globalThis.GoullartMachinePagesMap?.[i.publicCode]?`<p class="catalog-page-code"><a href="${esc(globalThis.GoullartMachinePagesMap[i.publicCode])}">Ficha completa da máquina →</a></p>`:''}</div></article>`;
    }).join('');
    const alternatives=eligibleItems.filter(i=>i.category==='maquinas'&&types.classify(i)!==type).slice(0,6).map(i=>`<article class="catalog-page-card${i.artwork?' approved-artwork':''}"><a href="/?area=maquinas&item=${encodeURIComponent(i.id)}"><img src="${esc(i.image)}" alt="${esc(i.title)}" loading="lazy"></a><div><h2>${esc(i.title)}</h2><p>${esc(dataTools.facts(i))}</p><strong>${dataTools.formatMachinePrice(i.price)}</strong></div></article>`).join('');
    const fallback=`<div class="catalog-page-empty"><h2>${empty}</h2><a href="https://wa.me/5562999427276" target="_blank" rel="noopener noreferrer">Falar com a equipe pelo WhatsApp</a><p>Veja outras máquinas disponíveis:</p>${alternatives}</div>`;
    // Keep prices such as R$250.000 literal; replacement strings would interpret $2 as </section>.
    html=html.replace(/(<section id="catalog-page-list"[^>]*>)[\s\S]*?(<\/section>)/,(_,start,end)=>start+(cards||fallback)+end);
   }
-  html=html.replace(/<a\b[^>]*href="\/maquinas\/([a-z-]+)\/?"[^>]*>[\s\S]*?<\/a>/g,(tag,id)=>counts[id]===0?tag.replace('<a ','<a hidden '):tag);
-  html=html.replace(/<details class="sidebar-group"[^>]*>[\s\S]*?<\/details>/g,tag=>/<a(?! hidden )/.test(tag)?tag:tag.replace('<details ','<details hidden '));
+  html=html.replace(/<a\b[^>]*href="\/maquinas\/([a-z-]+)\/?"[^>]*>/g,(tag,id)=>
+   Object.hasOwn(counts,id) ? setHidden(tag,counts[id]===0) : tag);
+  html=html.replace(/(<details\b[^>]*class="sidebar-group"[^>]*>)([\s\S]*?<\/details>)/g,(_,opening,body)=>
+   setHidden(opening,!/<a\b(?![^>]*\shidden[\s>])/.test(body))+body);
   // Cavalo Mecânico é classificado em Caminhões, sem card independente na home.
   if(filename==='index.html')html=html.replace(/<a\b[^>]*id="tipo-cavalo-mecanico"[^>]*>[\s\S]*?<\/a>/g,'');
   const hasOffers=eligibleItems.some(i=>i.category==='maquinas'&&i.offer?.verified===true&&i.offer.price===i.price&&i.offer.discountPercent>=20);
-  html=html.replace(/<a\b[^>]*href="\/ofertas\/?"[^>]*>[\s\S]*?<\/a>/g,tag=>hasOffers?tag:tag.replace('<a ','<a hidden '));
+  html=html.replace(/<a\b[^>]*href="\/ofertas\/?"[^>]*>/g,tag=>setHidden(tag,!hasOffers));
   await writeFile(path,html);
  }
  return data;
