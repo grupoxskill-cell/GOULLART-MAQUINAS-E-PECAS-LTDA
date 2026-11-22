@@ -28,8 +28,10 @@ export function renderMachineBanner(items, pageMap = {}, directory = 'espelho') 
   const price = item.price == null ? 'Solicite proposta' : Number(item.price).toLocaleString('pt-BR', {style:'currency',currency:'BRL',maximumFractionDigits:0});
   const facts = [item.year, item.hours && item.hours + ' h', item.location || item.state || 'Localização sob consulta'].filter(Boolean).join(' · ');
   const mobile = fotoMobile(item.image, directory);
+  const hd = mobile && mobile.replace(/\.webp$/, '-hd.webp');
+  const highDensity = hd && existsSync(join(directory, hd)) ? '<source type="image/webp" srcset="' + esc(hd) + '">' : '';
   const image = `<img src="${esc(item.image)}" alt="${esc(item.title)}" loading="${index ? 'lazy' : 'eager'}"${index ? '' : ' fetchpriority="high"'} decoding="async">`;
-  const photo = mobile ? `<picture><source media="(max-width: 700px), (max-resolution: 1.5dppx)" type="image/webp" srcset="${esc(mobile)}">${image}</picture>` : image;
+  const photo = mobile ? `<picture><source media="(max-width: 700px), (max-resolution: 1.5dppx)" type="image/webp" srcset="${esc(mobile)}">${highDensity}${image}</picture>` : image;
   return `<article class="approved-slide approved-machine-slide" data-slide data-code="${esc(item.publicCode)}" role="group" aria-roledescription="slide" aria-label="${index+1} de ${machines.length}"${index ? ' hidden inert' : ''}>
 <a class="machine-banner-art" href="${esc(link)}" aria-label="Ver ${esc(item.title)}">${photo}</a>
 <div class="machine-banner-copy"><p class="machine-banner-kicker">GOULLART PESADOS</p><h2>${esc(item.title)}</h2><p class="machine-banner-facts">${esc(facts)}</p><strong class="machine-banner-price">${esc(price)}</strong>${item.priceNote ? `<p class="machine-banner-note">${esc(item.priceNote)}</p>` : ''}<a class="machine-banner-link" href="${esc(link)}">Ver máquina e fotos →</a></div>
