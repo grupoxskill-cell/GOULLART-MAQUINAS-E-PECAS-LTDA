@@ -45,8 +45,9 @@
   }
 
   function botaoInteresse(m) {
-    const a = el("a", "btn btn-primary machine-btn", "Tenho interesse");
-    a.href = linkInteresse(m);
+    const vendida = m.situacao === "Vendida";
+    const a = el("a", "btn btn-primary machine-btn", vendida ? "Quero uma igual a essa" : "Tenho interesse");
+    a.href = vendida ? "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent("Quero uma máquina semelhante a " + m.titulo + " (" + m.referencia + ").") : linkInteresse(m);
     a.target = "_blank";
     a.rel = "noopener";
     a.dataset.interesse = "";
@@ -75,7 +76,7 @@
     const dados = [m.ano && `Ano ${m.ano}`, m.horas, m.local].filter(Boolean).join(" · ");
     if (dados) corpo.append(el("p", "machine-dados", dados));
     corpo.append(el("p", "machine-preco", m.preco || "Preço sob consulta"));
-    corpo.append(el("p", "machine-status", "Disponibilidade a confirmar"), botaoInteresse(m));
+    corpo.append(el("p", "machine-status", "Disponibilidade · " + (m.situacao || "A confirmar")), botaoInteresse(m));
     li.append(corpo);
     return li;
   }
