@@ -7,10 +7,30 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {prepareCatalogue} from '../scripts/build-catalog-pages.mjs';
+import {createHash} from 'node:crypto';
+import {renderMachineBanner} from '../scripts/machine-banner.mjs';
 
 const now=Date.parse('2026-10-31T15:00:00Z');
 const source=name=>readFileSync(new URL('../espelho/'+name,import.meta.url),'utf8');
 const machine=(id,extra={})=>({id,publicCode:id,title:'Escavadeira '+id,category:'maquinas',price:100000,image:'/original.jpg',publishedAt:'2026-10-31',...extra});
+
+test('o banner usa a miniatura da foto atual no celular e conserva a original como alternativa',async()=>{
+ const dir=await mkdtemp(join(tmpdir(),'goullart-banner-'));
+ try{
+  const path='/assets/listings/maquina.jpg',original=join(dir,path),item=machine('TESTE',{image:path});
+  await mkdir(join(dir,'assets/listings'),{recursive:true});
+  await writeFile(original,'primeira foto');
+  const hash=createHash('sha256').update('primeira foto').digest('hex').slice(0,12);
+  const mobile=path.replace('.jpg','-banner-'+hash+'.webp');
+  await writeFile(join(dir,mobile),'miniatura');
+  const banner=()=>renderMachineBanner([item],{},dir);
+  assert.ok(banner().includes('media="(max-width: 700px)" type="image/webp" srcset="'+mobile+'"'));
+  assert.ok(banner().includes('<img src="'+path+'"'));
+  await writeFile(original,'foto substituída');
+  assert.ok(!banner().includes('<source'));
+  assert.ok(banner().includes('<img src="'+path+'"'));
+ }finally{await rm(dir,{recursive:true,force:true});}
+});
 const inventory=[
  machine('RECENT'),
  machine('OWNER',{publishedAt:'2025-01-01',retentionPolicy:'owner_confirmation'}),
@@ -128,13 +148,15 @@ test('static category and offer snapshots filter eligibility without deleting so
   await mkdir(join(dir,'api'));await mkdir(join(dir,'maquinas'));
   const items=inventory.map(i=>({...i,offer:{verified:true,price:i.price,discountPercent:20}}));
   await writeFile(join(dir,'api/catalog.json'),JSON.stringify({items}));
-  const html='<nav class="catalog-page-categories"><div id="catalog-page-categories"></div></nav><p id="catalog-page-count"></p><section id="catalog-page-list"></section>';
+  const menu='<details hidden class="sidebar-group"><summary>Máquinas</summary><a hidden href="/maquinas/escavadeira">Escavadeira</a><a href="/maquinas/pa-carregadeira">Pá</a></details><a hidden href="/ofertas">Ofertas</a>';
+  const html=menu+'<nav class="catalog-page-categories"><div id="catalog-page-categories"></div></nav><p id="catalog-page-count"></p><section id="catalog-page-list"></section>';
   for(const file of ['index.html','ofertas.html','maquinas/escavadeira.html','maquinas/pa-carregadeira.html'])await writeFile(join(dir,file),html);
   await prepareCatalogue(dir,now);
   const category=await readFile(join(dir,'maquinas/escavadeira.html'),'utf8');
   assert.match(category,/2 anúncios encontrados/);assert.match(category,/RECENT/);assert.match(category,/OWNER/);
   assert.doesNotMatch(category,/NO-PHOTO|BLANK-PHOTO|EXPIRED|UNDATED|INVALID-DATE|FUTURE|OTHER-TYPE|EMPTY-TYPE/);
   assert.doesNotMatch(category,/catalog-page-categories/);
+  assert.match(category,/<details class="sidebar-group"><summary>Máquinas<\/summary><a href="\/maquinas\/escavadeira">Escavadeira<\/a><a hidden href="\/maquinas\/pa-carregadeira">Pá<\/a><\/details><a href="\/ofertas">Ofertas<\/a>/);
   const offers=await readFile(join(dir,'ofertas.html'),'utf8');assert.match(offers,/3 anúncios encontrados/);assert.doesNotMatch(offers,/NO-PHOTO|EXPIRED|FUTURE/);
   assert.match(await readFile(join(dir,'maquinas/pa-carregadeira.html'),'utf8'),/No momento sem unidades/);
   const saved=JSON.parse(await readFile(join(dir,'api/catalog.json'),'utf8')).items;

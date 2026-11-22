@@ -9,6 +9,10 @@ const types=context.window.GoullartMachineTypes;
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money=n=>Number(n).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 const empty='No momento sem unidades. Fale com a equipe que buscamos para você';
+function setHidden(openingTag, hidden) {
+ const tag = openingTag.replace(/\s+hidden(?=[\s>])/g, '');
+ return hidden ? tag.replace(/^<\w+/, '$& hidden') : tag;
+}
 export async function prepareCatalogue(directory,now=Date.now()){
  const data=dataTools.feed(JSON.parse(await readFile(directory+'/api/catalog.json','utf8')));
  await writeFile(directory+'/api/catalog.json',JSON.stringify(data));
@@ -18,7 +22,7 @@ export async function prepareCatalogue(directory,now=Date.now()){
  for(const filename of files){
   const path=directory+'/'+filename;let html=await readFile(path,'utf8');
   if(filename==='index.html'){
-   html=html.replace(/<section\b[^>]*id="approved-banner"[^>]*>[\s\S]*?<\/section>/,renderMachineBanner(eligibleItems,globalThis.GoullartMachinePagesMap));
+   html=html.replace(/<section\b[^>]*id="approved-banner"[^>]*>[\s\S]*?<\/section>/,()=>renderMachineBanner(eligibleItems,globalThis.GoullartMachinePagesMap,directory));
    if(!html.includes('href="/machine-banner.css'))html=html.replace('</head>','<link rel="stylesheet" href="/machine-banner.css?v=sem-faixa"></head>');
    // Uma foto original do próprio anúncio para cada categoria disponível.
    for(const [id,label] of types.entries){
@@ -52,12 +56,14 @@ export async function prepareCatalogue(directory,now=Date.now()){
    // Keep prices such as R$250.000 literal; replacement strings would interpret $2 as </section>.
    html=html.replace(/(<section id="catalog-page-list"[^>]*>)[\s\S]*?(<\/section>)/,(_,start,end)=>start+(cards||fallback)+end);
   }
-  html=html.replace(/<a\b[^>]*href="\/maquinas\/([a-z-]+)\/?"[^>]*>[\s\S]*?<\/a>/g,(tag,id)=>counts[id]===0?tag.replace('<a ','<a hidden '):tag);
-  html=html.replace(/<details class="sidebar-group"[^>]*>[\s\S]*?<\/details>/g,tag=>/<a(?! hidden )/.test(tag)?tag:tag.replace('<details ','<details hidden '));
+  html=html.replace(/<a\b[^>]*href="\/maquinas\/([a-z-]+)\/?"[^>]*>/g,(tag,id)=>
+   Object.hasOwn(counts,id) ? setHidden(tag,counts[id]===0) : tag);
+  html=html.replace(/(<details\b[^>]*class="sidebar-group"[^>]*>)([\s\S]*?<\/details>)/g,(_,opening,body)=>
+   setHidden(opening,!/<a\b(?![^>]*\shidden[\s>])/.test(body))+body);
   // Cavalo Mecânico é classificado em Caminhões, sem card independente na home.
   if(filename==='index.html')html=html.replace(/<a\b[^>]*id="tipo-cavalo-mecanico"[^>]*>[\s\S]*?<\/a>/g,'');
   const hasOffers=eligibleItems.some(i=>i.category==='maquinas'&&i.offer?.verified===true&&i.offer.price===i.price&&i.offer.discountPercent>=20);
-  html=html.replace(/<a\b[^>]*href="\/ofertas\/?"[^>]*>[\s\S]*?<\/a>/g,tag=>hasOffers?tag:tag.replace('<a ','<a hidden '));
+  html=html.replace(/<a\b[^>]*href="\/ofertas\/?"[^>]*>/g,tag=>setHidden(tag,!hasOffers));
   await writeFile(path,html);
  }
  return data;
