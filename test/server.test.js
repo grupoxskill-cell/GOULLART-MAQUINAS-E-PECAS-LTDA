@@ -47,7 +47,16 @@ test('catálogo de máquinas e fotos disponíveis, sem dados internos', async ()
   assert.ok(maquinas.length > 0);
   for (const m of maquinas) {
     assert.ok(!m.referencia.includes('CRM'));
-    for (const f of m.fotos) assert.equal((await fetch(base + '/' + f, { method: 'HEAD' })).headers.get('content-type'), 'image/jpeg');
+    for (const f of m.fotos) {
+      if (/^https:\/\//i.test(f)) {
+        const url = new URL(f);
+        assert.equal(url.protocol, 'https:');
+        assert.equal(url.hostname, 'storage.maquinalista.com');
+        assert.match(url.pathname, /^\/machinery-images\/[a-zA-Z0-9-]+\.jpe?g$/);
+      } else {
+        assert.equal((await fetch(base + '/' + f, { method: 'HEAD' })).headers.get('content-type'), 'image/jpeg');
+      }
+    }
   }
 });
 test('dados privados e caminhos malformados não são servidos', async () => {
