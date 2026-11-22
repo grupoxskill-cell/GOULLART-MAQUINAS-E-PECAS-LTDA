@@ -46,9 +46,23 @@ cp /www/server/panel/vhost/nginx/goullartmaquinaspesadas.com.br.conf.bak-2026102
 
 Rodar o script de novo atualiza o site e liga a atualização automática: o cron (`/etc/cron.d/goullart-site`) confere o branch `gh-pages` a cada 10 minutos e publica a versão nova. O registro fica em `/var/log/goullart-site.log`.
 
+Pelo Cloud Shell da Azure (o comando roda dentro da VM, não no Cloud Shell):
+
 ```sh
-curl -fsSL https://raw.githubusercontent.com/grupoxskill-cell/GOULLART-MAQUINAS-E-PECAS-LTDA/master/scripts/instalar-no-servidor.sh | bash
+az vm run-command invoke --ids $(az vm list --query "[?name=='goullart1'].id" -o tsv) --command-id RunShellScript --scripts "curl -fsSL https://api.github.com/repos/grupoxskill-cell/GOULLART-MAQUINAS-E-PECAS-LTDA/contents/scripts/instalar-no-servidor.sh?ref=master -H 'Accept: application/vnd.github.raw' | bash" --query "value[].message" -o tsv
 ```
+
+### Repositório privado
+
+O servidor fala com o GitHub só pela API (`gh_curl` em `scripts/instalar-no-servidor.sh`). Com o repositório privado, ele precisa de um token **só de leitura**:
+
+1. GitHub → Settings → Developer settings → Fine-grained tokens → Generate. Repositório: só este. Permissão: *Contents: Read-only*.
+2. Guardar no servidor (o token é testado antes de gravar e fica em `/etc/goullart/github-token`, só root lê):
+   `TOKEN='github_pat_...' bash scripts/instalar-github-token.sh`
+3. Rodar o instalador de novo. Com o repositório já privado, o próprio download do instalador também leva o token:
+   `curl -fsSL -H "Authorization: Bearer $(cat /etc/goullart/github-token)" -H 'Accept: application/vnd.github.raw' 'https://api.github.com/repos/grupoxskill-cell/GOULLART-MAQUINAS-E-PECAS-LTDA/contents/scripts/instalar-no-servidor.sh?ref=master' | bash`
+
+Atenção: o Radar manda a arte para o WhatsApp por um link público de `raw.githubusercontent.com` (`docs/radar.md`). Com o repositório privado esse link deixa de abrir; a arte precisa de outro endereço público antes da troca.
 
 ## Páginas das máquinas e contador de interesse
 
