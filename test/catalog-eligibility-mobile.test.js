@@ -105,6 +105,19 @@ test('live JCB category cards keep the approved photograph when the ADM returns 
  assert.match(refreshed['catalog-page-list'].innerHTML,/2025 ATUALIZADA/);
 });
 
+test('o preço unitário exige uma declaração comercial explícita', () => {
+ const { formatMachinePrice } = globalThis.GoullartCatalogData;
+ const normal = formatMachinePrice(355000);
+ for (const texto of ['Preço por unidade.', 'Preço por unidade: R$355.000,00', 'R$ 355.000 cada máquina']) {
+  assert.equal(formatMachinePrice(355000, texto), normal + ' por unidade');
+ }
+ for (const texto of ['Confirme as horas de cada unidade.', 'Consulte o preço por unidade.', 'Preço por unidade a confirmar.',
+  'R$ 5.000 cada máquina.', 'Preço do lote completo.']) {
+  assert.equal(formatMachinePrice(355000, texto), normal);
+ }
+ assert.equal(formatMachinePrice(null, 'Preço por unidade.'), 'Preço sob consulta');
+});
+
 test('static category prices stay literal and every card remains inside the catalogue grid',async()=>{
  const dir=await mkdtemp(join(tmpdir(),'goullart-price-markup-'));
  try{
@@ -129,6 +142,11 @@ test('static category prices stay literal and every card remains inside the cata
   assert.equal([...grid.matchAll(precoSobConsulta)].length, 1);
   const refreshed = await client(items, {type:'retroescavadeira'});
   assert.equal([...refreshed['catalog-page-list'].innerHTML.matchAll(precoSobConsulta)].length, 1);
+  const unitario = /class="catalog-page-price">R\$\s*355\.000,00 por unidade<\/p>/;
+  assert.match(grid, unitario);
+  assert.match(refreshed['catalog-page-list'].innerHTML, unitario);
+  assert.match(renderMachineBanner(items), /class="machine-banner-price">R\$\s*355\.000 por unidade<\/strong>/);
+
   assert.match(category,/<\/section><footer>Fim<\/footer>$/);
  }finally{await rm(dir,{recursive:true,force:true});}
 });
