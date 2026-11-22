@@ -72,7 +72,7 @@ test('índice usa somente a vitrine pública, preserva rotas e escapa os textos'
   const html = await paginaCatalogo([ficha, {referencia: 'SEM-VITRINE', slug:'nao-indexar'}], vitrine);
   assert.match(html, /href="\/maquina\/exemplo.html">/);
   assert.match(html, /href="\/\?area=maquinas&amp;item=outro">Trator &lt;campo&gt;/);
-  assert.match(html, /Cidade &amp; UF/);
+  assert.match(html, /Trator &lt;campo&gt; · TESTE-2/);
   assert.equal(html.match(/href="\/maquina\/exemplo.html"/g).length, 1);
   assert.doesNotMatch(html, /nao-indexar|NAO-PUBLICADO/);
   assert.doesNotMatch(await paginaCatalogo([ficha], {items: []}), /class="indice-maquinas"/);
