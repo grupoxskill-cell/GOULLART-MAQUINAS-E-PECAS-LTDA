@@ -1,40 +1,42 @@
 # Modo Semana GOULLART
 
-Rotina fixa da operação, valendo a partir de domingo, 22/11/2026. O objetivo é **Júnior gastar o mínimo de tempo e decidir só o que é dele**: aprovar, negociar e fechar. O resto (procurar, conferir, montar ficha, arte, site, relatórios) fica com o sistema e com o Claude.
+**Semana de domingo, 22, a sábado, 28 de novembro de 2026. Horário de Brasília.** Júnior decide preço, margem, condições, publicação de máquina e fechamento. A equipe prepara uma fila curta com a decisão necessária e as informações que a sustentam.
 
-As regras fixas do `CLAUDE.md` valem sempre: nada vai ao site sem `SIM RADAR-AAMMDD-NN`, a fonte e o preço de origem nunca saem do ADM, e preço do site = origem + margem.
+## Rotina de dez minutos do Júnior
 
-## O dia a dia (10 minutos por dia)
-
-| Quando | Quem | O quê |
+| Momento | Quem prepara | O que chega para decisão |
 | --- | --- | --- |
-| Manhã | Sistema | O Radar recebe ofertas (WhatsApp encaminhado, ChatGPT colado, entrada automática). Cada oferta vira ficha "Aguardando você", com o preço do site já calculado. |
-| Manhã | Júnior | Abre o **ADM → Início**. Vê as ofertas novas, os encontros com pedidos e as máquinas paradas há 30 dias ou mais. Responde `SIM RADAR-…` ou recusa. |
-| Durante o dia | Júnior | Atende o WhatsApp comercial. Cliente com pedido novo vai para o CRM. |
-| Fim do dia | Sistema | Backup diário dos dados (03:17) e atualização automática do site a cada 10 minutos. |
+| Pela manhã | Atendimento e comercial | Até três casos, nesta ordem de prioridade: fechamento, proposta ou retorno vencido, pedido com máquina ou peça compatível. Cada caso traz situação, próxima ação, responsável e prazo. |
+| Durante o dia | Equipe dos dois canais comerciais | Conciliar no CRM os pedidos dos canais autorizados. Marcar qual canal foi conferido, até que horário e o que depende de acesso. Um clique, pedido ou proposta só vira venda após confirmação. |
+| No fim do dia | Responsável pela operação | Registrar no painel privado os compromissos cumpridos, as respostas pendentes e a primeira decisão do dia seguinte. Destacar apenas o que precisa de Júnior. |
 
-## A semana
+## Agenda da semana
 
-| Dia | Foco | Resultado esperado |
+| Data | Foco | Entrega e conferência |
 | --- | --- | --- |
-| **Segunda** | Radar | Aprovar ou recusar todas as ofertas da semana anterior. Nenhuma oferta com mais de 15 dias fica parada. |
-| **Terça** | Encontros | Abrir **ADM → Encontros**: cada pedido de cliente que combina com uma máquina recebe uma mensagem de Júnior. |
-| **Quarta** | Vitrine | Máquinas com 30 dias ou mais no site: baixar o preço, trocar a foto ou tirar do site. Marcar as vendidas na lista `vendidas`. |
-| **Quinta** | Conteúdo | Publicar 1 notícia ou guia novo, sempre com fatos reais (máquina nova, serviço novo, como funciona). Arte da semana no Instagram e WhatsApp. |
-| **Sexta** | Números | Abrir **ADM → Início → Interesse no site**: quais máquinas tiveram mais cliques. Elas viram destaque na semana seguinte. |
-| **Sábado** | Segurança | Em **ADM → Config.**, baixar a cópia dos dados e conferir os **Últimos acessos** (só Júnior deve aparecer). |
-| **Domingo** | Descanso | O sistema segue sozinho: Radar recebendo, site no ar e backup rodando. |
+| Dom 22 | Abertura | Priorizar fechamentos, separar pedidos de máquina, peça e locação e distribuir os retornos. Revisar o último registro de cada automação. |
+| Seg 23 | Radar | Receber ofertas de sites na fila privada. Deduplicar por anúncio e por máquina, registrar anunciante, fonte, descrição e três fotos identificáveis. Solicitar conferência das pendências e da disponibilidade. |
+| Ter 24 | Encontros e propostas | Cruzar pedidos abertos com Radar, Pátio e catálogo. Confirmar localização, especificação e condição comercial antes de apresentar a opção a Júnior. Conferir aplicação de peça por código ou série em canal privado. |
+| Qua 25 | Vitrine | Revisar fichas paradas há 30 dias, fotos, cidade e preço. Para cada unidade, registrar manter, atualizar ou retirar. Com venda confirmada, conferir a baixa na ficha, na vitrine e no mapa do site. |
+| Qui 26 | Conteúdo | Selecionar uma notícia ou guia que responda pergunta real de comprador. Checar a fonte, publicar no canal autorizado e abrir o endereço público para verificar título, data e links. |
+| Sex 27 | Resultados | Comparar visitas, cliques de interesse, propostas e fechamentos confirmados. Registrar as máquinas mais procuradas e quais retornos ficaram sem responsável. |
+| Sáb 28 | Continuidade | Conferir último backup, executar restauração em ambiente separado quando houver acesso autorizado e registrar o resultado no painel privado. Revisar acessos e preparar a próxima semana. |
 
-## O que o Claude faz sozinho (modo automático)
+## Como funciona o modo automático
 
-- Revisão diária do código: erros, falhas de segurança e melhorias. Cada mudança testada vira PR, é mesclada no `master` e o servidor atualiza sozinho.
-- Nunca muda o visual do site sem pedido de Júnior. Nunca publica máquina sem `SIM`. Nunca escreve no WhatsApp para clientes.
-- Conteúdo novo (notícias e guias) só com fatos verificáveis da própria GOULLART.
+- **Radar e preço.** A entrada é privada. Modelo, ano e horas orientam a prioridade. Campos desconhecidos ficam pendentes. Para usar “abaixo do mercado”, guardar ao menos três comparáveis, modelo compatível, ano próximo, horímetros e cálculo. Registrar a diferença entre preço de origem, preço de venda e referência. Aprovação de publicação de máquina exige o código exato de Júnior.
+- **Atendimento.** Os agentes podem organizar pedidos, apontar encaixes e preparar respostas e propostas. A equipe confirma disponibilidade, documentação e condição. Contato externo, mudança importante de cadastro e compromisso financeiro passam pela autorização correspondente. Dados e contatos ficam no CRM privado.
+- **Site.** Erro reproduzido recebe uma correção em branch própria, validação e PR para revisão. Uma revisão de código, um merge e uma verificação no endereço público são registros distintos. Mudança de DNS, de credenciais ou de integrações requer autorização específica.
+- **Execução.** A configuração descreve a frequência pretendida. Para declarar a rotina executada, registrar início, término, volume, erro e última rodada válida. Quando faltar acesso ao CRM, à Meta, ao servidor ou ao Search Console, deixar explícitos o canal afetado e a ação de desbloqueio.
 
-## Indicadores da semana
+## Indicadores de sexta-feira
 
-1. Ofertas do Radar avaliadas (meta: todas, com no máximo 15 dias).
-2. Máquinas novas publicadas.
-3. Cliques em "Tenho interesse" (ADM → Início).
-4. Pedidos respondidos a partir de Encontros.
-5. Máquinas vendidas e retiradas do site.
+| Indicador | Como contar |
+| --- | --- |
+| Radar avaliado | Ofertas únicas com decisão e motivo / ofertas únicas recebidas. Destacar pendências com mais de 15 dias. |
+| Vitrine revisada | Fichas alteradas e verificadas no endereço público. Separar publicações, atualizações e baixas. |
+| Interesse por máquina | Visitas e cliques por referência. Mostrar período e último registro disponível. |
+| Retorno ao comprador | Pedidos com retorno confirmado / pedidos que exigiam resposta no período. |
+| Propostas e vendas | Contar cada etapa separadamente no CRM. Informar valores somente quando confirmados. |
+
+[Diagnóstico com as 30 ações e os dez recursos da GOULLART](O-QUE-FALTA.md) · [Regras de publicação do projeto](../CLAUDE.md)
