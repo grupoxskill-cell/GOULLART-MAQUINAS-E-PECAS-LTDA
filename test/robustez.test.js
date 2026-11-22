@@ -117,16 +117,12 @@ test('cópia do ChatGPT recusa copiar o próprio domínio', async () => {
   assert.equal(codigo, 1);
 });
 
-test('máquina do Radar publicada pelo repositório aparece na vitrine da página inicial', async () => {
+test('máquina do Radar sem município permanece fora da vitrine', async () => {
   const r = await fetch(base + '/adm/catalogo.json');
   assert.equal(r.status, 200);
   const { items } = await r.json();
   const pc200 = items.find((i) => i.publicCode === 'RADAR-PC200-2018');
-  assert.ok(pc200, 'RADAR-PC200-2018 deveria estar no feed');
-  assert.equal(pc200.category, 'maquinas');
-  assert.equal(pc200.price, 259000);
-  assert.equal(pc200.image, '/maquinas/radar-komatsu-pc200-2018-1.jpg');
-  assert.equal(pc200.publishedAt, '2026-10-22');
+  assert.equal(pc200,undefined,'O Radar mantém o registro até confirmar cidade e UF.');
 });
 
 // Revisão de segurança de 05/11/2026.
@@ -228,7 +224,7 @@ test('resumo do ADM lista as máquinas há mais de 30 dias no site', async () =>
 test('máquina do Radar publicada no ADM com preço de mercado vira oferta verificada no catálogo público', async () => {
   const cookie = await entrar(base);
   const foto = 'fotos/' + 'b'.repeat(24) + '.jpg';
-  const criado = await (await fetch(base + '/adm/api/radar', { method: 'POST', headers: { Cookie: cookie, Origin: base }, body: JSON.stringify({ titulo: 'Escavadeira Sany SY215C oferta', categoria: 'Escavadeiras', precoOrigem: 319000, fotos: [foto] }) })).json();
+  const criado = await (await fetch(base + '/adm/api/radar', { method: 'POST', headers: { Cookie: cookie, Origin: base }, body: JSON.stringify({ titulo: 'Escavadeira Sany SY215C oferta', categoria: 'Escavadeiras', cidadePublica:'Anápolis/GO', precoOrigem: 319000, fotos: [foto] }) })).json();
   await fetch(`${base}/adm/api/radar/${criado.id}`, { method: 'PUT', headers: { Cookie: cookie, Origin: base }, body: JSON.stringify({ precoMercado: 490000 }) });
   assert.equal((await fetch(`${base}/adm/api/radar/${criado.id}/publicar`, { method: 'POST', headers: { Cookie: cookie, Origin: base } })).status, 200);
   const { items } = await (await fetch(base + '/adm/catalogo.json')).json();

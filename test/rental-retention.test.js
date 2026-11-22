@@ -34,7 +34,7 @@ test('an open rental page expires unchanged cards at local midnight, even if ref
  const approved=original.slice(0,2),before=JSON.stringify(original);
  const ctx={Date:Clock,URL,URLSearchParams,Intl,location:new URL('https://example.com/?area=locacao'),history:{replaceState(){}},CustomEvent:class{},setInterval(fn){interval=fn;},addEventListener(){},document:{hidden:false,querySelector:get,querySelectorAll:()=>[],addEventListener(){},dispatchEvent(){}},fetch:async()=>{if(offline)throw Error('offline');return {ok:true,json:async()=>({items:approved})};}};
  ctx.window=ctx;ctx.GoullartRuntime={timeout(){}};ctx.GoullartPartsFamilies=[];ctx.GoullartPartsOrder={title:s=>s};
- ctx.GoullartMachineTypes={counts:()=>({}),label:()=>'',matches:()=>true};ctx.GoullartCatalogData={feed:d=>d};
+ ctx.GoullartMachineTypes={counts:()=>({}),label:()=>'',matches:()=>true};ctx.GoullartCatalogData={vitrine:d=>d};
  ctx.GoullartRoutes={matchesItem:()=>true,link:i=>'https://example.com/?item='+i.id+'&area=locacao'};
  vm.createContext(ctx);for(const f of ['listing-policy.js','app.js'])vm.runInContext(source(f),ctx);
  await new Promise(setImmediate);

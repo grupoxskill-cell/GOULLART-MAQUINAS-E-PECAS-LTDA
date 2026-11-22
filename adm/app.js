@@ -132,15 +132,15 @@ async function inicio() {
 }
 
 async function disponibilidade() {
-  const resposta = await fetch("/adm/consulta-maquinas.json", { cache: "no-store" });
-  if (!resposta.ok) throw Error("Não foi possível carregar as fichas.");
-  const unidades = await resposta.json();
+  const unidades = await api("/disponibilidade");
   const unidade = h("select", {}, unidades.map(m => h("option", { value: m.referencia }, m.codigoVitrine + " · " + m.titulo)));
   const estado = h("select", {}, ["A confirmar", "Disponível", "Reservada", "Vendida"].map(s => h("option", {}, s)));
+  const video = h("input", { type: "url", placeholder: "https://…" });
   const ultima = h("p", { class: "muted" });
   const ficha = () => unidades.find(m => m.referencia === unidade.value);
   function mostrar() {
     const m = ficha();
+    video.value = m?.video || "";
     estado.value = m?.situacao || "A confirmar";
     ultima.textContent = m?.conferidaEm ? "Última conferência em " + new Date(m.conferidaEm).toLocaleString("pt-BR") : "Conferência pendente.";
   }
@@ -149,13 +149,13 @@ async function disponibilidade() {
   salvar.addEventListener("click", () => acao(salvar, async () => {
     const m = ficha();
     const revisao = await api("/disponibilidade", { method: "PUT", body: {
-      referencia: m.referencia, situacao: estado.value, versaoAnterior: m.conferidaEm
+      referencia: m.referencia, situacao: estado.value, versaoAnterior: m.conferidaEm, video: video.value.trim(), comDono: true
     } });
     Object.assign(m, revisao); mostrar();
   }, "Situação registrada."));
   mostrar();
   conteudo.replaceChildren(h("div", { class: "painel" }, h("h2", {}, "Disponibilidade"),
-    h("label", {}, "Máquina", unidade), h("label", {}, "Situação conferida pela equipe", estado), ultima, salvar));
+    h("label", {}, "Máquina", unidade), h("label", {}, "Situação confirmada com o dono", estado), h("label", {}, "Vídeo autorizado do motor ligando", video), ultima, salvar));
 }
 
 // ---------- Radar e Pátio ----------
@@ -168,6 +168,7 @@ function formulario(tipo, item, aoSalvar) {
     horas: h("input", { value: item?.horas || "", placeholder: "14.170 h" }),
     local: h("input", { value: item?.local || "", placeholder: radar ? "Cidade/UF (fica só no ADM)" : "Pátio / cidade (aparece no site)" }),
     preco: h("input", { value: (radar ? item?.precoOrigem : item?.preco) ?? "", inputmode: "numeric", placeholder: radar ? "Preço de origem, ex.: 259000" : "Preço no site, ex.: 300000" }),
+    cidadePublica: h("input", { value:item?.cidadePublica || "", placeholder:"Cidade/UF confirmadas" }),
     fonte: radar ? h("input", { value: item?.fonte || "", placeholder: "Link ou contato de onde veio (fica só no ADM)" }) : null,
     obs: h("textarea", { placeholder: "Observações internas" }, item?.obs || ""),
     textoSite: h("textarea", { placeholder: "Ex.: Revisada, material rodante 70%, ar-condicionado, pronta para trabalhar." }, item?.textoSite || ""),
@@ -190,14 +191,14 @@ function formulario(tipo, item, aoSalvar) {
     h("label", {}, "Máquina", campos.titulo),
     h("div", { class: "grade" }, h("label", {}, "Tipo", campos.categoria), h("label", {}, "Ano", campos.ano), h("label", {}, "Horas / km", campos.horas)),
     h("div", { class: "grade" }, h("label", {}, radar ? "Preço de origem (R$)" : "Preço no site (R$)", campos.preco), h("label", {}, "Local", campos.local)),
-    precoSite, h("label", {}, "Texto para o cliente (aparece no site)", campos.textoSite),
+    precoSite, radar && h("label", {}, "Município/UF para publicação", campos.cidadePublica), h("label", {}, "Texto para o cliente (aparece no site)", campos.textoSite),
     campos.fonte && h("label", {}, "Fonte (só no ADM)", campos.fonte), h("label", {}, "Observações internas (só no ADM)", campos.obs),
     h("label", {}, "Fotos", arquivo), prev, salvar);
   form.addEventListener("submit", (e) => {
     e.preventDefault();
     const corpo = { titulo: campos.titulo.value, categoria: campos.categoria.value, ano: campos.ano.value, horas: campos.horas.value,
       local: campos.local.value, obs: campos.obs.value, textoSite: campos.textoSite.value, fotos, [radar ? "precoOrigem" : "preco"]: campos.preco.value };
-    if (radar) corpo.fonte = campos.fonte.value;
+    if (radar) { corpo.fonte = campos.fonte.value; corpo.cidadePublica = campos.cidadePublica.value; }
     acao(salvar, async () => {
       await api(item ? `/${tipo}/${item.id}` : `/${tipo}`, { method: item ? "PUT" : "POST", body: corpo });
       aoSalvar();

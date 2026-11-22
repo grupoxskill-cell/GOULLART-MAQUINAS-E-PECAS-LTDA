@@ -212,7 +212,7 @@ test('SIM com o código publica no site e confirma para o aprovador', async () =
   const noSite = cat.items.find((i) => i.title.includes('JOHN DEERE 210G') && i.price === 270000);
   assert.ok(noSite, 'máquina aprovada não apareceu no catálogo do site');
   // Nada privado no site: vendedor, telefone, preço de origem, link.
-  assert.doesNotMatch(JSON.stringify(noSite), /98888|Fulano|250000|250\.000|Goiânia|wamid/);
+  assert.doesNotMatch(JSON.stringify(noSite), /98888|Fulano|250000|250\.000|wamid/);
 });
 
 test('SIM vindo de outro número não publica nada', async () => {

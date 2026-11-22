@@ -7,7 +7,9 @@ await rm("_site", { recursive: true, force: true });
 await mkdir("_site/maquina", { recursive: true });
 await cp("public", "_site", { recursive: true });
 // Mapa código público -> página individual da máquina (/maquina/<slug>.html), usado pelos cards do catálogo novo.
-const maquinas = comSlugs(semVendidas(JSON.parse(await readFile("public/maquinas.json", "utf-8"))));
+const { camposComerciais, ofertaConfirmada } = await import("../lib/consulta-maquinas.js");
+const maquinas = comSlugs(semVendidas(JSON.parse(await readFile("public/maquinas.json", "utf-8"))))
+  .map(m => camposComerciais(m)).filter(globalThis.GoullartCatalogData.publicavel);
 globalThis.GoullartMachinePagesMap = Object.fromEntries(maquinas.filter((m) => m.referencia && m.slug).map((m) => [m.referencia, `/maquina/${m.slug}.html`]));
 // Códigos da vitrine que usam a mesma foto e oferta da ficha pública (lista em lib/paginas.js).
 const paginas = globalThis.GoullartMachinePagesMap;
@@ -33,7 +35,8 @@ const vitrine = JSON.parse(await readFile("_site/api/catalog.json", "utf8"));
 await writeFile("_site/maquinas.html", await paginaCatalogo(maquinas, vitrine));
 const { aplicarLayoutCatalogo } = await import("./catalogo-layout.mjs");
 await aplicarLayoutCatalogo("_site");
-await writeFile("_site/maquinas.json", JSON.stringify(maquinas, null, 1));
+await writeFile("_site/maquinas.json", JSON.stringify(maquinas.filter(ofertaConfirmada), null, 1));
+await writeFile("_site/fichas-maquinas.json",JSON.stringify(maquinas));
 await writeFile("_site/paginas-maquinas.js", `window.GoullartMachinePages=${JSON.stringify(globalThis.GoullartMachinePagesMap)};\n`);
 for (const m of maquinas) {
   await writeFile(`_site/maquina/${m.slug}.html`, await paginaMaquina(m, maquinas));

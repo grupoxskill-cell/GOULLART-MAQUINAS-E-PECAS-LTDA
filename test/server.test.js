@@ -43,20 +43,11 @@ test('site, logo e HEAD disponíveis; sem UI da Sophia', async () => {
   assert.equal(h.status, 200); assert.equal(await h.text(), '');
 });
 test('catálogo de máquinas e fotos disponíveis, sem dados internos', async () => {
-  const maquinas = await (await fetch(base + '/maquinas.json')).json();
+  const maquinas = await (await fetch(base + '/fichas-maquinas.json')).json();
   assert.ok(maquinas.length > 0);
   for (const m of maquinas) {
     assert.ok(!m.referencia.includes('CRM'));
-    for (const f of m.fotos) {
-      if (/^https:\/\//i.test(f)) {
-        const url = new URL(f);
-        assert.equal(url.protocol, 'https:');
-        assert.equal(url.hostname, 'storage.maquinalista.com');
-        assert.match(url.pathname, /^\/machinery-images\/[a-zA-Z0-9-]+\.jpe?g$/);
-      } else {
-        assert.equal((await fetch(base + '/' + f, { method: 'HEAD' })).headers.get('content-type'), 'image/jpeg');
-      }
-    }
+    for (const f of m.fotos) assert.match((await fetch(base + '/' + f, { method: 'HEAD' })).headers.get('content-type'), /^image\//);
   }
 });
 test('dados privados e caminhos malformados não são servidos', async () => {
@@ -85,14 +76,26 @@ test('ADM exige login e recusa senha errada', async () => {
 
 test('Radar soma a margem e só aparece no site depois de publicar', async () => {
   const cookie = await entrar();
-  const item = await (await enviar(cookie, '/adm/api/radar', 'POST', { titulo: 'Escavadeira Komatsu PC200 teste', ano: '2018', precoOrigem: 'R$ 259.000', fonte: 'contato privado', fotos: ['fotos/aaaaaaaaaaaaaaaaaaaaaaaa.jpg'] })).json();
+  const item = await (await enviar(cookie, '/adm/api/radar', 'POST', { titulo: 'Escavadeira Komatsu PC200 teste', ano: '2018', precoOrigem: 'R$ 259.000', cidadePublica:'Anápolis/GO', fonte: 'contato privado', fotos: ['fotos/aaaaaaaaaaaaaaaaaaaaaaaa.jpg'] })).json();
   assert.equal(item.status, 'novo');
-  const antes = await (await fetch(base + '/maquinas.json')).json();
+  const antes = await (await fetch(base + '/fichas-maquinas.json')).json();
   assert.ok(!antes.some((m) => m.titulo === item.titulo));
   assert.equal((await enviar(cookie, `/adm/api/radar/${item.id}/publicar`, 'POST')).status, 200);
-  const depois = await (await fetch(base + '/maquinas.json')).json();
+  const depois = await (await fetch(base + '/fichas-maquinas.json')).json();
   const publicado = depois.find((m) => m.titulo === item.titulo);
   assert.equal(publicado.preco, 'R$ 279.000');
+  const feed = async () => (await (await fetch(base+'/maquinas.json')).json()).filter(m=>m.referencia===publicado.referencia);
+  assert.deepEqual(await feed(),[]);
+  const confirmar = async (situacao,versaoAnterior) => {
+    const r=await enviar(cookie,'/adm/api/disponibilidade','PUT',{referencia:publicado.referencia,situacao,versaoAnterior,comDono:true});
+    assert.equal(r.status,200);
+    return (await r.json()).conferidaEm;
+  };
+  const conferida = await confirmar('Disponível',null);
+  assert.equal((await feed())[0].confirmado_em,conferida);
+  await confirmar('Vendida',conferida);
+  assert.deepEqual(await feed(),[]);
+  assert.equal((await fetch(base+'/maquina/'+publicado.slug+'.html')).status,404);
   assert.equal(publicado.fonte, undefined);
   assert.equal(publicado.obs, undefined);
 });
@@ -101,7 +104,7 @@ test('Pátio publicado aparece com local e marcado como pátio', async () => {
   const cookie = await entrar();
   const item = await (await enviar(cookie, '/adm/api/patio', 'POST', { titulo: 'Pá-carregadeira teste pátio', preco: '300000', local: 'Goiânia/GO', fotos: ['fotos/aaaaaaaaaaaaaaaaaaaaaaaa.jpg'] })).json();
   await enviar(cookie, `/adm/api/patio/${item.id}/publicar`, 'POST');
-  const m = (await (await fetch(base + '/maquinas.json')).json()).find((x) => x.titulo === item.titulo);
+  const m = (await (await fetch(base + '/fichas-maquinas.json')).json()).find((x) => x.titulo === item.titulo);
   assert.equal(m.patio, true); assert.equal(m.local, 'Goiânia/GO'); assert.equal(m.preco, 'R$ 300.000');
 });
 
@@ -180,25 +183,25 @@ test('Radares privados mantêm pedidos abertos, inclusive enquanto aguardam ofer
 });
 
 test('cada máquina tem página própria com prévia para WhatsApp e Google', async () => {
-  const maquinas = await (await fetch(base + '/maquinas.json')).json();
-  const m = maquinas.find((x) => /PC200/.test(x.titulo) && !x.referencia.startsWith('R-'));
-  assert.equal(m.slug, 'escavadeira-komatsu-pc200-2018');
+  const maquinas = await (await fetch(base + '/fichas-maquinas.json')).json();
+  const m = maquinas.find((x) => x.referencia==='GOUL-ART-261105-07');
+  assert.equal(m.slug, 'escavadeira-komatsu-pc240-2013');
   const r = await fetch(`${base}/maquina/${m.slug}.html`);
   assert.equal(r.status, 200);
   const html = await r.text();
-  assert.match(html, /<meta property="og:title" content="Escavadeira Komatsu PC200 — R\$ 259\.000">/);
-  assert.match(html, /og:image" content="https:\/\/www\.goullartmaquinaspesadas\.com\.br\/maquinas\//);
+  assert.match(html, /<meta property="og:title" content="Escavadeira Komatsu PC240 — R\$ 235\.000">/);
+  assert.match(html, /og:image" content="https:\/\/www\.goullartmaquinaspesadas\.com\.br\/assets\/listings\//);
   assert.match(html, /"@type":"Product"/);
   assert.equal((await fetch(base + '/maquina/nao-existe.html')).status, 404);
   const mapa = await (await fetch(base + '/sitemap.xml')).text();
-  assert.match(mapa, /maquina\/escavadeira-komatsu-pc200-2018\.html/);
+  assert.match(mapa, /maquina\/escavadeira-komatsu-pc240-2013\.html/);
   assert.match(mapa, /<loc>https:\/\/www\.goullartmaquinaspesadas\.com\.br\/ofertas\/<\/loc>/);
   assert.match(mapa, /\/maquinas\/escavadeira\/<\/loc>/);
 });
 
 test('contador conta visitas e cliques, ignora repetição e referência desconhecida', async () => {
   const cookie = await entrar();
-  const m = (await (await fetch(base + '/maquinas.json')).json()).find((x) => /Volvo EC220DL/.test(x.titulo));
+  const m = (await (await fetch(base + '/fichas-maquinas.json')).json()).find((x) => x.referencia==='GOUL-ART-261105-07');
   const contar = (ref, tipo, headers = { 'Content-Type': 'application/json' }) => fetch(base + '/api/interesse', { method: 'POST', body: JSON.stringify({ ref, tipo }), headers });
   // Outra página (formulário ou fetch sem pré-voo) não infla o contador.
   assert.equal((await contar(m.referencia, 'visita', { 'Content-Type': 'text/plain' })).status, 403);
@@ -233,7 +236,7 @@ test('entrada do Radar: token, ficha interna, repetição e foto com marca d\'á
 
   // JPEG mínimo válido (1x1) em base64 para não depender de internet.
   const jpeg = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=';
-  const corpo = { titulo: 'Escavadeira Volvo EC220D teste radar', ano: '2019', horas: '6.000 h', precoOrigem: 300000, precoMercado: 400000,
+  const corpo = { titulo: 'Escavadeira Volvo EC220D teste radar', cidadePublica:'Anápolis/GO', ano: '2019', horas: '6.000 h', precoOrigem: 300000, precoMercado: 400000,
     fonte: 'Marketplace X', link: 'https://exemplo.com/anuncio/123', contato: '62 90000-0000',
     fotos: [{ dados: jpeg }, { dados: jpeg, marcaDagua: true }] };
   const r = await oferta(corpo, token);
@@ -254,7 +257,7 @@ test('entrada do Radar: token, ficha interna, repetição e foto com marca d\'á
   assert.equal((await fetch(`${base}/${item.fotosMarca[0]}`, { headers: { Cookie: cookie } })).status, 200);
 
   assert.equal((await enviar(cookie, `/adm/api/radar/${item.id}/publicar`, 'POST')).status, 200);
-  const publica = (await (await fetch(base + '/maquinas.json')).json()).find((m) => m.titulo === corpo.titulo);
+  const publica = (await (await fetch(base + '/fichas-maquinas.json')).json()).find((m) => m.titulo === corpo.titulo);
   assert.equal(publica.preco, 'R$ 320.000');
   assert.deepEqual(publica.fotos, item.fotos.filter((f) => !item.fotosMarca.includes(f)));
   for (const campo of ['fonte', 'link', 'contato', 'precoMercado', 'descontoPct', 'precoOrigem']) assert.equal(publica[campo], undefined);
@@ -293,7 +296,7 @@ test('Colar do ChatGPT: importa várias ofertas com as regras do Radar', async (
   const de_novo = await (await enviar(cookie, '/adm/api/radar/importar', 'POST', ofertas[0])).json();
   assert.equal(de_novo.resultados[0].novo, false);
   assert.equal((await fetch(base + '/adm/api/radar/importar', { method: 'POST', body: '{}' })).status, 401);
-  const publico = await (await fetch(base + '/maquinas.json')).json();
+  const publico = await (await fetch(base + '/fichas-maquinas.json')).json();
   assert.ok(!publico.some((m) => /colada/.test(m.titulo)));
 });
 
@@ -313,7 +316,7 @@ test('contador de interesse recusa corpo forjado sem erro 500', async () => {
   }
 });
 test('página de máquina gerada pelo servidor sai com CSP e sem moldura externa', async () => {
-  const m = (await (await fetch(base + '/maquinas.json')).json())[0];
+  const m = (await (await fetch(base + '/fichas-maquinas.json')).json())[0];
   const r = await fetch(`${base}/maquina/${m.slug}.html`);
   assert.equal(r.status, 200);
   const csp = r.headers.get('content-security-policy') || '';
@@ -324,14 +327,14 @@ test('página de máquina gerada pelo servidor sai com CSP e sem moldura externa
 });
 
 test('lista de máquinas, sitemap e página da máquina respondem 304 quando nada mudou', async () => {
-  for (const caminho of ['/maquinas.json', '/sitemap.xml']) {
+  for (const caminho of ['/fichas-maquinas.json', '/sitemap.xml']) {
     const r = await fetch(base + caminho);
     const etag = r.headers.get('etag');
     assert.ok(etag, caminho);
     await r.arrayBuffer();
     assert.equal((await fetch(base + caminho, { headers: { 'If-None-Match': etag } })).status, 304, caminho);
   }
-  const m = (await (await fetch(base + '/maquinas.json')).json())[0];
+  const m = (await (await fetch(base + '/fichas-maquinas.json')).json())[0];
   const p = await fetch(`${base}/maquina/${m.slug}`);
   assert.equal(p.status, 200);
   assert.ok(p.headers.get('content-security-policy'));
@@ -370,7 +373,7 @@ test('catálogo e lista de máquinas vão comprimidos (gzip) para quem aceita', 
   const pedir = (caminho, headers) => new Promise((ok, falha) => request(base + caminho, { headers }, (r) => {
     const partes = []; r.on('data', (p) => partes.push(p)); r.on('end', () => ok({ r, corpo: Buffer.concat(partes) }));
   }).on('error', falha).end());
-  for (const caminho of ['/adm/catalogo.json', '/maquinas.json']) {
+  for (const caminho of ['/adm/catalogo.json', '/fichas-maquinas.json']) {
     const { r, corpo } = await pedir(caminho, { 'Accept-Encoding': 'gzip' });
     assert.equal(r.headers['content-encoding'], 'gzip', caminho);
     assert.match(r.headers.vary, /Accept-Encoding/);

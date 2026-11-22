@@ -319,7 +319,7 @@ footer .wrap{display:flex;gap:1rem;justify-content:space-between;flex-wrap:wrap;
   var CATS=['Todas','Escavadeiras','Carregadeiras','Retroescavadeiras','Tratores','Caminhões','Motoniveladoras','Outros'];
   var MAPA_CAT={'Pás-carregadeiras':'Carregadeiras'};
   function valor(txt){var m=String(txt||'').replace(/\./g,'').match(/R\$\s*(\d+)/);return m?+m[1]:0}
-  fetch('maquinas.json').then(function(r){return r.ok?r.json():[]}).then(function(lista){
+  fetch('fichas-maquinas.json').then(function(r){return r.ok?r.json():[]}).then(function(lista){
     ANUNCIOS=lista.filter(function(m){return m.fotos&&m.fotos.length}).map(function(m){
       return {id:m.referencia,titulo:m.titulo+(m.ano?' '+m.ano:''),cat:MAPA_CAT[m.categoria]||m.categoria,
         preco:valor(m.preco),foto:m.fotos[0],slug:m.slug,data:m.data||'',locacao:false};

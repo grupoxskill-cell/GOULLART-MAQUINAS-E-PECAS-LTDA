@@ -27,7 +27,7 @@
   try{
    const r=await fetch('/api/catalog',{cache:'no-store',signal:window.GoullartRuntime.timeout(15000)});
    if(!r.ok)throw Error('Catálogo indisponível');
-   const data=window.GoullartCatalogData.feed(await r.json());if(!Array.isArray(data.items))throw Error('Resposta inválida');
+   const data=window.GoullartCatalogData.vitrine(await r.json());if(!Array.isArray(data.items))throw Error('Resposta inválida');
    const next=JSON.stringify(data.items);
    if(next!==fingerprint){items=data.items;fingerprint=next;render();document.dispatchEvent(new CustomEvent('goullart:catalogupdate',{detail:data}));}
   }catch{/* Retain the server-rendered snapshot on a network failure. */}
