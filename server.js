@@ -45,7 +45,11 @@ async function serveStatic(req, res, pathname) {
 async function servirPaginaMaquina(req, res, slug) {
   const todas = await maquinasPublicas();
   const m = todas.find((x) => x.slug === slug);
-  if (!m) return res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" }).end("Máquina não encontrada");
+  if (!m) {
+    const atual = todas.find((x) => x.slugAnterior === slug);
+    if (atual) return res.writeHead(301, { Location: `/maquina/${atual.slug}.html` }).end();
+    return res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" }).end("Máquina não encontrada");
+  }
   responderComEtag(req, res, "text/html; charset=utf-8", await paginaMaquina(m, todas), {
     // Só recursos do próprio site (o formulário de contato abre o WhatsApp); o JSON-LD (type=application/ld+json) não é executado e não precisa de exceção.
     "Content-Security-Policy": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' https://wa.me https://api.whatsapp.com; frame-ancestors 'none'" });

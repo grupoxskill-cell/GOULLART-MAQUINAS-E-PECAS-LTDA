@@ -24,7 +24,13 @@ await writeFile("_site/.nojekyll", "");
 
 await writeFile("_site/maquinas.json", JSON.stringify(maquinas, null, 1));
 await writeFile("_site/paginas-maquinas.js", `window.GoullartMachinePages=${JSON.stringify(globalThis.GoullartMachinePagesMap)};\n`);
-for (const m of maquinas) await writeFile(`_site/maquina/${m.slug}.html`, await paginaMaquina(m, maquinas));
+for (const m of maquinas) {
+  await writeFile(`_site/maquina/${m.slug}.html`, await paginaMaquina(m, maquinas));
+  if (m.slugAnterior && /^[a-z0-9-]+$/.test(m.slugAnterior) && !maquinas.some((atual) => atual.slug === m.slugAnterior)) {
+    const destino = `/maquina/${m.slug}.html`;
+    await writeFile(`_site/maquina/${m.slugAnterior}.html`, `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="robots" content="noindex"><link rel="canonical" href="${SITE}${destino}"><meta http-equiv="refresh" content="0;url=${destino}"><title>Ficha da máquina | GOULLART Pesados</title></head><body><a href="${destino}">Abrir ficha da máquina</a></body></html>`);
+  }
+}
 // Renovar o script em todas as páginas, incluindo as copiadas de public/.
 for (const path of await readdir('_site', {recursive: true})) {
   if (!path.endsWith('.html')) continue;
