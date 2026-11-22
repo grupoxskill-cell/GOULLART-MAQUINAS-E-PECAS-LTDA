@@ -4,7 +4,7 @@ import { readFile } from "node:fs/promises";
 import { extname, resolve, relative, isAbsolute } from "node:path";
 import { fileURLToPath } from "node:url";
 import { rotaAdm, servirFoto, maquinasPublicas } from "./lib/adm.js";
-import { paginaMaquina, sitemap, tiposDeMaquina } from "./lib/paginas.js";
+import { paginaMaquina, paginaCatalogo, sitemap, tiposDeMaquina } from "./lib/paginas.js";
 import { registrar } from "./lib/interesse.js";
 import { ipCliente } from "./lib/auth.js";
 import { responderComEtag } from "./lib/resposta.js";
@@ -101,6 +101,9 @@ async function atender(req, res) {
   if (pathname.startsWith("/fotos/")) return servirFoto(req, res, pathname);
   // Catálogo do site + máquinas publicadas pelo ADM (Radar com margem e Pátio).
   if (pathname === "/maquinas.json") return responderComEtag(req, res, "application/json; charset=utf-8", JSON.stringify(await maquinasPublicas()));
+  if (pathname === "/maquinas.html") {
+    return responderComEtag(req, res, "text/html; charset=utf-8", await paginaCatalogo(await maquinasPublicas()));
+  }
   const pagina = /^\/maquina\/([a-z0-9-]+?)(?:\.html)?$/.exec(pathname);
   if (pagina) return servirPaginaMaquina(req, res, pagina[1]);
   if (pathname === "/sitemap.xml") {

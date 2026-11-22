@@ -75,3 +75,7 @@ body.goullart-storefront.approved-layout > header .brand-motion-toggle > span{di
  body.goullart-storefront.approved-layout > header .brand-motion-toggle{width:44px;height:44px;min-height:44px;margin:0}
  body.goullart-storefront.approved-layout > header .brand-motion-toggle[hidden]{display:none}
 }
+
+/* O catálogo usa o topo da home, mas não tem a barra fixa de navegação inferior. */
+body.catalogo-comercial { padding-bottom: 0; text-transform: none; }
+body.catalogo-comercial :is(input, select, textarea, button) { text-transform: none; }
