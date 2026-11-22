@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Comparar máquinas e simular troca | GOULLART Pesados</title>
+  <link rel="stylesheet" href="/consulta-maquinas.css"><script defer src="/consulta-maquinas.js"></script>
+</head>
+<body>
+  <header><div class="wrap"><a href="/">GOULLART PESADOS</a><a href="/?area=maquinas">Voltar ao catálogo</a></div></header>
+  <main class="wrap">
+    <h1>Compare as máquinas</h1>
+    <p>Escolha duas fichas para conferir ano, horas, preço e disponibilidade.</p>
+    <p id="aviso" role="status">Carregando as fichas…</p>
+    <div class="dupla">
+      <label>Primeira máquina<select id="primeira" disabled></select></label>
+      <label>Segunda máquina<select id="segunda" disabled></select></label>
+    </div>
+    <table id="comparacao" hidden><caption>Máquinas selecionadas</caption><thead><tr><th>Ficha</th><th>Primeira</th><th>Segunda</th></tr></thead><tbody></tbody></table>
+    <a id="pdf" hidden>Baixar catálogo em PDF</a>
+    <section><h2>Quanto vale a sua na troca?</h2>
+      <p>Informe três preços à vista de unidades diferentes, do mesmo modelo, com ano, horas e conservação próximos. Usamos o valor do meio e descontamos os custos informados.</p>
+      <form id="troca">
+        <div class="trio">
+          <label>Comparável 1 (R$)<input name="ref1" type="number" inputmode="decimal" min="0.01" step="0.01" required></label>
+          <label>Comparável 2 (R$)<input name="ref2" type="number" inputmode="decimal" min="0.01" step="0.01" required></label>
+          <label>Comparável 3 (R$)<input name="ref3" type="number" inputmode="decimal" min="0.01" step="0.01" required></label>
+        </div>
+        <div class="dupla">
+          <label>Reparos, frete e demais custos (R$)<input name="custos" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0"></label>
+          <label>Preço da máquina desejada (R$, opcional)<input name="alvo" type="number" inputmode="decimal" min="0.01" step="0.01"></label>
+        </div>
+        <button>Calcular estimativa</button><output id="resultado" aria-live="polite"></output>
+      </form>
+      <p class="nota">Estimativa para negociar. A proposta final depende de vistoria e aprovação da equipe.</p>
+    </section>
+  </main>
+</body>
+</html>

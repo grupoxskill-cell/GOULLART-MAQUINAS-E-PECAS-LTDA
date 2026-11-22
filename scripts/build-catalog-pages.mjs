@@ -64,6 +64,9 @@ export async function prepareCatalogue(directory,now=Date.now()){
   if(filename==='index.html')html=html.replace(/<a\b[^>]*id="tipo-cavalo-mecanico"[^>]*>[\s\S]*?<\/a>/g,'');
   const hasOffers=eligibleItems.some(i=>i.category==='maquinas'&&i.offer?.verified===true&&i.offer.price===i.price&&i.offer.discountPercent>=20);
   html=html.replace(/<a\b[^>]*href="\/ofertas\/?"[^>]*>/g,tag=>setHidden(tag,!hasOffers));
+  const linkConsulta = '<p><a href="/consulta-maquinas.html">Comparar máquinas · Simular troca · Baixar catálogo PDF</a></p>';
+  const alvoConsulta = filename === "index.html" ? /(<[^>]* id="catalog-title"[^>]*>[\s\S]*?<\/h[1-6]>)/ : /(<p id="catalog-page-count">[\s\S]*?<\/p>)/;
+  html = html.replace(alvoConsulta, (_, titulo) => titulo + linkConsulta);
   await writeFile(path,html);
  }
  return data;
