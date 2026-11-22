@@ -90,6 +90,7 @@ test('static category prices stay literal and every card remains inside the cata
  try{
   await mkdir(join(dir,'api'));await mkdir(join(dir,'maquinas'));
   const items=[
+   machine('SEM-PRECO',{title:'Retroescavadeira de teste',price:null,publicText:'Consulte a equipe.'}),
    machine('GOUL-341',{title:'RETROESCAVADEIRA • CAT 416E • 2015',price:250000,publicText:'VENDO\nR$250.000,00\n📍Pará'}),
    machine('GOUL-296',{title:'RETROESCAVADEIRA • CASE 580N • 2018',price:300000,publicText:'R$300.000,00'}),
    machine('GOUL-405',{title:'RETROESCAVADEIRA • JCB 3CX • 2025',price:355000,publicText:'Preço por unidade: R$355.000,00'})
@@ -104,6 +105,10 @@ test('static category prices stay literal and every card remains inside the cata
   assert.equal((category.match(/<\/section>/g)||[]).length,1);
   assert.equal((grid.match(/<article\b/g)||[]).length,items.length);
   for(const item of items){assert.ok(grid.includes(item.publicCode),item.publicCode);assert.ok(grid.includes(item.publicText),item.publicText);}
+  const precoSobConsulta = /<p class="catalog-page-price">Preço sob consulta<\/p>/g;
+  assert.equal([...grid.matchAll(precoSobConsulta)].length, 1);
+  const refreshed = await client(items, {type:'retroescavadeira'});
+  assert.equal([...refreshed['catalog-page-list'].innerHTML.matchAll(precoSobConsulta)].length, 1);
   assert.match(category,/<\/section><footer>Fim<\/footer>$/);
  }finally{await rm(dir,{recursive:true,force:true});}
 });

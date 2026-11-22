@@ -34,6 +34,10 @@
   }
   return copy;
  }
+ const moeda = new Intl.NumberFormat('pt-BR', {style:'currency',currency:'BRL'});
+ function formatMachinePrice(price) {
+  return price == null ? 'Preço sob consulta' : moeda.format(price);
+ }
  function facts(item){
   const i=normalize(item),text=i.publicText||'';
   const year=i.year||text.match(/ano\s*:?\s*((?:19|20)\d{2})/i)?.[1]||i.title.match(/\b(?:19|20)\d{2}\b/)?.[0];
@@ -51,5 +55,5 @@
  }
  const visivel=item=>!vendida(item)&&(item.category!=='pecas'||temFoto(item));
  function feed(data){return {...data,items:(data.items||[]).map(normalize).filter(visivel),opportunities:(data.opportunities||[]).map(normalize).filter(i=>!vendida(i))};}
- globalThis.GoullartCatalogData={normalize,feed,facts,asset,clean,visivel};
+ globalThis.GoullartCatalogData={normalize,feed,facts,formatMachinePrice,asset,clean,visivel};
 })();
