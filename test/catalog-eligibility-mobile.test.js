@@ -105,11 +105,25 @@ test('live JCB category cards keep the approved photograph when the ADM returns 
  assert.match(refreshed['catalog-page-list'].innerHTML,/2025 ATUALIZADA/);
 });
 
+test('o preço unitário exige uma declaração comercial explícita', () => {
+ const { formatMachinePrice } = globalThis.GoullartCatalogData;
+ const normal = formatMachinePrice(355000);
+ for (const texto of ['Preço por unidade.', 'Preço por unidade: R$355.000,00', 'R$ 355.000 cada máquina']) {
+  assert.equal(formatMachinePrice(355000, texto), normal + ' por unidade');
+ }
+ for (const texto of ['Confirme as horas de cada unidade.', 'Consulte o preço por unidade.', 'Preço por unidade a confirmar.',
+  'R$ 5.000 cada máquina.', 'Preço do lote completo.']) {
+  assert.equal(formatMachinePrice(355000, texto), normal);
+ }
+ assert.equal(formatMachinePrice(null, 'Preço por unidade.'), 'Preço sob consulta');
+});
+
 test('static category prices stay literal and every card remains inside the catalogue grid',async()=>{
  const dir=await mkdtemp(join(tmpdir(),'goullart-price-markup-'));
  try{
   await mkdir(join(dir,'api'));await mkdir(join(dir,'maquinas'));
   const items=[
+   machine('SEM-PRECO',{title:'Retroescavadeira de teste',price:null,publicText:'Consulte a equipe.'}),
    machine('GOUL-341',{title:'RETROESCAVADEIRA • CAT 416E • 2015',price:250000,publicText:'VENDO\nR$250.000,00\n📍Pará'}),
    machine('GOUL-296',{title:'RETROESCAVADEIRA • CASE 580N • 2018',price:300000,publicText:'R$300.000,00'}),
    machine('GOUL-405',{title:'RETROESCAVADEIRA • JCB 3CX • 2025',price:355000,publicText:'Preço por unidade: R$355.000,00'})
@@ -124,6 +138,15 @@ test('static category prices stay literal and every card remains inside the cata
   assert.equal((category.match(/<\/section>/g)||[]).length,1);
   assert.equal((grid.match(/<article\b/g)||[]).length,items.length);
   for(const item of items){assert.ok(grid.includes(item.publicCode),item.publicCode);assert.ok(grid.includes(item.publicText),item.publicText);}
+  const precoSobConsulta = /<p class="catalog-page-price">Preço sob consulta<\/p>/g;
+  assert.equal([...grid.matchAll(precoSobConsulta)].length, 1);
+  const refreshed = await client(items, {type:'retroescavadeira'});
+  assert.equal([...refreshed['catalog-page-list'].innerHTML.matchAll(precoSobConsulta)].length, 1);
+  const unitario = /class="catalog-page-price">R\$\s*355\.000,00 por unidade<\/p>/;
+  assert.match(grid, unitario);
+  assert.match(refreshed['catalog-page-list'].innerHTML, unitario);
+  assert.match(renderMachineBanner(items), /class="machine-banner-price">R\$\s*355\.000 por unidade<\/strong>/);
+
   assert.match(category,/<\/section><footer>Fim<\/footer>$/);
  }finally{await rm(dir,{recursive:true,force:true});}
 });

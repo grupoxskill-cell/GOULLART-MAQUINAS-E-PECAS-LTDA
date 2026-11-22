@@ -14,11 +14,11 @@ let listings = [], position = 1, paused = reduceMotion.matches, hovered = false,
 function slide(item, index, clone = false) {
   const name = machineName(item);
   const year = String(item.publicText || '').match(/\bano\s*:?\s*((?:19|20)\d{2})/i)?.[1];
-  const unit = /\bcada\b/i.test(item.publicText || '');
+  const unit = window.GoullartCatalogData.machinePriceIsPerUnit(item.price, item.publicText);
   const link = location.origin + '/?item=' + encodeURIComponent(item.id) + '#maquinas';
-  const message = 'Olá! Tenho interesse em ' + name + ', anunciado por R$ ' + money(item.price) + (unit ? ' cada' : '') + '. Pode confirmar disponibilidade e condições? ' + link;
+  const message = 'Olá! Tenho interesse em ' + name + ', anunciado por R$ ' + money(item.price) + (unit ? ' por unidade' : '') + '. Pode confirmar disponibilidade e condições? ' + link;
   const contact = 'https://wa.me/5562999427276?text=' + encodeURIComponent(message);
-  return `<article class="hero-offer" data-offer-id="${escape(item.id)}" role="group" aria-roledescription="anúncio" aria-label="${index + 1} de ${listings.length}"${clone ? ' data-clone="true"' : ''}><a href="${escape(contact)}" target="_blank" rel="noopener" tabindex="-1"><div class="hero-offer-photo"><img data-src="${escape(item.image)}" alt="${escape(name)}" width="600" height="450" decoding="async"></div><div class="hero-offer-details"><small>${year ? 'Ano ' + year + ' · ' : ''}GOULLART</small><h2>${escape(name)}</h2><p class="hero-offer-price"><span>R$</span><strong>${escape(money(item.price))}</strong>${unit ? '<span class="hero-offer-unit">cada máquina</span>' : ''}</p></div><span class="hero-offer-cta">Quero negociar esta máquina <span aria-hidden="true">↗</span></span></a></article>`;
+  return `<article class="hero-offer" data-offer-id="${escape(item.id)}" role="group" aria-roledescription="anúncio" aria-label="${index + 1} de ${listings.length}"${clone ? ' data-clone="true"' : ''}><a href="${escape(contact)}" target="_blank" rel="noopener" tabindex="-1"><div class="hero-offer-photo"><img data-src="${escape(item.image)}" alt="${escape(name)}" width="600" height="450" decoding="async"></div><div class="hero-offer-details"><small>${year ? 'Ano ' + year + ' · ' : ''}GOULLART</small><h2>${escape(name)}</h2><p class="hero-offer-price"><span>R$</span><strong>${escape(money(item.price))}</strong>${unit ? '<span class="hero-offer-unit">por unidade</span>' : ''}</p></div><span class="hero-offer-cta">Quero negociar esta máquina <span aria-hidden="true">↗</span></span></a></article>`;
 }
 
 function updateAccessibility() {

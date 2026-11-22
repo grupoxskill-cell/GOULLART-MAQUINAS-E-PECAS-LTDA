@@ -7,7 +7,17 @@ const feed=JSON.parse(readFileSync(new URL('../espelho/api/catalog.json',import.
 test('approved listing corrections include the D51 price, proper units and the requested titles',()=>{
  const d51=feed.items.find(i=>i.publicCode==='GOUL-293');assert.equal(d51.price,600000);assert.equal(d51.title,'TRATOR DE ESTEIRA • KOMATSU D51 • 2019');assert.match(d51.publicText,/7\.900 horas/);
  const trucks=feed.items.find(i=>i.publicCode==='GOUL-348');assert.match(trucks.publicText,/14 m³/);assert.doesNotMatch(trucks.publicText,/metros quadrados/);
- for(const item of feed.items.filter(i=>i.category==='maquinas')){assert.match(item.title,/^[^•]+ • [^•]+ • \d{4}$/);assert.doesNotMatch(item.publicText,/\*|Horimetro|manutenções em dias/i);assert.match(tools.facts(item),/Ano \d{4} · .+ · .+/);}
+ for (const item of feed.items.filter(i => i.category === 'maquinas')) {
+  assert.doesNotMatch(item.publicText, /\*|Horimetro|manutenções em dias/i);
+  if (item.publicCode === 'GOUL-305') {
+   assert.equal(item.year, null);
+   assert.match(item.title, /^[^•]+ • [^•]+ • ANO A CONFIRMAR$/);
+   assert.match(tools.facts(item), /^Ano a confirmar · /);
+  } else {
+   assert.match(item.title, /^[^•]+ • [^•]+ • \d{4}$/);
+   assert.match(tools.facts(item), /Ano \d{4} · .+ · .+/);
+  }
+ }
 });
 test('every machine photograph is an existing asset served from the same domain',()=>{
  const machines=feed.items.filter(i=>i.category==='maquinas');
