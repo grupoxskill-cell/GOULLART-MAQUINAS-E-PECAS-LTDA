@@ -23,6 +23,8 @@ body.goullart-storefront .business-cards>a>strong{overflow-wrap:normal;word-brea
  width:100%;
  height:auto;
 }
+.technical-report-sample{display:block;width:fit-content;margin:0 auto;padding:10px 16px;color:#fff;font-weight:700;text-underline-offset:.2em}
+.technical-report-sample:focus-visible{outline:3px solid #ffc62c}
 .technical-report-banner__link:focus-visible{
  outline:3px solid #ffcc00;
  outline-offset:-3px;
