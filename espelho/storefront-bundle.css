@@ -1901,3 +1901,7 @@ body.goullart-storefront.approved-layout > header .goullart-header-tools .channe
 body.goullart-storefront.approved-layout > header .goullart-header-tools .mobile-menu-toggle:hover {
   background: #f1f4f8;
 }
+
+/* GOULLART: remover a faixa inferior de navegacao do banner (pedido 22/11/2026). */
+body.goullart-storefront #approved-banner .approved-controls,
+body.goullart-storefront #approved-banner .approved-controls:focus-within { display: none !important; }
