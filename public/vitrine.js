@@ -130,7 +130,7 @@
     if (mais) mais.hidden = exibidas.length >= filtradas.length;
   }
 
-  fetch("maquinas.json")
+  fetch("fichas-maquinas.json")
     .then((r) => { if (!r.ok) throw new Error("Catálogo indisponível"); return r.json(); })
     .then((dados) => {
       maquinas = dados

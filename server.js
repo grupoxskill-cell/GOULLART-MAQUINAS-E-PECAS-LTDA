@@ -3,6 +3,7 @@ import http from "node:http";
 import { readFile } from "node:fs/promises";
 import { extname, resolve, relative, isAbsolute } from "node:path";
 import { fileURLToPath } from "node:url";
+import { ofertaConfirmada } from "./lib/consulta-maquinas.js";
 import { rotaAdm, servirFoto, maquinasPublicas } from "./lib/adm.js";
 import { paginaMaquina, paginaCatalogo, sitemap, tiposDeMaquina } from "./lib/paginas.js";
 import { catalogoEstatico } from "./lib/publicacoes.js";
@@ -105,7 +106,9 @@ async function atender(req, res) {
   if (pathname === "/api/empresa") return sendJson(res, 200, EMPRESA);
   if (pathname.startsWith("/fotos/")) return servirFoto(req, res, pathname);
   // Catálogo do site + máquinas publicadas pelo ADM (Radar com margem e Pátio).
-  if (pathname === "/maquinas.json") return responderComEtag(req, res, "application/json; charset=utf-8", JSON.stringify(await maquinasPublicas()));
+  if (resolve(PUBLIC_DIR,"."+pathname) === resolve(PUBLIC_DIR,"maquinas.json")) pathname="/maquinas.json";
+  if (pathname === "/fichas-maquinas.json") return responderComEtag(req,res,"application/json; charset=utf-8",JSON.stringify(await maquinasPublicas()));
+  if (pathname === "/maquinas.json") return responderComEtag(req, res, "application/json; charset=utf-8", JSON.stringify((await maquinasPublicas()).filter(ofertaConfirmada)));
   if (pathname === "/maquinas.html") {
     const [maquinas, vitrine] = await Promise.all([maquinasPublicas(), catalogoEstatico()]);
     return responderComEtag(req, res, "text/html; charset=utf-8", await paginaCatalogo(maquinas, vitrine));

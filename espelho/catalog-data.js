@@ -13,6 +13,14 @@
  };
  const clean=value=>String(value||'').replace(/\*/g,'').replace(/horimetro/gi,'Horímetro').replace(/manutenções em dias/gi,'manutenções em dia').replace(/14 metros quadrados/gi,'14 m³').replace(/7:900/g,'7.900 horas').replace(/litros\.{2,}/gi,'litros.');
  function asset(value){if(typeof value!=='string')return value;try{const u=new URL(value,'https://www.goullartmaquinaspesadas.com.br');return /^\/assets\/(?:listings|publicacoes)\//.test(u.pathname)?u.pathname+u.search:value;}catch{return value;}}
+ // Valores pendentes de comprovação, revisão comercial de 22/11.
+ const retidas=new Set(['GOUL-345','GOUL-ART-261105-06']);
+ const cidadeUf=valor=>/^[\p{L}][\p{L} .’'-]{1,70}\s*[,/–-]\s*(?:AC|AL|AP|AM|BA|CE|DF|ES|GO|MA|MT|MS|MG|PA|PB|PR|PE|PI|RJ|RN|RS|RO|RR|SC|SP|SE|TO)$/iu.test(String(valor||'').trim());
+ function publicavel(item){
+  return !retidas.has(item.publicCode||item.referencia)&&!vendida(item)&&
+   cidadeUf(item.location||item.local)&&(temFoto(item)||Boolean(item.fotos?.some(f=>typeof f==='string'&&f.trim())));
+ }
+ function mensagem(item){return 'Tenho interesse na máquina '+item.title+' (ref. '+item.publicCode+'). Ainda está disponível?';}
  function normalize(item){
   const patch=corrections[item.publicCode]||{},copy={...item,...patch,title:clean(patch.title||item.title),publicText:clean(patch.publicText||item.publicText)};
   if(item.publicCode==='GOUL-293'&&item.price==null)copy.price=600000;
@@ -64,10 +72,11 @@
  // mesmo que o ADM ainda as tenha como "no site". GOUL-291: Hyundai R220 LC-9 2022, vendida (Trello, 04/11/2026).
  const vendidas=new Set(['GOUL-291','PUB-158']);
  function vendida(item){
-  return vendidas.has(item.publicCode)||vendidas.has(item.id)||
+  return String(item.status||item.situacao||'').toLowerCase()==='vendida'||vendidas.has(item.referencia)||vendidas.has(item.publicCode)||vendidas.has(item.id)||
    (item.publicationId!=null&&vendidas.has('PUB-'+item.publicationId));
  }
  const visivel=item=>!vendida(item)&&(item.category!=='pecas'||temFoto(item));
+ function vitrine(data){const normalized=feed(data);return {...normalized,items:normalized.items.filter(i=>i.category!=='maquinas'||publicavel(i))};}
  function feed(data){return {...data,items:(data.items||[]).map(normalize).filter(visivel),opportunities:(data.opportunities||[]).map(normalize).filter(i=>!vendida(i))};}
- globalThis.GoullartCatalogData={normalize,feed,facts,machinePriceIsPerUnit,formatMachinePrice,asset,clean,visivel};
+ globalThis.GoullartCatalogData={normalize,feed,vitrine,facts,publicavel,mensagem,cidadeUf,machinePriceIsPerUnit,formatMachinePrice,asset,clean,visivel};
 })();
