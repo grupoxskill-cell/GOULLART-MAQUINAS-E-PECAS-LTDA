@@ -89,16 +89,16 @@ test('entrada do site só tem dados públicos, com preço já com a margem', () 
   assert.equal(e.preco, 'R$ 220.000');
   assert.equal(e.ficha, 'radar-2026-10-31');
   assert.equal(e.local, 'Itaúna - MG');
-  assert.throws(() => entradaPublica({ codigo: 'RADAR-261031-02', titulo: 'a', categoria: 'Outros', local: 'MG', precoSite: 1 }));
+  assert.equal(entradaPublica({ codigo: 'RADAR-261031-02', titulo: 'a', categoria: 'Outros', local: 'MG', precoSite: 1 }).local, '');
   assert.throws(() => entradaPublica({ codigo: 'X', titulo: 'a', precoSite: 1 }));
 });
-test('só passa anúncio real, recente e com cidade e estado', () => {
+test('anúncio real e recente pode entrar sem município', () => {
   const hoje = new Date('2026-10-31T21:00:00-03:00');
   const bom = { dataAnuncio: '2026-10-28', local: 'Itaúna - MG', temFotoOriginal: true, preco: 'R$ 250.000', ativo: true };
   assert.deepEqual(anuncioAprovado(bom, hoje), { ok: true, motivos: [] });
   assert.deepEqual(anuncioAprovado({ ...bom, dataAnuncio: '2026-10-21' }, hoje), { ok: true, motivos: [] }); // 10 dias: ainda recente
   assert.deepEqual(anuncioAprovado({ ...bom, dataAnuncio: '2026-10-10' }, hoje).motivos, ['anúncio com mais de 15 dias']);
-  assert.deepEqual(anuncioAprovado({ ...bom, local: 'MG' }, hoje).motivos, ['sem cidade e estado']);
+  assert.deepEqual(anuncioAprovado({ ...bom, local: 'MG' }, hoje).motivos, []);
   assert.deepEqual(anuncioAprovado({ ...bom, ativo: false, temFotoOriginal: false }, hoje).motivos, ['sem foto real da máquina', 'anúncio fora do ar']);
   assert.equal(localValido('Capital SP'), null);
   assert.equal(localValido('São Paulo/sp'), 'São Paulo - SP');
