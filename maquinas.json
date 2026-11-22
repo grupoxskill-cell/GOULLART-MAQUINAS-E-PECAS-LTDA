@@ -41,15 +41,18 @@
  {
   "ficha": "004",
   "referencia": "GOUL-278",
-  "titulo": "Tratores Valtra BM 125 - lote anunciado de 2",
+  "titulo": "Tratores Valtra BM 125",
   "categoria": "Tratores",
   "ano": "2016",
-  "horas": "3.800 h / 2.600 h",
-  "preco": "R$ 275.000 cada",
+  "horas": "3.800 h e 2.600 h informadas. Confirme a leitura de cada unidade.",
+  "preco": "Preço por unidade sob consulta",
   "fotos": [
    "maquinas/004-tratores-valtra-bm-125-lote-anunciado-de-2-1.jpg"
   ],
-  "slug": "tratores-valtra-bm-125-lote-anunciado-de-2-2016"
+  "textoSite": "Consulte a disponibilidade por unidade.",
+  "disponibilidadeConfirmada": false,
+  "slugAnterior": "tratores-valtra-bm-125-lote-anunciado-de-2-2016",
+  "slug": "tratores-valtra-bm-125-2016"
  },
  {
   "ficha": "005",
@@ -67,15 +70,18 @@
  {
   "ficha": "006",
   "referencia": "GOUL-281",
-  "titulo": "Retroescavadeiras JCB 3CX - lote anunciado",
+  "titulo": "Retroescavadeiras JCB 3CX",
   "categoria": "Retroescavadeiras",
   "ano": "2025",
-  "horas": "1.800 h",
-  "preco": "R$ 355.000 cada",
+  "horas": "1.800 h informadas. Confirme a leitura da unidade de interesse.",
+  "preco": "Preço por unidade sob consulta",
   "fotos": [
    "maquinas/006-retroescavadeiras-jcb-3cx-lote-anunciado-1.jpg"
   ],
-  "slug": "retroescavadeiras-jcb-3cx-lote-anunciado-2025"
+  "textoSite": "Consulte a disponibilidade por unidade.",
+  "disponibilidadeConfirmada": false,
+  "slugAnterior": "retroescavadeiras-jcb-3cx-lote-anunciado-2025",
+  "slug": "retroescavadeiras-jcb-3cx-2025"
  },
  {
   "ficha": "007",
@@ -238,7 +244,7 @@
   "titulo": "Escavadeira Hyundai 210",
   "categoria": "Escavadeiras",
   "ano": "2012",
-  "horas": "7.000 h (anunciadas)",
+  "horas": "7.000 h informadas, leitura a confirmar",
   "preco": "R$ 320.000",
   "fotos": [
    "maquinas/019-escavadeira-hyundai-210-1.jpg"
@@ -250,13 +256,15 @@
   "referencia": "GOUL-305",
   "titulo": "Pá-carregadeira Caterpillar 966H",
   "categoria": "Pás-carregadeiras",
-  "ano": "2022 (anunciado)",
+  "ano": "a confirmar",
   "horas": "14.846 h",
   "preco": "R$ 380.000",
   "fotos": [
    "maquinas/020-pa-carregadeira-caterpillar-966h-1.jpg"
   ],
-  "slug": "pa-carregadeira-caterpillar-966h-2022"
+  "textoSite": "Ano de fabricação a confirmar.",
+  "slugAnterior": "pa-carregadeira-caterpillar-966h-2022",
+  "slug": "pa-carregadeira-caterpillar-966h"
  },
  {
   "ficha": "021",
@@ -356,7 +364,7 @@
   "categoria": "Pás-carregadeiras",
   "ano": "2019",
   "horas": "7.115 h",
-  "preco": "R$ 355.000 no Pix (anunciado)",
+  "preco": "Preço sob consulta",
   "fotos": [
    "maquinas/028-pa-carregadeira-john-deere-524k-1.jpg"
   ],
@@ -382,7 +390,7 @@
   "categoria": "Escavadeiras",
   "ano": "2019",
   "horas": "4.321 h",
-  "preco": "R$ 450.000 no Pix (anunciado)",
+  "preco": "Preço sob consulta",
   "fotos": [
    "maquinas/030-escavadeira-hyundai-180-lc-9-1.jpg"
   ],
@@ -621,12 +629,12 @@
   "categoria": "Escavadeiras",
   "ano": "2019",
   "horas": "7.659 h",
-  "preco": "R$ 449.900 — valor a conferir",
+  "preco": "Preço sob consulta",
   "local": "Belém/PA",
   "fotos": [
    "assets/listings/goul-art-261105-06.jpg"
   ],
-  "textoSite": "Escavadeira John Deere 210G, ano 2019, com 7.659 horas. Belém/PA. Valor a conferir: R$ 449.900. Consulte a equipe para confirmar o preço.",
+  "textoSite": "Escavadeira John Deere 210G, ano 2019, com 7.659 horas, em Belém/PA. Preço sob consulta.",
   "artwork": true,
   "slug": "escavadeira-john-deere-210g-2019"
  },
