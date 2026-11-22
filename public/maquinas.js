@@ -109,7 +109,7 @@
     if (ordem?.value === "maior") filtradas.sort((a, b) => (b.valor ?? -Infinity) - (a.valor ?? -Infinity));
     lista.replaceChildren(...filtradas.map(card));
     info.textContent = filtradas.length
-      ? `${filtradas.length} máquina(s)`
+      ? `${filtradas.length} ${filtradas.length === 1 ? "máquina" : "máquinas"}`
       : "Nenhuma máquina encontrada. Fale com a equipe pelo WhatsApp que a gente procura para você.";
   }
 
@@ -137,11 +137,13 @@
         .sort((a, b) => Number(Boolean(b.patio)) - Number(Boolean(a.patio)) || posicao(a.categoria) - posicao(b.categoria));
       if (qtd) qtd.textContent = String(maquinas.length);
       if (filtros) {
-        if (!["Todas", ...ORDEM].includes(categoria)) categoria = "Todas";
+        if (categoria !== "Todas" && !maquinas.some(m => m.categoria === categoria)) categoria = "Todas";
         busca.value = params.get("q") || "";
         if (maximo) maximo.value = params.get("max") || "";
         renderFiltros();
         render();
+        document.getElementById("maquinas-indice")?.remove();
+        document.getElementById("maquinas-controles")?.removeAttribute("hidden");
         busca.addEventListener("input", render);
         maximo?.addEventListener("input", render);
         ordem?.addEventListener("change", render);
@@ -152,5 +154,5 @@
         if (patioSecao) patioSecao.hidden = false;
       }
     })
-    .catch(() => { if (info) info.textContent = "Não foi possível carregar as máquinas. Consulte a equipe pelo WhatsApp."; });
+    .catch(() => { if (info) info.textContent = document.querySelector("#maquinas-indice li") ? "Filtros indisponíveis. Acesse as fichas abaixo." : "Não foi possível carregar as máquinas. Consulte a equipe pelo WhatsApp."; });
 })();
