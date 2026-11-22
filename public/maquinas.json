@@ -909,5 +909,26 @@
   "status": null,
   "confirmado_em": null,
   "video": null
+ },
+ {
+  "ficha": "catalogo-2026-11-22",
+  "referencia": "GOUL-DOOSAN-SD2003-2023",
+  "titulo": "Pá carregadeira Doosan SD200-3",
+  "categoria": "Pás carregadeiras",
+  "ano": "2023",
+  "horas": "2.000 h (informadas no anúncio)",
+  "preco": "R$ 249.000",
+  "local": "Belo Horizonte/MG",
+  "disponibilidadeConfirmada": false,
+  "fotos": [
+   "assets/listings/doosan-sd2003-2023-14469-1.jpg",
+   "assets/listings/doosan-sd2003-2023-14469-2.jpg",
+   "assets/listings/doosan-sd2003-2023-14469-3.jpg",
+   "assets/listings/doosan-sd2003-2023-14469-4.jpg",
+   "assets/listings/doosan-sd2003-2023-14469-5.jpg",
+   "assets/listings/doosan-sd2003-2023-14469-6.jpg",
+   "assets/listings/doosan-sd2003-2023-14469-7.jpg"
+  ],
+  "textoSite": "Pá carregadeira Doosan SD200-3, ano 2023, com 2.000 horas informadas no anúncio de Belo Horizonte/MG. Preço anunciado de R$ 249.000. Confirme o preço atual, a disponibilidade e a documentação com a equipe GOULLART."
  }
 ]
