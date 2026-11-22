@@ -1,70 +1,72 @@
-# O que falta no sistema GOULLART (diagnóstico de 22/11/2026)
+# O que falta no sistema GOULLART
 
-Feito a partir do código, do site no ar e das regras do `CLAUDE.md`. A coluna "Quem" diz se depende do login de Júnior ou se o Claude faz sozinho.
+**Diagnóstico de 22/11/2026.** A leitura dos arquivos versionados descreve o sistema implementado. Volume de estoque disponível, conexões de contas, entrega do laudo e execução das rotinas precisam de evidência na operação. Os pedidos, registros de aprovação e contatos de clientes ficam no ambiente privado.
 
-## 1. Pendências que travam (prioridade máxima)
+## Onde começar
 
-| # | Falta | Por que importa | Quem |
-| --- | --- | --- | --- |
-| 1 | Repositório privado e `master` protegido | Hoje qualquer pessoa vê o código e o histórico. | Júnior (GitHub → Settings) |
-| 2 | Rodar `scripts/instalar-no-servidor.sh` de novo | Os cabeçalhos de segurança do nginx e as melhorias de servidor só valem depois disso. | Júnior (Azure → Executar comando) |
-| 3 | Decisão sobre RADAR-PC200-2018 | Está no site sem registro de aprovação. | Júnior |
-| 4 | Google Search Console e Perfil da Empresa no Google | Sem eles, o Google demora a mostrar a GOULLART nas buscas por "escavadeira usada Goiânia" e similares. | Júnior (login Google), com o Claude guiando |
-| 5 | Conta da Cloudflare localizada | Sem ela, não dá para limpar o cache nem ver ataques. | Júnior |
+| Evidência no repositório | Ação que ajuda a vender |
+| --- | --- |
+| Na base histórica de 56 fichas de máquinas, 51 têm menos de três entradas em `fotos`, 40 não têm `local`, dez têm `horas` vazio e uma tem preço vazio. A idade da ficha e a categoria afetam a leitura. | Começar por máquina com comprador em andamento. Confirmar município, disponibilidade e os dados que fazem sentido para a categoria. Obter fotos com autorização. |
+| Na base de referências de peças, das 93 linhas, 87 estão sem código e 90 sem aplicação. A busca por nome, código e aplicação já existe. | Completar referências dos pedidos em aberto, começando pelas peças de rodante. |
+| A comparação de preço no código pode aceitar um único comparável e uma diferença de ano de até três anos. O horímetro da máquina não entra no cálculo. | Sustentar cada alegação de desconto com ao menos três ofertas comparáveis, ano até dois anos de diferença, horas e preço final ao comprador. |
+| Fichas históricas e espelho da vitrine são conjuntos com sobreposição. Os campos e os números diferem. | Reconciliar pela referência antes de divulgar quantidades ou disponibilidade. |
 
-## 2. 30 coisas que ainda faltam (oportunidades)
+Contagens sobre [fichas históricas de máquinas](../public/maquinas.json), [base de referências de peças](../data/catalogo.json), [espelho da vitrine](../espelho/api/catalog.json), [busca de peças](../public/catalogo.js) e [comparação no Radar](../lib/radar.js), na revisão `449ff0f`. As quantidades descrevem campos nessas bases.
 
-**Vendas**
-1. Botão "Me avise quando chegar uma máquina assim" (cliente deixa o pedido, que cai no CRM).
-2. Simulador de financiamento e consórcio na página da máquina.
-3. Comparador de máquinas lado a lado na página própria (hoje só existe na vitrine).
-4. Selo "Laudo GOULLART disponível" nas máquinas que já têm laudo.
-5. Vídeo curto de cada máquina (30 s), além das fotos.
-6. Página "Vendidas recentemente", para prova social sem preço.
-7. Depoimentos reais de clientes, com autorização.
-8. Proposta em PDF gerada pelo ADM (máquina, preço, condições, validade).
+## 30 ações para a operação
 
-**Radar e operação**
-9. Aviso no WhatsApp de Júnior a cada oferta nova (o webhook existe, falta ligar Zapier, Make ou iZap).
-10. Painel de "ofertas que vencem amanhã" (regra dos 15 dias).
-11. Histórico de preço de cada modelo (para saber se a oferta está mesmo 15% abaixo).
-12. Etiqueta de motivo ao recusar uma oferta (preço, foto, local), para afinar o Radar.
-13. Agenda de visitas e inspeções no ADM.
-14. Controle de frete: quanto custa levar a máquina até o cliente.
-15. Checklist de entrega (documentos, nota, transporte).
+As ações abaixo incluem correções verificadas, decisões de produto e verificações para as quais a operação deve fornecer evidência. O critério de conclusão cabe na mesma linha do pedido.
 
-**Site e Google**
-16. Página por cidade ou estado ("Escavadeira usada em Goiás"), com as máquinas daquela região.
-17. Página por marca ("Caterpillar usada"), com as máquinas daquela marca.
-18. FAQ estruturado (perguntas frequentes) para aparecer no Google.
-19. Notícia semanal (a seção Notícias começou em 22/11/2026).
-20. Imagens em WebP em todas as fotos de máquina (carregam mais rápido).
-21. Página de peças com busca por código da peça.
-22. Versão em espanhol para compradores do Paraguai e da Bolívia.
+| Nº | Ação | Critério de conclusão |
+| --- | --- | --- |
+| 1 | Conciliar os dois canais comerciais com o CRM. | Última conversa conferida por canal, data e pedidos pendentes identificados no painel privado. |
+| 2 | Priorizar compradores que aguardam retorno. | Todo pedido ativo tem responsável, prazo e próxima ação. |
+| 3 | Reconciliar referências do site, do Pátio e do Radar. | Uma ficha principal por máquina e registro privado das associações. |
+| 4 | Reconfirmar disponibilidade e local das máquinas em proposta. | Cidade/UF e data da última confirmação registradas. |
+| 5 | Completar horas ou quilometragem conforme o equipamento. | Cada ficha prioritária traz unidade, data da leitura e fonte ou pendência. |
+| 6 | Completar as galerias usadas em propostas. | Três fotos originais e autorizadas da mesma unidade, com frente, lateral e detalhes. |
+| 7 | Revisar textos e preços herdados de terceiros. | Cada valor tem validação interna e cada ressalva tem decisão de manter, corrigir ou suspender. |
+| 8 | Testar proposta em PDF e alerta de máquina procurada. | Uma solicitação de teste cria pedido no CRM e uma proposta válida leva referência, condições e validade. |
+| 9 | Homologar a entrada do Radar no WhatsApp oficial. | Anúncio de teste autorizado chega uma vez à fila privada e recebe retorno ao aprovador. |
+| 10 | Melhorar a deduplicação entre portais. | O mesmo equipamento anunciado em dois sites aparece uma vez, com as duas fontes privadas. |
+| 11 | Qualificar o comparativo de preço e guardar histórico. | Três fontes independentes, modelo compatível, ano ±2 e horas próximas sustentam o percentual sobre o preço final. |
+| 12 | Acompanhar idade e motivo de recusa das ofertas. | Painel mostra data, motivo e próxima conferência das pendências. |
+| 13 | Conciliar aprovações das fichas históricas. | Casos sem prova ficam para decisão de Júnior, com o registro restrito ao painel. |
+| 14 | Registrar inspeção, visita e vídeo de funcionamento. | Cada visita acordada tem data e responsável. Um vídeo autorizado fica ligado à unidade correta. |
+| 15 | Estimar o frete na proposta. | Origem, destino, condições e validade da cotação de transporte identificados. |
+| 16 | Unificar navegação e visual do catálogo e da ficha no celular. | Uma mesma máquina abre com referência consistente, três fotos legíveis quando disponíveis e contato contextual. |
+| 17 | Completar a busca de peças que já funciona. | Nas referências priorizadas, código e aplicação confirmados aparecem na consulta por modelo ou código. |
+| 18 | Padronizar a arte do Radar. | Prévia aprovada usa três fotos inteiras, dados confirmados e revisão no formato de publicação. |
+| 19 | Conferir o laudo na jornada de compra. | Compra de teste autorizada demonstra recebimento e abertura. Testar separadamente captura offline, plaqueta, fotos e vídeos pedidos. |
+| 20 | Conferir mapa do site e Search Console. | Com acesso à propriedade correta do site, registrar URLs válidas, cobertura e data de rastreamento. |
+| 21 | Testar conteúdo regional e por marca onde há oferta real. | Página com inventário confirmado, texto próprio e medição de buscas, sem criar páginas vazias. |
+| 22 | Sustentar a cadência editorial e as avaliações de clientes. | Notícia ou guia traz fonte e data. Todo depoimento selecionado possui autorização de uso. |
+| 23 | Medir o funil por semana. | Painel separa ofertas, cliques, pedidos, propostas e vendas confirmadas. |
+| 24 | Comparar procura e prazo de atendimento. | Lista semanal identifica o que teve procura e ficou sem retorno na data combinada. |
+| 25 | Conferir proteção da branch e acessos administrativos. | Responsável autorizado verifica revisores, permissões e opções de segundo fator. |
+| 26 | Confirmar publicação técnica e recuperação. | Registro do deploy identifica versão, teste do endereço final e restauração de cópia em ambiente separado. |
+| 27 | Localizar os responsáveis pelas contas de domínio, servidor e Google. | Registro privado identifica proprietário, acesso autorizado e procedimento de recuperação. |
+| 28 | Acompanhar entrega e pós-venda. | Documentos, nota e transporte conferidos, entrega e responsável registrados. |
+| 29 | Vincular revisão e peças à máquina entregue. | Contato de pós-venda autorizado usa data ou horas combinadas e aplicação confirmada. |
+| 30 | Registrar satisfação e baixas. | Pendência de entrega tem tratativa e ficha de máquina vendida é conferida na vitrine, ficha e sitemap. |
 
-**Júnior e gestão**
-23. Relatório semanal automático (máquinas novas, cliques, vendidas) no e-mail de Júnior.
-24. Meta mensal e funil (ofertas → publicadas → interessados → vendidas).
-25. Cadastro de parceiros e vendedores com histórico (só no ADM, nunca no site).
-26. Login em dois passos no ADM (código no celular).
-27. Aplicativo do ADM na tela inicial do celular (PWA).
+Outras ideias do plano original, como simulador de financiamento, comparador de fichas, versão em espanhol e atalho do ADM no celular, podem entrar no ciclo seguinte após definir público, dados e responsável.
 
-**Pós-venda**
-28. Lembrete de revisão para quem comprou (horas e data).
-29. Peças sugeridas para a máquina que o cliente comprou.
-30. Pesquisa de satisfação depois da entrega.
+## Dez diferenciais demonstráveis da GOULLART
 
-## 3. 10 coisas que a GOULLART já tem e poucas revendas de pesados oferecem
+Tracbel publica classificados com avaliação e comparação de máquinas. A MAQ360 oferece anúncios com inspeções técnicas. O que a GOULLART pode apresentar com evidência é como suas ferramentas funcionam em conjunto. [Tracbel](https://www.tracbel.com.br/blog/conheca-portal-classificados-seminovos/) · [MAQ360](https://maq360.com.br/)
 
-Não existe levantamento oficial de todo o Brasil. Estas são funções reais do sistema que não são comuns em revendas de linha amarela.
+| Nº | Recurso | O que mostrar |
+| --- | --- | --- |
+| 1 | Radar com aprovação por código | A integração implementa SIM ou NÃO do aprovador para uma oferta específica e evita repetir mensagens. A ativação depende de teste com a conta autorizada. [Fluxo](WHATSAPP-RADAR.md) |
+| 2 | Formação de preço no Radar | O código calcula preço final com a margem configurada e gera a ficha pública com os campos comerciais permitidos. [Cálculo](../lib/radar.js) |
+| 3 | Encontros entre pedido e máquina | O sistema considera tipo, marca, modelo e orçamento e informa as razões de cada sugestão. [Encontros](../lib/encontros.js) |
+| 4 | Pedido de peça com referência | O comprador pode pesquisar nome, código ou aplicação quando cadastrados e abrir uma cotação com a peça identificada. [Busca e cotação](../public/catalogo.js) |
+| 5 | Fotografias por família de peça | O catálogo associa 17 famílias a imagens de referência, distinguindo peças semelhantes da unidade exata cotada. [Famílias](../espelho/parts-reference.js) |
+| 6 | Arte da máquina condicionada à foto | O gerador de arte de feed exige uma foto da unidade e usa o código e os dados fornecidos. [Gerador](../scripts/radar/arte.mjs) |
+| 7 | Tratamento dos JPEGs do Radar | A rotina remove metadados como GPS e conserva a orientação da foto. [Processamento](../lib/radar-entrada.js) |
+| 8 | Ficha individual que acompanha a conversa | A ficha prepara prévia social com imagem e preço quando disponível. O contato pelo WhatsApp leva a referência e o endereço da ficha. [Ficha](../lib/paginas.js) |
+| 9 | Interesse medido por máquina | Visitas e cliques ficam agrupados por referência, com janela de repetição e resumo dos últimos dias. [Contador](../lib/interesse.js) |
+| 10 | Curso de vendas de Júnior Goullart | A página descreve cinco módulos de venda de máquinas online com atividade e revisão em vídeo. [Curso](../espelho/curso.html) |
 
-1. **Radar com aprovação por código**: nenhuma máquina vai para o site sem o `SIM RADAR-AAMMDD-NN` do dono.
-2. **Preço calculado sozinho**: origem + margem, sem planilha e sem erro de conta.
-3. **Arte profissional automática** da máquina (feed e story), sem marca d'água de terceiros.
-4. **Laudo técnico em PDF por R$ 49,90** para qualquer dono de máquina.
-5. **Encontros**: o sistema cruza os pedidos dos clientes com as máquinas do Radar e do site.
-6. **Máquina vendida some do site inteiro na hora**: vitrine, página, lista e Google.
-7. **Página própria por máquina**, com foto e preço na prévia do WhatsApp.
-8. **Fotos sem localização escondida**: o GPS do celular é apagado antes de publicar.
-9. **Contador de interesse por máquina** (visitas e cliques), sem guardar dados pessoais.
-10. **Radar pelo WhatsApp oficial**: oferta encaminhada vira ficha pronta para aprovar.
+Para baixa de máquina, o sistema atualiza as próprias páginas e o sitemap. A data em que a alteração aparece na pesquisa depende de novo rastreamento. [Orientação do Google](https://developers.google.com/search/help/crawling-index-faq?hl=pt-br)
