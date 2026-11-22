@@ -1,0 +1,11 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Máquinas por preço e horas | GOULLART Pesados</title><meta name="description" content="Busque máquinas por cidade, modelo, horas e preço. Selecione três fichas para baixar seu catálogo GOULLART em PDF.">
+<link rel="stylesheet" href="/fonte-goullart.css"><link rel="stylesheet" href="/selecao.css">
+<script defer src="/runtime-compat.js"></script><script defer src="/catalog-data.js"></script><script defer src="/listing-policy.js"></script><script defer src="/busca-maquinas.js"></script><script defer src="/catalogo-pdf.js"></script><script defer src="/selecao.js"></script></head>
+<body><header><a href="/">GOULLART PESADOS</a></header><main><h1>Máquinas por orçamento</h1>
+<form id="filtros"><label>Máquina, cidade ou horas<input id="termo" name="q" type="search" placeholder="Escavadeira em Goiânia até 3 mil horas"></label>
+<label>Preço máximo (R$)<input id="limite" name="ate" type="number" min="1" step="any" inputmode="decimal"></label><button>Buscar</button></form>
+<nav><a href="/maquinas-ate-300-mil.html">Até R$ 300 mil</a> · <a href="/selecao.html">Todas as faixas</a> · <a href="/vendidas.html">Máquinas vendidas</a></nav>
+<section class="selecao"><h2>Meu catálogo</h2><p id="escolhas">Selecione três máquinas para baixar o PDF.</p><button id="pdf" disabled>Baixar PDF com 3 máquinas</button></section>
+<p id="resultado" role="status">Consultando o catálogo…</p><section id="lista" class="cards" aria-label="Máquinas"></section></main></body></html>

@@ -1,11 +1,15 @@
 // Site GOULLART: catálogo e contato humano. A IA permanece desativada.
+import { historiasPublicas, lerOperacao } from "./lib/operacao.js";
+import { faixa300 } from "./lib/selecao.js";
+import { catalogoPublico } from "./lib/publicacoes.js";
 import http from "node:http";
 import { readFile } from "node:fs/promises";
 import { extname, resolve, relative, isAbsolute } from "node:path";
 import { fileURLToPath } from "node:url";
-import { rotaAdm, servirFoto, maquinasPublicas } from "./lib/adm.js";
+import { rotaAdm, servirFoto, maquinasPublicas, referenciasPublicas } from "./lib/adm.js";
 import { paginaMaquina, sitemap, tiposDeMaquina } from "./lib/paginas.js";
-import { registrar } from "./lib/interesse.js";
+import { evidenciaPublica, responderVideo } from "./lib/evidencia-publica.js";
+import { registrar, contarNavegador, navegadoresHoje } from "./lib/interesse.js";
 import { ipCliente } from "./lib/auth.js";
 import { responderComEtag } from "./lib/resposta.js";
 
@@ -58,10 +62,11 @@ async function contarInteresse(req, res) {
   for await (const parte of req) { corpo += parte; if (corpo.length > 1024) return res.writeHead(413).end(); }
   let dados;
   try { dados = JSON.parse(corpo); } catch { return res.writeHead(400).end(); }
-  const refs = new Map((await maquinasPublicas()).map((m) => [m.referencia, m.titulo]));
+  const refs = await referenciasPublicas();
   const ip = ipCliente(req);
   const texto = (v) => (typeof v === "string" ? v : "");
   const ok = registrar(texto(dados?.ref), texto(dados?.tipo), ip, refs);
+  if (ok && dados.tipo === "visita" && typeof dados.navegador === "string") await contarNavegador(dados.ref, dados.navegador);
   res.writeHead(ok ? 204 : 400).end();
 }
 
@@ -96,6 +101,18 @@ async function atender(req, res) {
     res.setHeader("Allow", "GET, HEAD");
     return res.writeHead(405).end();
   }
+  if (pathname === "/api/interesse") {
+    const query = new URL(req.url,"http://localhost").searchParams;
+    if (query.has("vendidas")) return sendJson(res,200,historiasPublicas(await lerOperacao()));
+    const ref = query.get("video") || query.get("ref");
+    if (!ref || !(await referenciasPublicas()).has(ref)) return res.writeHead(404).end();
+    if (query.has("video")) return responderVideo(req,res,ref);
+    return sendJson(res,200,{ ...await evidenciaPublica(ref), navegadores:await navegadoresHoje(ref) });
+  }
+  if (["/catalog-data.js", "/listing-policy.js", "/runtime-compat.js"].includes(pathname)) {
+    return responderComEtag(req,res,"text/javascript; charset=utf-8", await readFile(new URL("./espelho"+pathname,import.meta.url),"utf8"));
+  }
+  if (pathname === "/maquinas-ate-300-mil.html") return responderComEtag(req,res,"text/html; charset=utf-8",await faixa300(await catalogoPublico()));
   if (pathname === "/health") return sendJson(res, 200, { ok: true, automaticReplies: false, atendimento: "humano" });
   if (pathname === "/api/empresa") return sendJson(res, 200, EMPRESA);
   if (pathname.startsWith("/fotos/")) return servirFoto(req, res, pathname);

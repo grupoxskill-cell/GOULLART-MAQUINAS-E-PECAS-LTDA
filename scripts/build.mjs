@@ -1,5 +1,6 @@
 // Gera o site estático em _site: arquivos públicos, catálogo de peças, uma página por máquina,
 // sitemap.xml e robots.txt. Usado pelo GitHub Actions (branch gh-pages) e pelo servidor via cron.
+import { faixa300 } from "../lib/selecao.js";
 import { cp, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { comSlugs, semVendidas, paginaMaquina, sitemap, tiposDeMaquina, SITE, FICHAS_DA_VITRINE } from "../lib/paginas.js";
 
@@ -21,6 +22,7 @@ await import("./preparar-espelho.mjs");
 await cp("site-novo", "_site", { recursive: true });
 await cp("data/catalogo.json", "_site/catalogo.json");
 await writeFile("_site/.nojekyll", "");
+await writeFile("_site/maquinas-ate-300-mil.html", await faixa300(JSON.parse(await readFile("_site/api/catalog.json", "utf8"))));
 
 await writeFile("_site/maquinas.json", JSON.stringify(maquinas, null, 1));
 await writeFile("_site/paginas-maquinas.js", `window.GoullartMachinePages=${JSON.stringify(globalThis.GoullartMachinePagesMap)};\n`);
