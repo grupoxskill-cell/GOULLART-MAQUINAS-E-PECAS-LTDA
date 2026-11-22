@@ -17,8 +17,13 @@
  const retidas=new Set(['GOUL-345','GOUL-ART-261105-06']);
  const cidadeUf=valor=>/^[\p{L}][\p{L} .’'-]{1,70}\s*[,/–-]\s*(?:AC|AL|AP|AM|BA|CE|DF|ES|GO|MA|MT|MS|MG|PA|PB|PR|PE|PI|RJ|RN|RS|RO|RR|SC|SP|SE|TO)$/iu.test(String(valor||'').trim());
  function publicavel(item){
-  return !retidas.has(item.publicCode||item.referencia)&&!vendida(item)&&
-   cidadeUf(item.location||item.local)&&(temFoto(item)||Boolean(item.fotos?.some(f=>typeof f==='string'&&f.trim())));
+  const local = item.location || item.local;
+  const localPendente = !local && item.locationPending === true;
+  const temImagem = temFoto(item) || item.fotos?.some(f => typeof f === 'string' && f.trim());
+  return !retidas.has(item.publicCode || item.referencia) && !vendida(item) &&
+   !item.archived && !item.privateOnly && item.published !== false &&
+   ![item.status, item.situacao].some(s => /^(cancelad[ao]|bloquead[ao])$/i.test(s || '')) &&
+   (cidadeUf(local) || localPendente) && Boolean(temImagem);
  }
  function mensagem(item){return 'Tenho interesse na máquina '+item.title+' (ref. '+item.publicCode+'). Ainda está disponível?';}
  function normalize(item){
