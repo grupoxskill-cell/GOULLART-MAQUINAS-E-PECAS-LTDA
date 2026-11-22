@@ -24,7 +24,7 @@ test('o banner usa a miniatura da foto atual no celular e conserva a original co
   const mobile=path.replace('.jpg','-banner-'+hash+'.webp');
   await writeFile(join(dir,mobile),'miniatura');
   const banner=()=>renderMachineBanner([item],{},dir);
-  assert.ok(banner().includes('media="(max-width: 700px)" type="image/webp" srcset="'+mobile+'"'));
+  assert.ok(banner().includes('media="(max-width: 700px), (max-resolution: 1.5dppx)" type="image/webp" srcset="'+mobile+'"'));
   assert.ok(banner().includes('<img src="'+path+'"'));
   await writeFile(original,'foto substituída');
   assert.ok(!banner().includes('<source'));
