@@ -7,10 +7,30 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {prepareCatalogue} from '../scripts/build-catalog-pages.mjs';
+import {createHash} from 'node:crypto';
+import {renderMachineBanner} from '../scripts/machine-banner.mjs';
 
 const now=Date.parse('2026-10-31T15:00:00Z');
 const source=name=>readFileSync(new URL('../espelho/'+name,import.meta.url),'utf8');
 const machine=(id,extra={})=>({id,publicCode:id,title:'Escavadeira '+id,category:'maquinas',price:100000,image:'/original.jpg',publishedAt:'2026-10-31',...extra});
+
+test('o banner usa a miniatura da foto atual no celular e conserva a original como alternativa',async()=>{
+ const dir=await mkdtemp(join(tmpdir(),'goullart-banner-'));
+ try{
+  const path='/assets/listings/maquina.jpg',original=join(dir,path),item=machine('TESTE',{image:path});
+  await mkdir(join(dir,'assets/listings'),{recursive:true});
+  await writeFile(original,'primeira foto');
+  const hash=createHash('sha256').update('primeira foto').digest('hex').slice(0,12);
+  const mobile=path.replace('.jpg','-banner-'+hash+'.webp');
+  await writeFile(join(dir,mobile),'miniatura');
+  const banner=()=>renderMachineBanner([item],{},dir);
+  assert.ok(banner().includes('media="(max-width: 700px), (max-resolution: 1.5dppx)" type="image/webp" srcset="'+mobile+'"'));
+  assert.ok(banner().includes('<img src="'+path+'"'));
+  await writeFile(original,'foto substituída');
+  assert.ok(!banner().includes('<source'));
+  assert.ok(banner().includes('<img src="'+path+'"'));
+ }finally{await rm(dir,{recursive:true,force:true});}
+});
 const inventory=[
  machine('RECENT'),
  machine('OWNER',{publishedAt:'2025-01-01',retentionPolicy:'owner_confirmation'}),
@@ -85,11 +105,25 @@ test('live JCB category cards keep the approved photograph when the ADM returns 
  assert.match(refreshed['catalog-page-list'].innerHTML,/2025 ATUALIZADA/);
 });
 
+test('o preço unitário exige uma declaração comercial explícita', () => {
+ const { formatMachinePrice } = globalThis.GoullartCatalogData;
+ const normal = formatMachinePrice(355000);
+ for (const texto of ['Preço por unidade.', 'Preço por unidade: R$355.000,00', 'R$ 355.000 cada máquina']) {
+  assert.equal(formatMachinePrice(355000, texto), normal + ' por unidade');
+ }
+ for (const texto of ['Confirme as horas de cada unidade.', 'Consulte o preço por unidade.', 'Preço por unidade a confirmar.',
+  'R$ 5.000 cada máquina.', 'Preço do lote completo.']) {
+  assert.equal(formatMachinePrice(355000, texto), normal);
+ }
+ assert.equal(formatMachinePrice(null, 'Preço por unidade.'), 'Preço sob consulta');
+});
+
 test('static category prices stay literal and every card remains inside the catalogue grid',async()=>{
  const dir=await mkdtemp(join(tmpdir(),'goullart-price-markup-'));
  try{
   await mkdir(join(dir,'api'));await mkdir(join(dir,'maquinas'));
   const items=[
+   machine('SEM-PRECO',{title:'Retroescavadeira de teste',price:null,publicText:'Consulte a equipe.'}),
    machine('GOUL-341',{title:'RETROESCAVADEIRA • CAT 416E • 2015',price:250000,publicText:'VENDO\nR$250.000,00\n📍Pará'}),
    machine('GOUL-296',{title:'RETROESCAVADEIRA • CASE 580N • 2018',price:300000,publicText:'R$300.000,00'}),
    machine('GOUL-405',{title:'RETROESCAVADEIRA • JCB 3CX • 2025',price:355000,publicText:'Preço por unidade: R$355.000,00'})
@@ -104,6 +138,15 @@ test('static category prices stay literal and every card remains inside the cata
   assert.equal((category.match(/<\/section>/g)||[]).length,1);
   assert.equal((grid.match(/<article\b/g)||[]).length,items.length);
   for(const item of items){assert.ok(grid.includes(item.publicCode),item.publicCode);assert.ok(grid.includes(item.publicText),item.publicText);}
+  const precoSobConsulta = /<p class="catalog-page-price">Preço sob consulta<\/p>/g;
+  assert.equal([...grid.matchAll(precoSobConsulta)].length, 1);
+  const refreshed = await client(items, {type:'retroescavadeira'});
+  assert.equal([...refreshed['catalog-page-list'].innerHTML.matchAll(precoSobConsulta)].length, 1);
+  const unitario = /class="catalog-page-price">R\$\s*355\.000,00 por unidade<\/p>/;
+  assert.match(grid, unitario);
+  assert.match(refreshed['catalog-page-list'].innerHTML, unitario);
+  assert.match(renderMachineBanner(items), /class="machine-banner-price">R\$\s*355\.000 por unidade<\/strong>/);
+
   assert.match(category,/<\/section><footer>Fim<\/footer>$/);
  }finally{await rm(dir,{recursive:true,force:true});}
 });
@@ -128,13 +171,15 @@ test('static category and offer snapshots filter eligibility without deleting so
   await mkdir(join(dir,'api'));await mkdir(join(dir,'maquinas'));
   const items=inventory.map(i=>({...i,offer:{verified:true,price:i.price,discountPercent:20}}));
   await writeFile(join(dir,'api/catalog.json'),JSON.stringify({items}));
-  const html='<nav class="catalog-page-categories"><div id="catalog-page-categories"></div></nav><p id="catalog-page-count"></p><section id="catalog-page-list"></section>';
+  const menu='<details hidden class="sidebar-group"><summary>Máquinas</summary><a hidden href="/maquinas/escavadeira">Escavadeira</a><a href="/maquinas/pa-carregadeira">Pá</a></details><a hidden href="/ofertas">Ofertas</a>';
+  const html=menu+'<nav class="catalog-page-categories"><div id="catalog-page-categories"></div></nav><p id="catalog-page-count"></p><section id="catalog-page-list"></section>';
   for(const file of ['index.html','ofertas.html','maquinas/escavadeira.html','maquinas/pa-carregadeira.html'])await writeFile(join(dir,file),html);
   await prepareCatalogue(dir,now);
   const category=await readFile(join(dir,'maquinas/escavadeira.html'),'utf8');
   assert.match(category,/2 anúncios encontrados/);assert.match(category,/RECENT/);assert.match(category,/OWNER/);
   assert.doesNotMatch(category,/NO-PHOTO|BLANK-PHOTO|EXPIRED|UNDATED|INVALID-DATE|FUTURE|OTHER-TYPE|EMPTY-TYPE/);
   assert.doesNotMatch(category,/catalog-page-categories/);
+  assert.match(category,/<details class="sidebar-group"><summary>Máquinas<\/summary><a href="\/maquinas\/escavadeira">Escavadeira<\/a><a hidden href="\/maquinas\/pa-carregadeira">Pá<\/a><\/details><a href="\/ofertas">Ofertas<\/a>/);
   const offers=await readFile(join(dir,'ofertas.html'),'utf8');assert.match(offers,/3 anúncios encontrados/);assert.doesNotMatch(offers,/NO-PHOTO|EXPIRED|FUTURE/);
   assert.match(await readFile(join(dir,'maquinas/pa-carregadeira.html'),'utf8'),/No momento sem unidades/);
   const saved=JSON.parse(await readFile(join(dir,'api/catalog.json'),'utf8')).items;

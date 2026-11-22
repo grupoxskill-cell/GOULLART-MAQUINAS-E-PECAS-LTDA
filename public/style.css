@@ -194,6 +194,9 @@ p { margin: 0; }
 .machine:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
 .machine-abrir { position: relative; display: block; width: 100%; padding: 0; border: 0; background: var(--bg-alt); cursor: pointer; }
 .machine-abrir img, .machine-nofoto { display: flex; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+.machine-abrir img { object-fit: contain; }
+.indice-maquinas { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr)); gap: 8px 24px; list-style: none; margin: 16px 0; padding: 0; }
+.indice-maquinas a { display: block; padding: 10px 0; color: var(--ink); overflow-wrap: anywhere; }
 .machine-nofoto { align-items: center; justify-content: center; color: var(--muted); font-size: 0.9rem; background: var(--bg-alt); }
 .machine-qtd { position: absolute; right: 10px; bottom: 10px; background: rgb(6 30 66 / 0.8); color: #fff; font-size: 0.75rem; font-weight: 600; padding: 3px 10px; border-radius: 999px; }
 .machine-selo { position: absolute; left: 10px; top: 10px; background: var(--brand); color: var(--ink); font-size: 0.72rem; font-weight: 800; padding: 3px 10px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.04em; }

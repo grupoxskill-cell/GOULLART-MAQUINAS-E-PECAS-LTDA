@@ -9,16 +9,16 @@ const positionLabel = document.getElementById('hero-offers-position');
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 const escape = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const money = value => new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 2 }).format(value);
-let listings = [], position = 1, paused = reduceMotion.matches, hovered = false, inView = true, moving = false, timer, settleTimer;
+let listings = [], position = 1, paused = reduceMotion.matches, hovered = false, inView = !('IntersectionObserver' in window), moving = false, timer, settleTimer;
 
 function slide(item, index, clone = false) {
   const name = machineName(item);
   const year = String(item.publicText || '').match(/\bano\s*:?\s*((?:19|20)\d{2})/i)?.[1];
-  const unit = /\bcada\b/i.test(item.publicText || '');
+  const unit = window.GoullartCatalogData.machinePriceIsPerUnit(item.price, item.publicText);
   const link = location.origin + '/?item=' + encodeURIComponent(item.id) + '#maquinas';
-  const message = 'Olá! Tenho interesse em ' + name + ', anunciado por R$ ' + money(item.price) + (unit ? ' cada' : '') + '. Pode confirmar disponibilidade e condições? ' + link;
+  const message = 'Olá! Tenho interesse em ' + name + ', anunciado por R$ ' + money(item.price) + (unit ? ' por unidade' : '') + '. Pode confirmar disponibilidade e condições? ' + link;
   const contact = 'https://wa.me/5562999427276?text=' + encodeURIComponent(message);
-  return `<article class="hero-offer" data-offer-id="${escape(item.id)}" role="group" aria-roledescription="anúncio" aria-label="${index + 1} de ${listings.length}"${clone ? ' data-clone="true"' : ''}><a href="${escape(contact)}" target="_blank" rel="noopener" tabindex="-1"><div class="hero-offer-photo"><img data-src="${escape(item.image)}" alt="${escape(name)}" width="600" height="450" decoding="async"></div><div class="hero-offer-details"><small>${year ? 'Ano ' + year + ' · ' : ''}GOULLART</small><h2>${escape(name)}</h2><p class="hero-offer-price"><span>R$</span><strong>${escape(money(item.price))}</strong>${unit ? '<span class="hero-offer-unit">cada máquina</span>' : ''}</p></div><span class="hero-offer-cta">Quero negociar esta máquina <span aria-hidden="true">↗</span></span></a></article>`;
+  return `<article class="hero-offer" data-offer-id="${escape(item.id)}" role="group" aria-roledescription="anúncio" aria-label="${index + 1} de ${listings.length}"${clone ? ' data-clone="true"' : ''}><a href="${escape(contact)}" target="_blank" rel="noopener" tabindex="-1"><div class="hero-offer-photo"><img data-src="${escape(item.image)}" alt="${escape(name)}" width="600" height="450" decoding="async"></div><div class="hero-offer-details"><small>${year ? 'Ano ' + year + ' · ' : ''}GOULLART</small><h2>${escape(name)}</h2><p class="hero-offer-price"><span>R$</span><strong>${escape(money(item.price))}</strong>${unit ? '<span class="hero-offer-unit">por unidade</span>' : ''}</p></div><span class="hero-offer-cta">Quero negociar esta máquina <span aria-hidden="true">↗</span></span></a></article>`;
 }
 
 function updateAccessibility() {
@@ -27,7 +27,7 @@ function updateAccessibility() {
   [...track.children].forEach((card, index) => {
     const visible = index === position;
     // Fetch only the current photo and its neighbours, including loop clones.
-    if (Math.abs(index - position) <= 1) {
+    if (inView && Math.abs(index - position) <= 1) {
       const photo = card.querySelector('img[data-src]');
       if (photo && !photo.getAttribute('src')) photo.src = photo.dataset.src;
     }
@@ -119,7 +119,11 @@ root.addEventListener('focusin', schedule);
 root.addEventListener('focusout', () => setTimeout(schedule, 0));
 document.addEventListener('visibilitychange', schedule);
 reduceMotion.addEventListener('change', () => { paused = reduceMotion.matches; syncPause(); });
-if ('IntersectionObserver' in window) new IntersectionObserver(entries => { inView = entries[0].isIntersecting; schedule(); }, { threshold: 0.15 }).observe(root);
+if ('IntersectionObserver' in window) new IntersectionObserver(entries => {
+  inView = entries[0].isIntersecting;
+  if (inView && listings.length) updateAccessibility();
+  schedule();
+}, { threshold: 0.15 }).observe(root);
 let touch = null, lastSwipe = 0;
 viewport.addEventListener('touchstart', event => { const p = event.touches[0]; touch = {x:p.clientX,y:p.clientY}; clearTimeout(timer); }, {passive:true});
 viewport.addEventListener('touchend', event => {

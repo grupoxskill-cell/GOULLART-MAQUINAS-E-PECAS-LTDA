@@ -47,6 +47,6 @@ Cards do Radar levam código, máquina, ano, horas, preço anunciado → preço 
 
 ## Pendências conhecidas (nov/2026)
 
-- Deixar o repositório privado e proteger o `master` (ação do dono no GitHub).
-- Rodar `scripts/instalar-no-servidor.sh` de novo no servidor para os cabeçalhos do nginx valerem.
+- Proteger o `master` (ação do dono no GitHub): PR obrigatório com a verificação "validar", 0 aprovações, sem force push nem exclusão.
+- Repositório privado: antes, guardar o token só de leitura no servidor (`scripts/instalar-github-token.sh`, README "Repositório privado") e dar outro endereço público às artes do Radar, que hoje vão ao WhatsApp por `raw.githubusercontent.com`.
 - RADAR-PC200-2018 está em `public/maquinas.json` sem registro de aprovação; decisão de Júnior.

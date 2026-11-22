@@ -1,9 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
 import { anuncioAprovado, avaliar, entradaPublica, localValido, marcaDe, modeloDe, precoEmReais, precoSite } from '../lib/radar.js';
 
-const catalogo = JSON.parse(await readFile('public/maquinas.json', 'utf8'));
+
 
 test('lê preços como escritos no catálogo e nos anúncios', () => {
   assert.equal(precoEmReais('R$ 180.000 ou R$ 195.000'), 180000);
@@ -24,14 +23,66 @@ test('reconhece marca e modelo', () => {
   assert.equal(marcaDe('Pá-carregadeira CAT 924'), 'caterpillar');
   assert.equal(modeloDe('Escavadeira Komatsu PC200'), 'pc200');
 });
-test('barata = pelo menos 15% abaixo das parecidas do catálogo', () => {
-  const pc200 = { titulo: 'Escavadeira Komatsu PC200', categoria: 'Escavadeiras', ano: '2018' };
-  const ref = avaliar({ ...pc200, precoOrigem: 'R$ 999.999' }, catalogo).referencia;
-  assert.ok(ref > 0);
-  assert.equal(avaliar({ ...pc200, precoOrigem: String(Math.floor(ref * 0.8)) }, catalogo).barata, true);
-  assert.equal(avaliar({ ...pc200, precoOrigem: String(Math.floor(ref * 0.95)) }, catalogo).barata, false);
-  assert.equal(avaliar({ titulo: 'Guindaste Marca Desconhecida X1', categoria: 'Outros', precoOrigem: '100.000' }, catalogo).motivo, 'sem parecidas no catálogo');
+const alvo = { referencia: 'ALVO', titulo: 'Escavadeira Hyundai R220LC-9', categoria: 'Escavadeiras',
+  ano: '2020', horas: '5.000 h', precoOrigem: 255000 };
+const amostra = [
+  { ...alvo, referencia: 'A', ano: 2018, horas: '4.000 h', preco: 'R$ 280.000' },
+  { ...alvo, referencia: 'B', ano: 2020, horas: 5200, preco: 300000 },
+  { ...alvo, referencia: 'C', ano: 2022, horas: '6.000', preco: 'R$ 400 mil' },
+];
+
+test('compara pela mediana de três unidades e inclui exatamente 15% de desconto', () => {
+  const conta = avaliar(alvo, amostra);
+  assert.equal(conta.referencia, 300000);
+  assert.equal(conta.barata, true);
+  assert.equal(conta.desconto, 0.15);
+  assert.equal(conta.metodo, 'mediana dos preços pedidos');
+  assert.deepEqual(conta.faixa, [280000, 400000]);
+  assert.deepEqual(conta.comparadas, ['A', 'B', 'C']);
+  assert.equal(avaliar({ ...alvo, precoOrigem: 255001 }, amostra).barata, false);
 });
+
+test('dados insuficientes não geram desconto, mesmo com preço de origem muito baixo', () => {
+  for (const extra of [
+    { titulo: 'Escavadeira Hyundai R220LC-9S' }, { titulo: 'Escavadeira Hyundai R220LC-7' },
+    { titulo: 'Escavadeira SANY R220LC-9' }, { ano: '2017' }, { ano: '' }, { horas: '' },
+    { horas: '6.001 h' }, { horas: '5.500 km' }, { horas: '5.200 / 5.600 h' }, { preco: -300000 },
+    { preco: 'entrada R$ 130.000' }, { preco: '300 mil ou 320 mil' }, { preco: 'R$ 300.000 cada' },
+  ]) {
+    const conta = avaliar(alvo, [amostra[0], amostra[1], { ...amostra[2], ...extra }]);
+    assert.equal(conta.barata, false, JSON.stringify(extra));
+    assert.equal(conta.referencia, undefined);
+    assert.equal(conta.desconto, undefined);
+    assert.match(conta.motivo, /amostra insuficiente/);
+  }
+  for (const campo of ['titulo', 'ano', 'horas', 'categoria']) {
+    assert.equal(avaliar({ ...alvo, [campo]: '' }, amostra).comparadas.length, 0);
+  }
+  assert.equal(avaliar({ ...alvo, precoOrigem: '-300.000' }, amostra).referencia, undefined);
+});
+
+test('mesma unidade, cópias cruzadas e o próprio anúncio não aumentam a amostra', () => {
+  const [a, b] = amostra;
+  const registros = [
+    { ...alvo, referencia: 'COPIA-DO-ALVO', preco: 800000 },
+    { ...a, fotos: ['maquina-a.jpg'], preco: 290000 },
+    { ...a, referencia: 'REVENDA-2', horas: '4.002 h', fotos: ['maquina-a.jpg'], link: 'https://example.org/item?id=42&utm_source=loja' },
+    { ...a, referencia: 'REVENDA-3', horas: '4.003 h', link: 'https://example.org/item?id=42' },
+    b, { ...b, referencia: 'CLONE-B', preco: 800000 },
+  ];
+  for (const ordem of [registros, [...registros].reverse()]) {
+    const conta = avaliar(alvo, ordem);
+    assert.equal(conta.comparadas.length, 2);
+    assert.equal(conta.referencia, undefined);
+  }
+});
+
+test('amostra de máquinas de poucas horas também respeita o limite relativo de 20%', () => {
+  const novo = { ...alvo, horas: 100 };
+  const conta = avaliar(novo, amostra.map((x, i) => ({ ...x, horas: [80, 120, 121][i] })));
+  assert.equal(conta.comparadas.length, 2);
+});
+
 test('entrada do site só tem dados públicos, com preço já com a margem', () => {
   const e = entradaPublica({ codigo: 'RADAR-261031-01', titulo: 'Escavadeira Komatsu PC200', categoria: 'Escavadeiras', ano: 2018, horas: '9.000 h', local: 'Itaúna, MG', precoSite: precoSite(200000), fonte: 'grupo X' });
   assert.deepEqual(Object.keys(e).sort(), ['ano', 'categoria', 'ficha', 'fotos', 'horas', 'local', 'preco', 'referencia', 'titulo']);

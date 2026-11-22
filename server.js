@@ -4,7 +4,8 @@ import { readFile } from "node:fs/promises";
 import { extname, resolve, relative, isAbsolute } from "node:path";
 import { fileURLToPath } from "node:url";
 import { rotaAdm, servirFoto, maquinasPublicas } from "./lib/adm.js";
-import { paginaMaquina, sitemap, tiposDeMaquina } from "./lib/paginas.js";
+import { paginaMaquina, paginaCatalogo, sitemap, tiposDeMaquina } from "./lib/paginas.js";
+import { catalogoEstatico } from "./lib/publicacoes.js";
 import { registrar } from "./lib/interesse.js";
 import { ipCliente } from "./lib/auth.js";
 import { responderComEtag } from "./lib/resposta.js";
@@ -18,7 +19,7 @@ const CATALOGO = await loadJson("./data/catalogo.json");
 const MIME = { ".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8",
   ".js": "text/javascript; charset=utf-8", ".json": "application/json; charset=utf-8",
   ".svg": "image/svg+xml", ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg",
-  ".webp": "image/webp", ".ico": "image/x-icon" };
+  ".pdf": "application/pdf", ".woff2": "font/woff2", ".webp": "image/webp", ".ico": "image/x-icon" };
 
 function sendJson(res, status, body) {
   res.writeHead(status, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" });
@@ -45,7 +46,11 @@ async function serveStatic(req, res, pathname) {
 async function servirPaginaMaquina(req, res, slug) {
   const todas = await maquinasPublicas();
   const m = todas.find((x) => x.slug === slug);
-  if (!m) return res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" }).end("Máquina não encontrada");
+  if (!m) {
+    const atual = todas.find((x) => x.slugAnterior === slug);
+    if (atual) return res.writeHead(301, { Location: `/maquina/${atual.slug}.html` }).end();
+    return res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" }).end("Máquina não encontrada");
+  }
   responderComEtag(req, res, "text/html; charset=utf-8", await paginaMaquina(m, todas), {
     // Só recursos do próprio site (o formulário de contato abre o WhatsApp); o JSON-LD (type=application/ld+json) não é executado e não precisa de exceção.
     "Content-Security-Policy": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' https://wa.me https://api.whatsapp.com; frame-ancestors 'none'" });
@@ -101,12 +106,19 @@ async function atender(req, res) {
   if (pathname.startsWith("/fotos/")) return servirFoto(req, res, pathname);
   // Catálogo do site + máquinas publicadas pelo ADM (Radar com margem e Pátio).
   if (pathname === "/maquinas.json") return responderComEtag(req, res, "application/json; charset=utf-8", JSON.stringify(await maquinasPublicas()));
+  if (pathname === "/maquinas.html") {
+    const [maquinas, vitrine] = await Promise.all([maquinasPublicas(), catalogoEstatico()]);
+    return responderComEtag(req, res, "text/html; charset=utf-8", await paginaCatalogo(maquinas, vitrine));
+  }
   const pagina = /^\/maquina\/([a-z0-9-]+?)(?:\.html)?$/.exec(pathname);
   if (pagina) return servirPaginaMaquina(req, res, pagina[1]);
   if (pathname === "/sitemap.xml") {
     return responderComEtag(req, res, "application/xml; charset=utf-8", sitemap(await maquinasPublicas(), await tiposDeMaquina()));
   }
   if (pathname === "/api/catalogo" || pathname === "/catalogo.json") return sendJson(res, 200, CATALOGO);
+  if (pathname === "/financiamento-e-consorcio" || pathname === "/financiamento-e-consorcio/") {
+    return serveStatic(req, res, "/financiamento-e-consorcio/index.html");
+  }
   return serveStatic(req, res, pathname);
 }
 

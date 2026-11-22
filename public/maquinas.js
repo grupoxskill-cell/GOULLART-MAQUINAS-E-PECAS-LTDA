@@ -45,8 +45,9 @@
   }
 
   function botaoInteresse(m) {
-    const a = el("a", "btn btn-primary machine-btn", "Tenho interesse");
-    a.href = linkInteresse(m);
+    const vendida = m.situacao === "Vendida";
+    const a = el("a", "btn btn-primary machine-btn", vendida ? "Quero uma igual a essa" : "Tenho interesse");
+    a.href = vendida ? "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent("Quero uma máquina semelhante a " + m.titulo + " (" + m.referencia + ").") : linkInteresse(m);
     a.target = "_blank";
     a.rel = "noopener";
     a.dataset.interesse = "";
@@ -75,7 +76,7 @@
     const dados = [m.ano && `Ano ${m.ano}`, m.horas, m.local].filter(Boolean).join(" · ");
     if (dados) corpo.append(el("p", "machine-dados", dados));
     corpo.append(el("p", "machine-preco", m.preco || "Preço sob consulta"));
-    corpo.append(el("p", "machine-status", "Disponibilidade a confirmar"), botaoInteresse(m));
+    corpo.append(el("p", "machine-status", "Disponibilidade · " + (m.situacao || "A confirmar")), botaoInteresse(m));
     li.append(corpo);
     return li;
   }
@@ -108,7 +109,7 @@
     if (ordem?.value === "maior") filtradas.sort((a, b) => (b.valor ?? -Infinity) - (a.valor ?? -Infinity));
     lista.replaceChildren(...filtradas.map(card));
     info.textContent = filtradas.length
-      ? `${filtradas.length} máquina(s)`
+      ? `${filtradas.length} ${filtradas.length === 1 ? "máquina" : "máquinas"}`
       : "Nenhuma máquina encontrada. Fale com a equipe pelo WhatsApp que a gente procura para você.";
   }
 
@@ -136,11 +137,13 @@
         .sort((a, b) => Number(Boolean(b.patio)) - Number(Boolean(a.patio)) || posicao(a.categoria) - posicao(b.categoria));
       if (qtd) qtd.textContent = String(maquinas.length);
       if (filtros) {
-        if (!["Todas", ...ORDEM].includes(categoria)) categoria = "Todas";
+        if (categoria !== "Todas" && !maquinas.some(m => m.categoria === categoria)) categoria = "Todas";
         busca.value = params.get("q") || "";
         if (maximo) maximo.value = params.get("max") || "";
         renderFiltros();
         render();
+        document.getElementById("maquinas-indice")?.remove();
+        document.getElementById("maquinas-controles")?.removeAttribute("hidden");
         busca.addEventListener("input", render);
         maximo?.addEventListener("input", render);
         ordem?.addEventListener("change", render);
@@ -151,5 +154,5 @@
         if (patioSecao) patioSecao.hidden = false;
       }
     })
-    .catch(() => { if (info) info.textContent = "Não foi possível carregar as máquinas. Consulte a equipe pelo WhatsApp."; });
+    .catch(() => { if (info) info.textContent = document.querySelector("#maquinas-indice li") ? "Filtros indisponíveis. Acesse as fichas abaixo." : "Não foi possível carregar as máquinas. Consulte a equipe pelo WhatsApp."; });
 })();
