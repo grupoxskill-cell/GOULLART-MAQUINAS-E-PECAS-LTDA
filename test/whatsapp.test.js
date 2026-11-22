@@ -39,6 +39,11 @@ await writeFile(join(dataDir, 'config.json'), JSON.stringify({
   margem: 20000, segredo: 'b'.repeat(64), ...hashSenha('senha-de-teste'),
   whatsapp: { phoneNumberId: PHONE_ID, token: 't'.repeat(40), appSecret: APP_SECRET, verifyToken: 'verifica-123', aprovador: APROVADOR },
 }));
+// Unidades independentes do pátio de teste, usadas na avaliação de ponta a ponta.
+await writeFile(join(dataDir, 'patio.json'), JSON.stringify([7100, 7200, 7300].map((horas, i) => ({
+  id: '00000' + i, publicado: true, titulo: 'Escavadeira John Deere 210G', categoria: 'Escavadeiras',
+  ano: '2018', horas: String(horas), preco: 400000 + i * 1000, local: 'Anápolis - GO', fotos: [],
+}))));
 // Anúncio que estava esperando quando o servidor reiniciou: tem de ser retomado.
 await writeFile(join(dataDir, 'whatsapp-pendente.json'), JSON.stringify({ [APROVADOR]: { textos: ['CAMINHÃO VOLKSWAGEN 15-180\nAno 2008\nR$ 150.000\nAnápolis - GO'], midias: [] } }));
 const child = spawn(process.execPath, ['server.js'], {
@@ -177,6 +182,8 @@ test('anúncio encaminhado pelo aprovador vira oferta e a foto vai com o código
   assert.equal(item.codigo, codigo);
   assert.ok(item.precoMercado > 300000, 'referência de mercado não foi guardada');
   assert.match(item.classificacao, /Quente|Boa/);
+  assert.ok(item.amostraMercado.comparadas.length >= 3);
+  assert.match(item.amostraMercado.metodo, /mediana/);
   assert.equal(item.status, 'novo');
   assert.equal(item.origemEntrada, 'whatsapp');
   assert.equal(item.fotos.length, 1);
@@ -221,11 +228,12 @@ test('anúncio sem cidade fica no ADM e o aprovador recebe o motivo; NÃO descar
   const doosan = (await radar()).find((r) => /DOOSAN/.test(r.titulo));
   assert.equal(doosan.status, 'novo');
   assert.equal(doosan.codigo, undefined);
+  assert.equal(doosan.precoMercado, null);
 });
 
 test('NÃO com o código descarta a oferta', async () => {
   // Nova oferta válida para poder recusar.
-  await postar(payload([foto(APROVADOR, '33333', 'ESCAVADEIRA JOHN DEERE 210G\nAno 2017\nHorímetro 9.000 h\nR$ 240.000\nRio Verde - GO')]));
+  await postar(payload([foto(APROVADOR, '33333', 'ESCAVADEIRA JOHN DEERE 210G\nAno 2017\nHorímetro 7.400 h\nR$ 240.000\nRio Verde - GO')]));
   assert.ok(await ate(async () => (await radar()).some((r) => r.codigo && r.codigo !== codigo)));
   const outro = (await radar()).find((r) => r.codigo && r.codigo !== codigo);
   await postar(payload([texto(APROVADOR, `NÃO ${outro.codigo}`)]));
@@ -238,9 +246,9 @@ test('código nunca se repete, mesmo depois de apagar a oferta no ADM', async ()
   const comCodigo = lista.filter((r) => r.codigo).sort((a, b) => a.codigo.localeCompare(b.codigo));
   const apagado = comCodigo.at(-1).codigo;
   await writeFile(join(dataDir, 'radar.json'), JSON.stringify(lista.filter((r) => r.codigo !== apagado)));
-  await postar(payload([foto(APROVADOR, '44444', 'ESCAVADEIRA JOHN DEERE 200G LC\nAno 2022\nR$ 330.000\nCatalão - GO')]));
-  assert.ok(await ate(async () => (await radar()).some((r) => /200G/.test(r.titulo) && r.codigo)));
-  const novo = (await radar()).find((r) => /200G/.test(r.titulo));
+  await postar(payload([foto(APROVADOR, '44444', 'ESCAVADEIRA JOHN DEERE 210G\nAno 2019\nHorímetro 7.500 h\nR$ 245.000\nCatalão - GO')]));
+  assert.ok(await ate(async () => (await radar()).some((r) => r.local === 'Catalão - GO' && r.codigo)));
+  const novo = (await radar()).find((r) => r.local === 'Catalão - GO');
   assert.notEqual(novo.codigo, apagado);
   assert.ok(novo.codigo > apagado);
 });
