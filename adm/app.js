@@ -67,7 +67,7 @@ document.getElementById("form-login").addEventListener("submit", async (e) => {
 });
 
 // ---------- Abas ----------
-const telas = { inicio, disponibilidade, publicacoes, radares, radar: () => telaMaquinas("radar"), patio: () => telaMaquinas("patio"), encontros, crm, config };
+const telas = { inicio, operacao: abrirOperacao, disponibilidade, publicacoes, radares, radar: () => telaMaquinas("radar"), patio: () => telaMaquinas("patio"), encontros, crm, config };
 document.getElementById("abas").addEventListener("click", (e) => {
   const b = e.target.closest("button[data-aba]");
   if (b) abrir(b.dataset.aba);
@@ -84,6 +84,7 @@ async function iniciar() {
   try { resumo = await api("/resumo"); } catch { return; }
   document.getElementById("tela-login").hidden = true;
   document.getElementById("app").hidden = false;
+  api("/operacao/consulta", {method:"POST"}).catch(() => {});
   abrir(["#radares", "#radar"].includes(location.hash) ? location.hash.slice(1) : "inicio");
 }
 // Link do aviso de nova oferta (/adm/#radar) também funciona com o ADM já aberto.
@@ -91,10 +92,13 @@ addEventListener("hashchange", () => { if (["#radares", "#radar"].includes(locat
 
 // ---------- Início ----------
 async function inicio() {
-  const [r, interesse] = await Promise.all([api("/resumo"), api("/interesse").catch(() => [])]);
+  const [r, interesse, operacao] = await Promise.all([api("/resumo"), api("/interesse").catch(() => []), api("/operacao").catch(() => null)]);
   resumo = r;
   const n = (titulo, valor, aba) => h("button", { class: "numero btn sec", onclick: () => abrir(aba) }, h("b", {}, valor), titulo);
   conteudo.replaceChildren(
+    operacao ? h("div", { class: "numeros" },
+      n("Vendas registradas hoje", operacao.vendasHoje, "operacao"), n("Entradas no Radar hoje", operacao.radarHoje, "radar"),
+      n("Aprovações comerciais pendentes", operacao.pendentes.length, "operacao"), n("Ofertas para aprovação", operacao.radarPendente, "radar")) : "",
     resumo.encontrosRadarNovo ? h("div", { class: "alerta" },
       h("strong", {}, `${resumo.encontrosRadarNovo} pedido(s) de clientes combinam com máquinas do Radar ainda não publicadas.`),
       " ", h("button", { class: "btn", onclick: () => abrir("encontros") }, "Ver encontros")) : "",
@@ -231,6 +235,16 @@ async function telaMaquinas(tipo) {
       } }, "Ajustar preço"));
     } else {
       botoes.push(h("button", { class: m.publicado ? "btn sec" : "btn ok", onclick: (e) => acao(e.target, async () => { await api(`/patio/${m.id}/${m.publicado ? "despublicar" : "publicar"}`, { method: "POST" }); recarregar(); }, m.publicado ? "Retirada do site." : "Publicada no site.") }, m.publicado ? "Tirar do site" : "Publicar"));
+    }
+    if (radar) {
+      for (const interna of [true, false]) {
+        const abrirVia = e => acao(e.currentTarget, async () => {
+          const atual = (await api("/radar")).find(item => item.id === m.id);
+          if (!atual) throw Error("A unidade foi retirada do Radar. Atualize a lista.");
+          abrirProposta0006(atual, interna, recarregar);
+        });
+        botoes.push(h("button", {class:"btn sec", onclick:abrirVia}, interna ? "0006 · interna" : "0006 · cliente"));
+      }
     }
     if (m.fotos?.length) botoes.push(h("button", { class: "btn sec", onclick: () => telaArte(tipo, m, recarregar) }, m.arte ? "Refazer arte" : "Fazer arte"));
     botoes.push(h("button", { class: "btn sec", onclick: () => conteudo.replaceChildren(formulario(tipo, m, recarregar), h("button", { class: "btn sec", onclick: recarregar }, "Voltar")) }, "Editar"));
@@ -382,7 +396,7 @@ async function desenharArte(m, preco, fotoIdx, enquadre, formato = "feed") {
   ctx.save(); ctx.beginPath(); ctx.roundRect(M, topo, W - 2 * M, fh, 28); ctx.clip();
   if (fotoIdx >= 0 && m.fotos?.[fotoIdx]) {
     const foto = await carregarImagem(`/adm/${m.fotos[fotoIdx]}`);
-    const fw = W - 2 * M, escala = Math.max(fw / foto.width, fh / foto.height);
+    const fw = W - 2 * M, escala = Math.min(fw / foto.width, fh / foto.height);
     const dw = foto.width * escala, dh = foto.height * escala;
     ctx.drawImage(foto, M + (fw - dw) / 2, topo + (fh - dh) * enquadre, dw, dh);
   } else {
@@ -506,6 +520,10 @@ async function encontros() {
         h("span", { class: `selo ${a.maquina.publicado ? "publicado" : "novo"}` }, `${a.maquina.origem}${a.maquina.publicado ? " · no site" : " · não publicada"}`),
         h("strong", {}, a.maquina.titulo), h("span", { class: "preco" }, a.maquina.preco || ""),
         h("span", { class: "muted" }, a.motivos.join(", ")),
+        h("button",{class:"btn sec",onclick:ev=>acao(ev.currentTarget,async()=>{
+          await api("/operacao",{method:"POST",body:{tipo:"vista",id:crypto.randomUUID(),pedido:e.pedidoId,ref:a.maquina.referencia || a.maquina.id}});
+          await encontros();
+        },"Unidade marcada como vista.")},"Cliente já viu"),
         a.maquina.origem === "Radar" && !a.maquina.publicado
           ? h("button", { class: "btn ok", onclick: (ev) => acao(ev.target, async () => { await api(`/radar/${a.maquina.id}/publicar`, { method: "POST" }); encontros(); }, "Publicado no site.") }, "Publicar")
           : null)))));

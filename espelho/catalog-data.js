@@ -51,5 +51,5 @@
  }
  const visivel=item=>!vendida(item)&&(item.category!=='pecas'||temFoto(item));
  function feed(data){return {...data,items:(data.items||[]).map(normalize).filter(visivel),opportunities:(data.opportunities||[]).map(normalize).filter(i=>!vendida(i))};}
- globalThis.GoullartCatalogData={normalize,feed,facts,asset,clean,visivel};
+ globalThis.GoullartCatalogData={normalize,feed,facts,asset,clean,visivel,vendida};
 })();

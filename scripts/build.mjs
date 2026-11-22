@@ -1,5 +1,6 @@
 // Gera o site estático em _site: arquivos públicos, catálogo de peças, uma página por máquina,
 // sitemap.xml e robots.txt. Usado pelo GitHub Actions (branch gh-pages) e pelo servidor via cron.
+import { faixa300 } from "../lib/selecao.js";
 import { cp, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { comSlugs, semVendidas, paginaMaquina, paginaCatalogo, sitemap, tiposDeMaquina, SITE, FICHAS_DA_VITRINE } from "../lib/paginas.js";
 
@@ -28,6 +29,7 @@ const baseConsulta = JSON.parse(await readFile("_site/api/catalog.json", "utf8")
 const consulta = consultaPublica(maquinasDoCatalogo(baseConsulta, baseConsulta, null, maquinas), baseConsulta, maquinas);
 await writeFile("_site/consulta-maquinas.json", JSON.stringify(consulta));
 await writeFile("_site/catalogo-maquinas.pdf", catalogoPdf(consulta, diaEmissao()));
+await writeFile("_site/maquinas-ate-300-mil.html", await faixa300(baseConsulta));
 
 const vitrine = JSON.parse(await readFile("_site/api/catalog.json", "utf8"));
 await writeFile("_site/maquinas.html", await paginaCatalogo(maquinas, vitrine));
