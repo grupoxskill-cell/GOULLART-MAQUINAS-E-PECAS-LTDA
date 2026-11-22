@@ -207,6 +207,55 @@ function formulario(tipo, item, aoSalvar) {
   return form;
 }
 
+function abrirProposta0006(m, interna, voltar) {
+  const preco = m.precoSiteCalculado;
+  const foto = (m.fotos || []).find(f => /^fotos\/[a-f0-9]{24}\.jpg$/.test(f) && f !== m.arte && !(m.fotosMarca || []).includes(f));
+  if (!interna) {
+    if (["descartado", "vendido"].includes(m.status) || ["Reservada","Vendida"].includes(m.situacaoComercial)) {
+      aviso("Unidade retirada, reservada ou vendida. Selecione outra máquina para a proposta.");
+      return;
+    }
+    if (!foto || !Number.isFinite(preco) || preco <= 0) {
+      aviso("A via do cliente precisa de preço de venda e foto original da unidade.");
+      return;
+    }
+  }
+  const emitida = new Intl.DateTimeFormat("pt-BR", {timeZone:"America/Sao_Paulo"}).format(new Date());
+  const codigo = m.codigo || "R-" + m.id.slice(0,6).toUpperCase();
+  const cidade = String(m.cidadePublica || (interna ? m.local : "") || "").trim();
+  const local = /^[\p{L}][\p{L} .'-]{1,64} *[\/,-] *(?:AC|AL|AP|AM|BA|CE|DF|ES|GO|MA|MT|MS|MG|PA|PB|PR|PE|PI|RJ|RN|RS|RO|RR|SC|SP|SE|TO)$/iu.test(cidade) ? cidade : "";
+  const imprimir = h("button", {class:"btn", type:"button", disabled:!interna, onclick:()=>window.print()}, "Imprimir ou salvar PDF");
+  const estadoFoto = h("span", {role:"status", class:"muted"}, foto ? "Carregando foto…" : "");
+  const imagem = foto ? h("img", {
+    src:"/adm/"+foto, alt:"Foto da unidade "+m.titulo,
+    onload:()=>{imprimir.disabled=false; estadoFoto.textContent="";},
+    onerror:()=>{imprimir.disabled=!interna; estadoFoto.textContent="Foto indisponível. Reabra a ficha e confira o arquivo.";}
+  }) : null;
+  const emissao = h("div",{class:"prop-emissao"},h("strong",{},"Modelo 0006"),h("span",{},"Emissão em "+emitida));
+  const cabecalho = h("header",{class:"prop-topo"},h("img",{src:"/assets/brands/goullart-pesados-original.svg",alt:"GOULLART Pesados"}),emissao);
+  const fatos = [["Referência",codigo],["Ano",m.ano],["Horas / km",m.horas],["Localização",local]].filter(([,v])=>v);
+  const ficha = h("dl",{class:"prop-fatos"},fatos.map(([rotulo,valor])=>h("div",{},h("dt",{},rotulo),h("dd",{},valor))));
+  const documento = h("article",{class:"proposta-impressa"},cabecalho,
+    h("div",{class:"prop-corpo"},h("p",{class:"prop-tipo"},interna ? "Uso interno · análise de negociação" : "Proposta comercial"),
+      h("h1",{},m.titulo),ficha,imagem ? h("figure",{},imagem) : h("p",{},"Foto pendente"),
+      h("div",{class:"prop-preco"},h("span",{},"Valor da máquina"),h("strong",{},reais(preco)))));
+  const corpo = documento.querySelector(".prop-corpo");
+  if (interna) {
+    const diferenca = Number.isFinite(preco) && Number.isFinite(m.precoOrigem) ? preco-m.precoOrigem : null;
+    corpo.append(h("h2",{},"Conta da operação"),h("dl",{class:"prop-conta"},
+      h("div",{},h("dt",{},"Preço de origem"),h("dd",{},reais(m.precoOrigem))),
+      h("div",{},h("dt",{},"Diferença antes dos custos"),h("dd",{},reais(diferenca))),
+      h("div",{},h("dt",{},"Percentual sobre a venda"),h("dd",{},diferenca!=null && preco>0 ? (diferenca*100/preco).toFixed(1).replace(".",",")+"%" : "Pendente"))),
+      h("h2",{},"Conferência da equipe"),h("p",{},[...(m.avisos||[]),m.obs].filter(Boolean).join(" · ") || "Conferir documentação, disponibilidade, frete e custos da operação."));
+  } else {
+    corpo.append(h("h2",{},"Próximo passo"),h("p",{},"Informe a cidade de entrega para a equipe confirmar a disponibilidade e cotar o frete."),
+      h("p",{class:"prop-condicoes"},"Condições de pagamento e eventual troca serão definidas na negociação."));
+  }
+  documento.append(h("footer",{class:"prop-rodape"},h("strong",{},"Equipe Goullart Agro Brasil"),h("a",{href:"https://wa.me/5562999427276"},"WhatsApp (62) 99942-7276")));
+  conteudo.replaceChildren(documento,h("div",{class:"op-acoes"},estadoFoto,imprimir,
+    h("button",{class:"btn sec",type:"button",onclick:voltar},"Voltar ao Radar")));
+}
+
 async function telaMaquinas(tipo) {
   const radar = tipo === "radar";
   resumo = await api("/resumo");
@@ -232,6 +281,16 @@ async function telaMaquinas(tipo) {
       } }, "Ajustar preço"));
     } else {
       botoes.push(h("button", { class: m.publicado ? "btn sec" : "btn ok", onclick: (e) => acao(e.target, async () => { await api(`/patio/${m.id}/${m.publicado ? "despublicar" : "publicar"}`, { method: "POST" }); recarregar(); }, m.publicado ? "Retirada do site." : "Publicada no site.") }, m.publicado ? "Tirar do site" : "Publicar"));
+    }
+    if (radar) {
+      for (const interna of [true, false]) {
+        const abrirVia = e => acao(e.currentTarget, async () => {
+          const atual = (await api("/radar")).find(item => item.id === m.id);
+          if (!atual) throw Error("A unidade foi retirada do Radar. Atualize a lista.");
+          abrirProposta0006(atual, interna, recarregar);
+        });
+        botoes.push(h("button", {class:"btn sec", onclick:abrirVia}, interna ? "0006 · interna" : "0006 · cliente"));
+      }
     }
     if (m.fotos?.length) botoes.push(h("button", { class: "btn sec", onclick: () => telaArte(tipo, m, recarregar) }, m.arte ? "Refazer arte" : "Fazer arte"));
     botoes.push(h("button", { class: "btn sec", onclick: () => conteudo.replaceChildren(formulario(tipo, m, recarregar), h("button", { class: "btn sec", onclick: recarregar }, "Voltar")) }, "Editar"));
