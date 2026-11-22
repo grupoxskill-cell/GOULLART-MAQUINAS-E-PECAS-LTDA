@@ -1,5 +1,6 @@
 // Cards do catálogo novo linkam a ficha completa (/maquina/<slug>.html) quando ela existe. Precisa de _site gerado (node scripts/build.mjs).
 import test from 'node:test';
+import '../espelho/listing-policy.js';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { comSlugs, semVendidas, paginaCatalogo, tiposDeMaquina, SITE } from '../lib/paginas.js';
@@ -48,14 +49,31 @@ test('catálogo e categorias compartilham a navegação e a URL definitiva do si
     assert.ok(html.includes('class="brand-marquee"') && html.includes('href="/?area=pecas"'), arquivo);
   }
   const catalogo = ler('maquinas.html');
-  const links = [...catalogo.matchAll(/<li><a href="(\/maquina\/[^"]+)">/g)].map(m => m[1]);
-  assert.equal(new Set(links).size, JSON.parse(ler('maquinas.json')).length);
-  assert.ok(links.every(link => existsSync('_site'+link)));
+  const indice = catalogo.match(/<ul class="indice-maquinas">([\s\S]*?)<\/ul>/)[1];
+  const links = [...indice.matchAll(/<a href="([^"]+)">/g)].map(m => m[1]);
+  const publicados = globalThis.GoullartCatalogData.feed(JSON.parse(ler('api/catalog.json'))).items
+    .filter(i => i.category === 'maquinas' && globalThis.GoullartListingPolicy.eligibleListing(i));
+  assert.equal(links.length, new Set(publicados.map(i => i.publicCode)).size);
+  for (const link of links) {
+    if (link.startsWith('/maquina/')) assert.ok(existsSync('_site'+link), link);
+    else if (link.includes('/#anuncio-')) {
+      const [rota, ancora] = link.split('#');
+      assert.ok(ler(rota+'index.html').includes('id="'+decodeURIComponent(ancora)+'"'), link);
+    } else assert.ok(publicados.some(i => link === '/?area=maquinas&amp;item='+encodeURIComponent(i.id)), link);
+  }
 });
 
-test('índice público aceita catálogo vazio e escapa dados de fichas do ADM', async () => {
-  const vazio = await paginaCatalogo([]);
-  assert.doesNotMatch(vazio, /class="indice-maquinas"/);
-  const html = await paginaCatalogo([{ slug: 'exemplo', titulo: 'Trator <campo>', local: 'SP & MG' }]);
-  assert.match(html, /href="\/maquina\/exemplo.html">Trator &lt;campo&gt; · SP &amp; MG<\/a>/);
+test('índice usa somente a vitrine pública, preserva rotas e escapa os textos', async () => {
+  const ficha = { referencia: 'GOUL-315', slug: 'exemplo' };
+  const anuncio = { publicCode: 'GOUL-333', id: 'abc', category: 'maquinas', title: 'Trator teste',
+    image: '/foto.jpg', publishedAt: new Date().toISOString(), location: 'Cidade & UF' };
+  const outro = { ...anuncio, publicCode: 'TESTE-2', id: 'outro', title: 'Trator <campo>' };
+  const vitrine = { items: [anuncio, anuncio, outro, { ...outro, publicCode: 'NAO-PUBLICADO', privateOnly: true }] };
+  const html = await paginaCatalogo([ficha, {referencia: 'SEM-VITRINE', slug:'nao-indexar'}], vitrine);
+  assert.match(html, /href="\/maquina\/exemplo.html">/);
+  assert.match(html, /href="\/\?area=maquinas&amp;item=outro">Trator &lt;campo&gt;/);
+  assert.match(html, /Cidade &amp; UF/);
+  assert.equal(html.match(/href="\/maquina\/exemplo.html"/g).length, 1);
+  assert.doesNotMatch(html, /nao-indexar|NAO-PUBLICADO/);
+  assert.doesNotMatch(await paginaCatalogo([ficha], {items: []}), /class="indice-maquinas"/);
 });

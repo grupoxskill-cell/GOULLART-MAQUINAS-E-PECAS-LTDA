@@ -22,7 +22,8 @@ await cp("site-novo", "_site", { recursive: true });
 await cp("data/catalogo.json", "_site/catalogo.json");
 await writeFile("_site/.nojekyll", "");
 
-await writeFile("_site/maquinas.html", await paginaCatalogo(maquinas));
+const vitrine = JSON.parse(await readFile("_site/api/catalog.json", "utf8"));
+await writeFile("_site/maquinas.html", await paginaCatalogo(maquinas, vitrine));
 const { aplicarLayoutCatalogo } = await import("./catalogo-layout.mjs");
 await aplicarLayoutCatalogo("_site");
 await writeFile("_site/maquinas.json", JSON.stringify(maquinas, null, 1));

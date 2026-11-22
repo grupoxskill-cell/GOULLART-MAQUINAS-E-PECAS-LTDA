@@ -108,7 +108,7 @@
     if (ordem?.value === "maior") filtradas.sort((a, b) => (b.valor ?? -Infinity) - (a.valor ?? -Infinity));
     lista.replaceChildren(...filtradas.map(card));
     info.textContent = filtradas.length
-      ? `${filtradas.length} máquina(s)`
+      ? `${filtradas.length} ${filtradas.length === 1 ? "máquina" : "máquinas"}`
       : "Nenhuma máquina encontrada. Fale com a equipe pelo WhatsApp que a gente procura para você.";
   }
 
@@ -136,7 +136,7 @@
         .sort((a, b) => Number(Boolean(b.patio)) - Number(Boolean(a.patio)) || posicao(a.categoria) - posicao(b.categoria));
       if (qtd) qtd.textContent = String(maquinas.length);
       if (filtros) {
-        if (!["Todas", ...ORDEM].includes(categoria)) categoria = "Todas";
+        if (categoria !== "Todas" && !maquinas.some(m => m.categoria === categoria)) categoria = "Todas";
         busca.value = params.get("q") || "";
         if (maximo) maximo.value = params.get("max") || "";
         renderFiltros();

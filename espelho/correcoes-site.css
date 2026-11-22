@@ -79,3 +79,18 @@ body.goullart-storefront.approved-layout > header .brand-motion-toggle > span{di
 /* O catálogo usa o topo da home, mas não tem a barra fixa de navegação inferior. */
 body.catalogo-comercial { padding-bottom: 0; text-transform: none; }
 body.catalogo-comercial :is(input, select, textarea, button) { text-transform: none; }
+
+/* Prioriza as fotos e conserva os filtros disponíveis no celular. */
+@media (max-width: 700px) {
+  body.catalogo-comercial > .page-hero { padding: 20px 0 24px; }
+  body.catalogo-comercial #conteudo { padding-block: 24px; }
+  body.catalogo-comercial #maquinas-filtros {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 8px;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    padding: 2px 2px 8px;
+  }
+  body.catalogo-comercial #maquinas-filtros .chip { flex: none; }
+}
