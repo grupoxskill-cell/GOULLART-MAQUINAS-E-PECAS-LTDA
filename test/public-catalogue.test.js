@@ -71,3 +71,12 @@ test('site público não traz telefones particulares, só o comercial (62) 99942
  for(const pasta of ['espelho','public','lib','data'])varrer(new URL('../'+pasta,import.meta.url).pathname);
  assert.deepEqual(achados,[],'telefone particular em arquivo público');
 });
+
+test('unidade autorizada com localização pendente mantém retenções e foto obrigatória', () => {
+ const item = {publicCode:'TESTE', locationPending:true, image:'/foto.jpg'};
+ assert.equal(tools.publicavel(item), true);
+ for (const restricao of [{status:'vendida'}, {situacao:'Cancelada'}, {archived:true},
+   {privateOnly:true}, {published:false}, {status:'bloqueado'}, {publicCode:'GOUL-ART-261105-06'}, {image:''}]) {
+  assert.equal(tools.publicavel({...item, ...restricao}), false);
+ }
+});
