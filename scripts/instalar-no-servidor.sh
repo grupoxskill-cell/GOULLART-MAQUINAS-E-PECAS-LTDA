@@ -12,7 +12,11 @@ set -euo pipefail
 
 DOMINIO="${DOMINIO:-goullartmaquinaspesadas.com.br}"
 REPO="grupoxskill-cell/GOULLART-MAQUINAS-E-PECAS-LTDA"
-SCRIPT_URL="https://raw.githubusercontent.com/$REPO/master/scripts/instalar-no-servidor.sh"
+GH_API="${GH_API:-https://api.github.com}"
+SCRIPT_URL="$GH_API/repos/$REPO/contents/scripts/instalar-no-servidor.sh?ref=master"
+# Repositório privado: token só de leitura (Contents: Read-only) em $TOKEN_FILE, gravado por
+# scripts/instalar-github-token.sh. Sem o arquivo, funciona como antes (repositório público).
+TOKEN_FILE="${TOKEN_FILE:-/etc/goullart/github-token}"
 VHOST_DIR="${VHOST_DIR:-/www/server/panel/vhost/nginx}"
 DESTINO="${DESTINO:-/www/wwwroot/goullart-site}"
 APP_DIR="${APP_DIR:-/opt/goullart-app}"
@@ -52,17 +56,26 @@ recarregar_nginx() {
 TMP=$(mktemp -d)
 trap 'rm -rf "$TMP"' EXIT
 
+# Toda conversa com o GitHub passa por aqui. O token vai num arquivo de cabeçalho (0600), nunca na
+# linha de comando: assim não aparece no `ps` nem no registro.
+GH_AUTH=()
+if [ -s "$TOKEN_FILE" ]; then
+  (umask 077; printf 'Authorization: Bearer %s\n' "$(tr -d '[:space:]' < "$TOKEN_FILE")" > "$TMP/gh-auth")
+  GH_AUTH=(-H "@$TMP/gh-auth")
+fi
+gh_curl() { curl -fsSL ${GH_AUTH[@]+"${GH_AUTH[@]}"} -H "X-GitHub-Api-Version: 2022-11-28" "$@"; }
+
 # Baixa um branch do GitHub para uma pasta, trocando a antiga sem deixar o site pela metade.
 # Devolve 0 se instalou versão nova, 1 se já estava atualizado.
 # Chamada dentro de `if`, onde o bash ignora `set -e`: por isso cada passo tem sua própria checagem.
 falhar() { echo "ERRO: $1"; exit 1; }
 sincronizar() {
   local branch="$1" pasta="$2" teste="$3" versao origem
-  versao=$(curl -fsSL -H "Accept: application/vnd.github.sha" "https://api.github.com/repos/$REPO/commits/$branch" || true)
+  versao=$(gh_curl -H "Accept: application/vnd.github.sha" "$GH_API/repos/$REPO/commits/$branch" || true)
   if [ -n "$versao" ] && [ -d "$pasta" ] && [ "$(cat "$pasta/.versao" 2>/dev/null)" = "$versao" ]; then return 1; fi
   rm -rf "$TMP/$branch" && mkdir -p "$TMP/$branch" "$(dirname "$pasta")" || falhar "não consegui preparar as pastas de $branch."
   # --no-same-owner/-permissions: nada do pacote vira arquivo de root com permissão especial.
-  curl -fsSL "https://github.com/$REPO/archive/${versao:-refs/heads/$branch}.tar.gz" | tar -xz --no-same-owner --no-same-permissions -C "$TMP/$branch" \
+  gh_curl "$GH_API/repos/$REPO/tarball/${versao:-$branch}" | tar -xz --no-same-owner --no-same-permissions -C "$TMP/$branch" \
     || falhar "download de $branch falhou. Nada foi alterado."
   origem=$(dirname "$(ls "$TMP/$branch"/*/"$teste" 2>/dev/null | head -1)")
   [ -f "$origem/$teste" ] || falhar "download de $branch incompleto. Nada foi alterado."
@@ -242,7 +255,7 @@ fi
 
 # ---------- 3. Atualização automática ----------
 if [ "$AUTOMATICO" != "1" ]; then
-  curl -fsSL "$SCRIPT_URL" -o "$BIN.tmp" && bash -n "$BIN.tmp" && chmod 755 "$BIN.tmp" && mv "$BIN.tmp" "$BIN"
+  gh_curl -H "Accept: application/vnd.github.raw" "$SCRIPT_URL" -o "$BIN.tmp" && bash -n "$BIN.tmp" && chmod 755 "$BIN.tmp" && mv "$BIN.tmp" "$BIN"
   # Backup diário dos dados privados (CRM, senha, token, Radar, fotos): 14 cópias em $BACKUP_DIR, só root lê.
   mkdir -p "$BACKUP_DIR" && chmod 700 "$BACKUP_DIR"
   cat > "$BACKUP_BIN" <<BKP

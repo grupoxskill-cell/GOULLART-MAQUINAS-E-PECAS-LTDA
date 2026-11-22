@@ -22,7 +22,14 @@ await import("./preparar-espelho.mjs");
 await cp("site-novo", "_site", { recursive: true });
 await cp("data/catalogo.json", "_site/catalogo.json");
 await writeFile("_site/.nojekyll", "");
-await writeFile("_site/maquinas-ate-300-mil.html", await faixa300(JSON.parse(await readFile("_site/api/catalog.json", "utf8"))));
+const { maquinasDoCatalogo } = await import("../lib/adm.js");
+const { consultaPublica } = await import("../lib/consulta-maquinas.js");
+const { catalogoPdf, diaEmissao } = await import("../lib/catalogo-pdf.js");
+const baseConsulta = JSON.parse(await readFile("_site/api/catalog.json", "utf8"));
+const consulta = consultaPublica(maquinasDoCatalogo(baseConsulta, baseConsulta, null, maquinas), baseConsulta, maquinas);
+await writeFile("_site/consulta-maquinas.json", JSON.stringify(consulta));
+await writeFile("_site/catalogo-maquinas.pdf", catalogoPdf(consulta, diaEmissao()));
+await writeFile("_site/maquinas-ate-300-mil.html", await faixa300(baseConsulta));
 
 const vitrine = JSON.parse(await readFile("_site/api/catalog.json", "utf8"));
 await writeFile("_site/maquinas.html", await paginaCatalogo(maquinas, vitrine));
