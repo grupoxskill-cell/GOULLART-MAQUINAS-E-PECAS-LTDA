@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Máquinas pesadas à venda | GOULLART Pesados</title>
   <meta name="description" content="Catálogo de escavadeiras, pás-carregadeiras, retroescavadeiras, tratores, motoniveladoras e caminhões. Fotos, ano, horas e preço anunciado.">
+  <link rel="canonical" href="https://www.goullartmaquinaspesadas.com.br/maquinas.html">
   <meta name="theme-color" content="#061e42">
   <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="customer-contact.css?v=20261029-1"></head>
@@ -39,8 +40,8 @@
 
   <main id="conteudo" class="section section-alt">
     <div class="wrap">
-      <div class="filtros">
-        <p><a href="/selecao.html">Buscar por orçamento e montar meu catálogo</a></p>
+      <p><a href="/selecao.html">Buscar por orçamento e montar meu catálogo</a></p>
+      <div class="filtros" id="maquinas-controles" hidden>
         <div id="maquinas-filtros" class="chips" role="group" aria-label="Filtrar por tipo de máquina"></div>
         <div class="filtros-linha">
           <input id="maquinas-busca" class="search" type="search" placeholder="Buscar por marca, modelo ou ano: Volvo, D6, 966, 2020…" aria-label="Buscar máquina">
@@ -52,7 +53,7 @@
       </div>
       <p class="muted">Preços anunciados. Disponibilidade, estado e condições são confirmados pela equipe antes da negociação.</p>
       <p id="maquinas-info" class="contagem" role="status" aria-live="polite">Carregando máquinas…</p>
-      <noscript><p>Ative o JavaScript para ver as máquinas ou <a href="https://wa.me/5562999427276" rel="noopener" target="_blank">consulte pelo WhatsApp</a>.</p></noscript>
+      <div id="maquinas-indice"></div>
       <ul id="maquinas-lista" class="machines"></ul>
     </div>
   </main>

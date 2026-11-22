@@ -1,13 +1,13 @@
 // Site GOULLART: catálogo e contato humano. A IA permanece desativada.
 import { historiasPublicas, lerOperacao } from "./lib/operacao.js";
 import { faixa300 } from "./lib/selecao.js";
-import { catalogoPublico } from "./lib/publicacoes.js";
+import { catalogoEstatico, catalogoPublico } from "./lib/publicacoes.js";
 import http from "node:http";
 import { readFile } from "node:fs/promises";
 import { extname, resolve, relative, isAbsolute } from "node:path";
 import { fileURLToPath } from "node:url";
 import { rotaAdm, servirFoto, maquinasPublicas, referenciasPublicas } from "./lib/adm.js";
-import { paginaMaquina, sitemap, tiposDeMaquina } from "./lib/paginas.js";
+import { paginaMaquina, paginaCatalogo, sitemap, tiposDeMaquina } from "./lib/paginas.js";
 import { evidenciaPublica, responderVideo } from "./lib/evidencia-publica.js";
 import { registrar, contarNavegador, navegadoresHoje } from "./lib/interesse.js";
 import { ipCliente } from "./lib/auth.js";
@@ -118,6 +118,10 @@ async function atender(req, res) {
   if (pathname.startsWith("/fotos/")) return servirFoto(req, res, pathname);
   // Catálogo do site + máquinas publicadas pelo ADM (Radar com margem e Pátio).
   if (pathname === "/maquinas.json") return responderComEtag(req, res, "application/json; charset=utf-8", JSON.stringify(await maquinasPublicas()));
+  if (pathname === "/maquinas.html") {
+    const [maquinas, vitrine] = await Promise.all([maquinasPublicas(), catalogoEstatico()]);
+    return responderComEtag(req, res, "text/html; charset=utf-8", await paginaCatalogo(maquinas, vitrine));
+  }
   const pagina = /^\/maquina\/([a-z0-9-]+?)(?:\.html)?$/.exec(pathname);
   if (pagina) return servirPaginaMaquina(req, res, pagina[1]);
   if (pathname === "/sitemap.xml") {
