@@ -47,7 +47,7 @@ export async function prepareCatalogue(directory,now=Date.now()){
   if(filename!=='index.html'){
    const type=filename.startsWith('maquinas/')?filename.slice(9,-5):'',offers=filename==='ofertas.html';
    const items=eligibleItems.filter(i=>i.category==='maquinas'&&(!type||types.matches(i,type))&&(!offers||i.offer?.verified===true&&i.offer.price===i.price&&i.offer.discountPercent>=20)).sort((a,b)=>(a.price??Infinity)-(b.price??Infinity));
-   const nav=types.entries.filter(([id])=>counts[id]>0).map(([id,label])=>`<a href="/maquinas/${id}"${id===type?' aria-current="page"':''}><span>${esc(label)}</span><strong>${counts[id]}</strong></a>`).join('');
+   const nav=types.entries.map(([id,label])=>`<a href="/maquinas/${id}"${id===type?' aria-current="page"':''}><span>${esc(label)}</span><strong>${counts[id]}</strong></a>`).join('');
    if(type)html=html.replace(/<nav\b[^>]*class="catalog-page-categories"[^>]*>[\s\S]*?<\/nav>/,'');
    else html=html.replace(/(<div id="catalog-page-categories">)[\s\S]*?(<\/div><\/nav>)/,'$1'+nav+'$2');
    html=html.replace(/(<p id="catalog-page-count">)[\s\S]*?(<\/p>)/,'$1'+(items.length?items.length+(items.length===1?' anúncio encontrado':' anúncios encontrados'):'Consulte outras máquinas disponíveis')+'$2');
@@ -61,11 +61,9 @@ export async function prepareCatalogue(directory,now=Date.now()){
    html=html.replace(/(<section id="catalog-page-list"[^>]*>)[\s\S]*?(<\/section>)/,(_,start,end)=>start+(cards||fallback)+end);
   }
   html=html.replace(/<a\b[^>]*href="\/maquinas\/([a-z-]+)\/?"[^>]*>/g,(tag,id)=>
-   Object.hasOwn(counts,id) ? setHidden(tag,counts[id]===0) : tag);
+   Object.hasOwn(counts,id) ? setHidden(tag,false) : tag);
   html=html.replace(/(<details\b[^>]*class="sidebar-group"[^>]*>)([\s\S]*?<\/details>)/g,(_,opening,body)=>
-   setHidden(opening,!/<a\b(?![^>]*\shidden[\s>])/.test(body))+body);
-  // Cavalo Mecânico é classificado em Caminhões, sem card independente na home.
-  if(filename==='index.html')html=html.replace(/<a\b[^>]*id="tipo-cavalo-mecanico"[^>]*>[\s\S]*?<\/a>/g,'');
+   setHidden(opening,false)+body);
   const hasOffers=eligibleItems.some(i=>i.category==='maquinas'&&i.offer?.verified===true&&i.offer.price===i.price&&i.offer.discountPercent>=20);
   html=html.replace(/<a\b[^>]*href="\/ofertas\/?"[^>]*>/g,tag=>setHidden(tag,!hasOffers));
   const linkConsulta = '<p><a href="/consulta-maquinas.html">Comparar máquinas · Simular troca · Baixar catálogo PDF</a></p>';

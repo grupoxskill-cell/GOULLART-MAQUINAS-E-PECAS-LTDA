@@ -66,6 +66,44 @@ test('live category cards and counts use the homepage eligibility policy',async(
  assert.equal(JSON.stringify(inventory),before);
 });
 
+test('categorias de caminhões carregam anúncios sem cidade e mantêm vendidos e privados fora da vitrine',async()=>{
+ for (const [type,title] of [['pipa','Caminhão pipa'], ['basculante','Caminhão basculante'], ['cavalo-mecanico','Cavalo mecânico']]) {
+  const truck=machine('TRUCK-'+type,{title,location:undefined});
+  const nodes=await client([truck, {...truck,id:'PRIVATE-TRUCK',publicCode:'PRIVATE-TRUCK',privateOnly:true},
+   {...truck,id:'SOLD-TRUCK',publicCode:'SOLD-TRUCK',situacao:'Vendida'}],{type});
+  assert.equal(nodes['catalog-page-count'].textContent,'1 anúncio encontrado',type);
+  assert.ok(nodes['catalog-page-list'].innerHTML.includes('TRUCK-'+type),type);
+  assert.match(nodes['catalog-page-list'].innerHTML,/Localização a confirmar/);
+  assert.doesNotMatch(nodes['catalog-page-list'].innerHTML,/PRIVATE-TRUCK|SOLD-TRUCK/);
+ }
+ const empty=await client([],{type:''});
+ for (const type of ['pipa','basculante','cavalo-mecanico','munck','retroescavadeira']) {
+  assert.ok(empty['catalog-page-categories'].innerHTML.includes('href="/maquinas/'+type+'"'),type);
+ }
+ assert.equal(empty['catalog-page-count'].textContent,'0 anúncios encontrados');
+});
+
+test('menu e categorias continuam acessíveis após carregar e atualizar um catálogo vazio',async()=>{
+ const links=['pipa','basculante','cavalo-mecanico','munck','retroescavadeira'].map(type=>({
+  hidden:true, getAttribute:()=>'/maquinas/'+type,
+ }));
+ const groups=[{hidden:true,querySelectorAll:()=>links}];
+ const events={};
+ const context={document:{
+  querySelectorAll:selector=>selector==='.sidebar-group'?groups:links,
+  addEventListener:(name,fn)=>{events[name]=fn;},
+ },GoullartFeed:Promise.resolve({items:[]})};
+ context.window=context;vm.createContext(context);
+ for(const file of ['catalog-types.js','catalog-navigation.js'])vm.runInContext(source(file),context);
+ await new Promise(resolve=>setImmediate(resolve));
+ assert.ok(links.every(link=>link.hidden===false),'Categorias vazias devem permanecer acessíveis.');
+ assert.equal(groups[0].hidden,false,'O grupo Caminhões deve permanecer acessível.');
+ events['goullart:catalogupdate']({detail:{items:[machine('TEST',{title:'Caminhão pipa'})]}});
+ events['goullart:catalogupdate']({detail:{items:[]}});
+ assert.ok(links.every(link=>link.hidden===false));
+ assert.equal(groups[0].hidden,false);
+});
+
 test('live offers require eligibility as well as a verified matching discount',async()=>{
  const offer={verified:true,price:100000,discountPercent:20};
  const nodes=await client([machine('VALID-OFFER',{offer}),machine('NO-PHOTO',{image:'',offer}),machine('OLD-OFFER',{publishedAt:'2025-01-01',offer}),machine('UNVERIFIED',{offer:{...offer,verified:false}}),machine('CHANGED-PRICE',{offer:{...offer,price:90000}})],{type:'',offers:true});
@@ -156,10 +194,28 @@ test('the built retro catalogue has all approved cards in its grid and no leftov
  for(const file of ['_site/maquinas/retroescavadeira.html','_site/maquinas/retroescavadeira/index.html']){
   const html=await readFile(file,'utf8'),match=html.match(/<section id="catalog-page-list"[^>]*>([\s\S]*?)<\/section>/);
   assert.ok(match,file);
-  for(const code of codes) assert.ok(!match[1].includes(code),code+' sem município deve ficar no ADM');
-  assert.match(match[1],/No momento sem unidades/);
+  for(const code of codes) assert.ok(match[1].includes(code),code+' autorizado deve aparecer mesmo sem município');
+  assert.doesNotMatch(match[1],/No momento sem unidades/);
   assert.equal((html.match(/<article\b/g)||[]).length,(match[1].match(/<article\b/g)||[]).length,file);
   assert.match(html.slice(match.index+match[0].length),/^\s*<a class="catalog-page-back"/,file);
+ }
+});
+
+test('build restaura os blocos originais e os caminhões publicados na home e nas categorias',async()=>{
+ const html=await readFile('_site/index.html','utf8');
+ const cards=[...html.matchAll(/<a\b[^>]*class="machine-type-card"[^>]*>[\s\S]*?<\/a>/g)].map(m=>m[0]);
+ const ids=cards.map(card=>card.match(/\bid="([^"]+)"/)[1]);
+ for(const id of ['tipo-retroescavadeira','tipo-motoniveladora','tipo-mini-carregadeira','tipo-trator-esteira','tipo-pipa','tipo-basculante','tipo-cavalo-mecanico']){
+  assert.ok(ids.includes(id),id+' deve continuar na home');
+ }
+ assert.ok(cards.every(card=>!/^<a\b[^>]*\shidden(?:\s|>)/.test(card)),'Nenhum bloco de categoria deve ficar oculto.');
+ for(const [type,code] of [['pipa','GOUL-330'],['basculante','GOUL-348'],['cavalo-mecanico','GOUL-331']]){
+  for(const suffix of ['.html','/index.html']){
+   const page=await readFile('_site/maquinas/'+type+suffix,'utf8');
+   const grid=page.match(/<section id="catalog-page-list"[^>]*>([\s\S]*?)<\/section>/)?.[1];
+   assert.ok(grid?.includes('id="anuncio-'+code+'"'),type+suffix+' deve exibir '+code);
+   assert.match(grid,/https:\/\/wa.me\/5562999427276\?text=/);
+  }
  }
 });
 
@@ -177,7 +233,7 @@ test('static category and offer snapshots filter eligibility without deleting so
   assert.match(category,/2 anúncios encontrados/);assert.match(category,/RECENT/);assert.match(category,/OWNER/);
   assert.doesNotMatch(category,/NO-PHOTO|BLANK-PHOTO|EXPIRED|UNDATED|INVALID-DATE|FUTURE|OTHER-TYPE|EMPTY-TYPE/);
   assert.doesNotMatch(category,/catalog-page-categories/);
-  assert.match(category,/<details class="sidebar-group"><summary>Máquinas<\/summary><a href="\/maquinas\/escavadeira">Escavadeira<\/a><a hidden href="\/maquinas\/pa-carregadeira">Pá<\/a><\/details><a href="\/ofertas">Ofertas<\/a>/);
+  assert.match(category,/<details class="sidebar-group"><summary>Máquinas<\/summary><a href="\/maquinas\/escavadeira">Escavadeira<\/a><a href="\/maquinas\/pa-carregadeira">Pá<\/a><\/details><a href="\/ofertas">Ofertas<\/a>/);
   const offers=await readFile(join(dir,'ofertas.html'),'utf8');assert.match(offers,/3 anúncios encontrados/);assert.doesNotMatch(offers,/NO-PHOTO|EXPIRED|FUTURE/);
   assert.match(await readFile(join(dir,'maquinas/pa-carregadeira.html'),'utf8'),/No momento sem unidades/);
   const saved=JSON.parse(await readFile(join(dir,'api/catalog.json'),'utf8')).items;
