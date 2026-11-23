@@ -45,6 +45,6 @@ test('an open rental page expires unchanged cards at local midnight, even if ref
  clock=Date.parse('2026-11-01T03:00:00Z');offline=true;interval();await new Promise(setImmediate);
  cards=get('#products').innerHTML;
  assert.match(cards,/item-NEWEST/);assert.doesNotMatch(cards,/item-OLDER|WAITING/);
- assert.equal(get('#count').textContent,'1 anúncios encontrados');
+ assert.equal(get('#count').textContent,'1 anúncio encontrado');
  assert.equal(JSON.stringify(original),before);
 });
