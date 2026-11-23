@@ -18,7 +18,9 @@ const definitions = [
  ['comboio','Caminhão Comboio',/\bcomboio\b/],
  ['munck','Caminhão Munck',/\b(?:munck|munk|guindauto)\b/],
  ['cavalo-mecanico','Cavalo Mecânico',/\bcavalo\s+mecanico\b/],
+ ['caminhoes','Todos os caminhões',/^(?:caminh(?:ao|oes)|conjunto de caminhoes)\b/],
 ];
+const truckTypes = new Set(['caminhoes','pipa','basculante','comboio','munck','cavalo-mecanico']);
 const modelRules = [
  ['pa-carregadeira',/\b(?:(?:volvo\s+)?l\s*(?:60|70|90|110|120|150|180|220)(?:[a-z])?|(?:komatsu\s+)?wa\s*\d{2,3}(?:[- ]\d)?|(?:hyundai\s+)?hl\s*\d{3}|(?:cat|caterpillar)\s*9(?:24|38|50|62|66|80)[a-z]?)\b/],
  ['retroescavadeira',/\b(?:(?:cat|caterpillar)\s*4(?:16|20)[a-z]?|jcb\s*3cx|case\s*580[a-z]?)\b/],
@@ -40,8 +42,19 @@ const machineTypes = {
  entries,
  label,
  classify,
- matches(item,id){return !label(id)||classify(item)===id;},
- counts(items){const result=Object.fromEntries(entries.map(([id])=>[id,0]));for(const item of items){const id=classify(item);if(id)result[id]++;}return result;},
+ matches(item,id){
+  const type=classify(item);
+  return !label(id)||(id==='caminhoes'?truckTypes.has(type):type===id);
+ },
+ counts(items){
+  const result=Object.fromEntries(entries.map(([id])=>[id,0]));
+  for(const item of items){
+   const id=classify(item);
+   if(id)result[id]++;
+   if(id!=='caminhoes'&&truckTypes.has(id))result.caminhoes++;
+  }
+  return result;
+ },
 };
 
 window.GoullartMachineTypes=machineTypes;
