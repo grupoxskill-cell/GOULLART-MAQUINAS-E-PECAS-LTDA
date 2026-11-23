@@ -2,7 +2,7 @@
  * que não carregam site-typography.css: guias, peças, apresentação e catálogo antigo. */
 @font-face{
  font-family:"Montserrat GOULLART";
- src:url('/assets/fonts/montserrat-latin-variable.woff2') format('woff2');
+ src:url('./assets/fonts/montserrat-latin-variable.woff2') format('woff2');
  font-style:normal;
  font-weight:100 900;
  font-display:swap;

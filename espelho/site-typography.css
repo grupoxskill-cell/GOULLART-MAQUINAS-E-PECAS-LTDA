@@ -3,7 +3,7 @@
  * changing their colors, spacing, geometry or SVG logos. */
 @font-face{
  font-family:"Montserrat GOULLART";
- src:url('/assets/fonts/montserrat-latin-variable.woff2') format('woff2');
+ src:url('./assets/fonts/montserrat-latin-variable.woff2') format('woff2');
  font-style:normal;
  font-weight:100 900;
  font-display:swap;
@@ -68,7 +68,7 @@
  position:absolute;
  inset:20px 18px 16px;
  z-index:0;
- background:url('/assets/brands/goullart-locacoes-azul-v1.png') center/contain no-repeat;
+ background:url('./assets/brands/goullart-locacoes-azul-v1.png') center/contain no-repeat;
  opacity:.5;
  /* A logo original tem fundo claro opaco: escurecê-la inteira apagava a marca. */
  filter:grayscale(1) invert(1);

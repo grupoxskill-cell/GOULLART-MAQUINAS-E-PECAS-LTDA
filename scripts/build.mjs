@@ -57,8 +57,10 @@ await writeFile("_site/sitemap.xml", sitemap(maquinas, await tiposDeMaquina()));
 // Mesma fonte em todas as páginas: as que não vêm do espelho recebem fonte-goullart.css.
 for (const rel of (await readdir("_site", { recursive: true })).filter((n) => n.endsWith(".html"))) {
   const f = `_site/${rel}`, html = await readFile(f, "utf-8");
-  if (/href="\/(?:site-typography|fonte-goullart)\.css/.test(html) || !/<\/head>/i.test(html)) continue;
-  await writeFile(f, html.replace(/<\/head>/i, '<link rel="stylesheet" href="/fonte-goullart.css?v=20261113"></head>'));
+  if (/\bhref=(["'])(?:\/|(?:\.\.?\/)*)(?:site-typography|fonte-goullart)\.css(?:[?#][^"']*)?\1/i.test(html) || !/<\/head>/i.test(html)) continue;
+  // Uma ficha está uma pasta abaixo; outras páginas podem ter mais níveis ou usar a base da raiz.
+  const prefixo = /<base\s+href=["']\/["']/i.test(html) ? "./" : "../".repeat(rel.split(/[\\/]/).length - 1) || "./";
+  await writeFile(f, html.replace(/<\/head>/i, `<link rel="stylesheet" href="${prefixo}fonte-goullart.css?v=20261113"></head>`));
 }
 // Por último: cada CSS/JS ganha ?v=<resumo do conteúdo>, para mudanças aparecerem na hora (sem cache velho).
 const { versionarArquivos } = await import("./versionar-arquivos.mjs");

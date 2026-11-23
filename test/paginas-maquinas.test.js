@@ -94,7 +94,7 @@ test('fichas com preço sob consulta preservam a ressalva no compartilhamento e 
   }
 });
 
-test('comparador e simulação partem da ficha no domínio e no espelho em subdiretório', async () => {
+test('URLs e seleção inicial do comparador preservam o subdiretório (DOM simulado)', async () => {
   const base = 'https://exemplo.github.io/catalogo/';
   const ficha = readdirSync('_site/maquina').find(nome => nome.includes('hyundai-r220lc-9-2020'));
   assert.ok(ficha);
@@ -106,7 +106,6 @@ test('comparador e simulação partem da ficha no domínio e no espelho em subdi
   assert.equal(consulta.searchParams.get('ref'), 'GOUL-HY-2020-12000');
   const pagina = readFileSync('_site/consulta-maquinas.html', 'utf8');
   for (const [, ref] of pagina.matchAll(/(?:src|href)="([^"]+)"/g)) {
-    if (ref.startsWith('/fonte-goullart.css')) continue; // Fonte global adicionada pelo build.
     assert.ok(new URL(ref, consulta).href.startsWith(base), ref);
   }
   const estado = { primeira: { options: [], replaceChildren(...v) { this.options = v; } },
