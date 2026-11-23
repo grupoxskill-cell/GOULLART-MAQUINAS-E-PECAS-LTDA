@@ -93,6 +93,8 @@ addEventListener("hashchange", () => { if (["#radares", "#radar"].includes(locat
 async function inicio() {
   const [r, interesse] = await Promise.all([api("/resumo"), api("/interesse").catch(() => [])]);
   resumo = r;
+  const acessos = resumo.acessos;
+  const falhas = acessos?.filter(evento => evento.tipo === "login_falhou").length;
   const n = (titulo, valor, aba) => h("button", { class: "numero btn sec", onclick: () => abrir(aba) }, h("b", {}, valor), titulo);
   conteudo.replaceChildren(
     resumo.encontrosRadarNovo ? h("div", { class: "alerta" },
@@ -103,10 +105,12 @@ async function inicio() {
       h("p", { class: "muted" }, "Vale decidir: baixar o preço, trocar a foto ou tirar do site."),
       h("ul", {}, resumo.envelhecidas.slice(0, 12).map((m) => h("li", {}, h("b", {}, m.codigo), ` ${m.titulo} — ${m.dias} dias (desde ${m.publicadoEm.split("-").reverse().join("/")})`)))) : "",
     h("div", { class: "painel" },
-      h("h2", {}, "Últimos acessos ao ADM"),
-      h("p", { class: "muted" }, "Só você deveria aparecer aqui. Entrada de um endereço estranho: troque a senha em Config. (um login de IP novo também gera aviso pela automação configurada)."),
+      h("h2", {}, "Segurança do ADM"),
+      Array.isArray(acessos) && acessos.length ? h("strong", {}, `${falhas} tentativa(s) de login com senha incorreta nos últimos ${acessos.length} eventos de segurança.`) : "",
+      h("p", { class: "muted" }, "Confira os horários e os endereços dos acessos recentes. Se identificar um login desconhecido, troque a senha."),
       resumo.acessos?.length ? h("ul", {}, resumo.acessos.map((a) => h("li", {}, `${new Date(a.em).toLocaleString("pt-BR")} — ${({ login: "entrou", login_falhou: "senha errada", sair: "saiu", senha_trocada: "trocou a senha", token_gerado: "gerou token do Radar" })[a.tipo] || a.tipo}${a.ip ? ` — IP ${a.ip}` : ""}`)))
-        : h("p", {}, "Nenhum acesso registrado ainda.")),
+        : h("p", {}, Array.isArray(acessos) ? "Nenhum evento de segurança registrado." : "Histórico de acessos indisponível."),
+      h("button", { class: "btn sec", onclick: () => abrir("config") }, "Gerenciar senha e sessão")),
     h("p", { class: "muted" }, resumo.servidor?.versao
       ? `Servidor no ar com a versão ${resumo.servidor.versao}, atualizada em ${new Date(resumo.servidor.atualizadoEm).toLocaleString("pt-BR")} (ligado desde ${new Date(resumo.servidor.ligadoEm).toLocaleString("pt-BR")}).`
       : `Servidor ligado desde ${resumo.servidor ? new Date(resumo.servidor.ligadoEm).toLocaleString("pt-BR") : "—"} (versão local, sem atualização automática).`),
@@ -884,7 +888,18 @@ async function config() {
     setTimeout(() => URL.revokeObjectURL(link.href), 10_000);
   }, "Cópia baixada. Guarde o arquivo em local seguro: ele tem dados privados."));
   const sair = h("button", { class: "btn perigo" }, "Sair do ADM");
-  sair.addEventListener("click", async () => { await api("/sair", { method: "POST" }).catch(() => {}); mostrarLogin(); });
+  const situacaoSaida = h("p", { role: "status" });
+  sair.addEventListener("click", () => acao(sair, async () => {
+    situacaoSaida.textContent = "Encerrando a sessão…";
+    try {
+      const resposta = await api("/sair", { method: "POST" });
+      if (resposta.ok !== true) throw new Error();
+      situacaoSaida.textContent = "";
+      mostrarLogin();
+    } catch {
+      situacaoSaida.textContent = "O servidor não confirmou a saída. Tente novamente antes de deixar este dispositivo.";
+    }
+  }));
   const painelWhats = await painelWhatsapp();
   conteudo.replaceChildren(
     painelWhats,
@@ -901,7 +916,7 @@ async function config() {
     h("div", { class: "painel" }, h("h2", {}, "Cópia de segurança"),
       h("p", { class: "muted" }, "O servidor já faz backup todo dia. Aqui você baixa uma cópia para guardar com você. O arquivo tem preços de origem e contatos: não envie para ninguém."),
       baixar),
-    h("div", { class: "painel" }, sair));
+    h("div", { class: "painel" }, h("h2", {}, "Sessão administrativa"), sair, situacaoSaida));
 }
 
 // ---------- WhatsApp do Radar (API oficial da Meta) ----------

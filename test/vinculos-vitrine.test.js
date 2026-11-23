@@ -17,11 +17,6 @@ for (const [codigo, ficha] of Object.entries({
   test(codigo + " abre a ficha " + ficha, async () => {
     const row=JSON.parse(await readFile('public/maquinas.json','utf8')).find(m=>m.referencia===ficha);
     assert.ok(row);
-    if(!row.local){
-      assert.equal(paginas[codigo],undefined);
-      assert.equal(paginas[ficha],undefined);
-      return;
-    }
     assert.match(paginas[ficha], /^\/maquina\/.+\.html$/);
     assert.equal(paginas[codigo], paginas[ficha]);
     const html = await readFile("_site" + paginas[codigo], "utf8");

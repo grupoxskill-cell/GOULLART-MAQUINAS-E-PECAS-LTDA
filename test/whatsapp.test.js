@@ -222,9 +222,9 @@ test('SIM vindo de outro número não publica nada', async () => {
   assert.equal(enviados.length, antes);
 });
 
-test('anúncio sem cidade fica no ADM e o aprovador recebe o motivo; NÃO descarta', async () => {
+test('anúncio sem comparáveis fica no ADM mesmo com localização opcional', async () => {
   await postar(payload([foto(APROVADOR, '22222', 'ESCAVADEIRA DOOSAN DX220 LC\nAno 2023\nR$ 300.000')]));
-  assert.ok(await ate(async () => enviados.some((e) => e.type === 'text' && /Não virou oferta: .*sem cidade e estado/.test(e.text.body))));
+  assert.ok(await ate(async () => enviados.some((e) => e.type === 'text' && /DOOSAN.*Não virou oferta: amostra insuficiente/i.test(e.text.body))));
   const doosan = (await radar()).find((r) => /DOOSAN/.test(r.titulo));
   assert.equal(doosan.status, 'novo');
   assert.equal(doosan.codigo, undefined);

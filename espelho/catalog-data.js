@@ -13,17 +13,15 @@
  };
  const clean=value=>String(value||'').replace(/\*/g,'').replace(/horimetro/gi,'Horímetro').replace(/manutenções em dias/gi,'manutenções em dia').replace(/14 metros quadrados/gi,'14 m³').replace(/7:900/g,'7.900 horas').replace(/litros\.{2,}/gi,'litros.');
  function asset(value){if(typeof value!=='string')return value;try{const u=new URL(value,'https://www.goullartmaquinaspesadas.com.br');return /^\/assets\/(?:listings|publicacoes)\//.test(u.pathname)?u.pathname+u.search:value;}catch{return value;}}
- // Valores pendentes de comprovação, revisão comercial de 22/11.
- const retidas=new Set(['GOUL-345','GOUL-ART-261105-06']);
+ // Pendências específicas de preço ou de aprovação da ficha (ver CLAUDE.md).
+ const retidas=new Set(['GOUL-345','GOUL-ART-261105-06','RADAR-PC200-2018']);
  const cidadeUf=valor=>/^[\p{L}][\p{L} .’'-]{1,70}\s*[,/–-]\s*(?:AC|AL|AP|AM|BA|CE|DF|ES|GO|MA|MT|MS|MG|PA|PB|PR|PE|PI|RJ|RN|RS|RO|RR|SC|SP|SE|TO)$/iu.test(String(valor||'').trim());
  function publicavel(item){
-  const local = item.location || item.local;
-  const localPendente = !local && item.locationPending === true;
   const temImagem = temFoto(item) || item.fotos?.some(f => typeof f === 'string' && f.trim());
   return !retidas.has(item.publicCode || item.referencia) && !vendida(item) &&
    !item.archived && !item.privateOnly && item.published !== false &&
    ![item.status, item.situacao].some(s => /^(cancelad[ao]|bloquead[ao])$/i.test(s || '')) &&
-   (cidadeUf(local) || localPendente) && Boolean(temImagem);
+   Boolean(temImagem);
  }
  function mensagem(item){return 'Tenho interesse na máquina '+item.title+' (ref. '+item.publicCode+'). Ainda está disponível?';}
  function normalize(item){

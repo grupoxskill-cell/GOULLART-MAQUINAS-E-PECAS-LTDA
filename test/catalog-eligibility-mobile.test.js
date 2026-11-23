@@ -156,8 +156,8 @@ test('the built retro catalogue has all approved cards in its grid and no leftov
  for(const file of ['_site/maquinas/retroescavadeira.html','_site/maquinas/retroescavadeira/index.html']){
   const html=await readFile(file,'utf8'),match=html.match(/<section id="catalog-page-list"[^>]*>([\s\S]*?)<\/section>/);
   assert.ok(match,file);
-  for(const code of codes) assert.ok(!match[1].includes(code),code+' sem município deve ficar no ADM');
-  assert.match(match[1],/No momento sem unidades/);
+  for(const code of codes) assert.ok(match[1].includes(code),code+' deve aparecer mesmo sem município');
+  assert.doesNotMatch(match[1],/No momento sem unidades/);
   assert.equal((html.match(/<article\b/g)||[]).length,(match[1].match(/<article\b/g)||[]).length,file);
   assert.match(html.slice(match.index+match[0].length),/^\s*<a class="catalog-page-back"/,file);
  }

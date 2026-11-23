@@ -117,12 +117,12 @@ test('cópia do ChatGPT recusa copiar o próprio domínio', async () => {
   assert.equal(codigo, 1);
 });
 
-test('máquina do Radar sem município permanece fora da vitrine', async () => {
+test('máquina do Radar com aprovação individual pendente permanece fora da vitrine', async () => {
   const r = await fetch(base + '/adm/catalogo.json');
   assert.equal(r.status, 200);
   const { items } = await r.json();
   const pc200 = items.find((i) => i.publicCode === 'RADAR-PC200-2018');
-  assert.equal(pc200,undefined,'O Radar mantém o registro até confirmar cidade e UF.');
+  assert.equal(pc200,undefined,'A ficha tem uma pendência comercial própria.');
 });
 
 // Revisão de segurança de 05/11/2026.
