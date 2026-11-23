@@ -967,5 +967,22 @@
      "assets/listings/sany-sy75c-2024-1500-03-cabine.jpg"
    ],
    "textoSite": "Miniescavadeira SANY SY75C, ano 2024, com 1.500 horas. Nota fiscal de origem, único dono e roda motriz em estado impecável, conforme informações fornecidas à GOULLART. Localização sob consulta. Fale agora com Jr. Goullart."
+ },
+ {
+   "ficha": "catalogo-2026-11-23",
+   "referencia": "GOUL-HY-2022-7190",
+   "locationPending": true,
+   "titulo": "Escavadeira Hyundai 220 LC-9S",
+   "categoria": "Escavadeiras",
+   "ano": "2022",
+   "horas": "7.190 h",
+   "preco": "R$ 410.000,00",
+   "fotos": [
+     "assets/listings/hyundai-220lc-9s-2022-7190-01-geral.jpg",
+     "assets/listings/hyundai-220lc-9s-2022-7190-02-frontal.jpg",
+     "assets/listings/hyundai-220lc-9s-2022-7190-03-lateral.jpg",
+     "assets/listings/hyundai-220lc-9s-2022-7190-04-roda-motriz.jpg"
+   ],
+   "textoSite": "Escavadeira Hyundai 220 LC-9S, ano 2022, com 7.190 horas. Nota fiscal de origem e ar-condicionado, conforme informações fornecidas à GOULLART. No estado de São Paulo, com cidade sob consulta. Fale agora com Jr. Goullart."
  }
 ]
