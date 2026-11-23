@@ -8,7 +8,7 @@
   if(!items)return;
   const eligibleItems=items.filter(i=>policy.eligibleListing(i));
   const counts=types.counts(eligibleItems);
-  if(nav)nav.innerHTML=types.entries.filter(([id])=>counts[id]>0).map(([id,label])=>'<a href="/maquinas/'+id+'"'+(id===type?' aria-current="page"':'')+'><span>'+esc(label)+'</span><strong>'+counts[id]+'</strong></a>').join('');
+  if(nav)nav.innerHTML=types.entries.map(([id,label])=>'<a href="/maquinas/'+id+'"'+(id===type?' aria-current="page"':'')+'><span>'+esc(label)+'</span><strong>'+counts[id]+'</strong></a>').join('');
   const list=eligibleItems.filter(i=>i.category==='maquinas'&&(!type||types.matches(i,type))&&(!offers||i.offer?.verified===true&&i.offer.price===i.price&&i.offer.discountPercent>=20));
   const order=select.value;
   list.sort((a,b)=>order==='recent'?String(b.publishedAt||'').localeCompare(String(a.publishedAt||'')):a.price==null?b.price==null?0:1:b.price==null?-1:order==='high'?b.price-a.price:a.price-b.price);

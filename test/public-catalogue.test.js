@@ -72,11 +72,18 @@ test('site público não traz telefones particulares, só o comercial (62) 99942
  assert.deepEqual(achados,[],'telefone particular em arquivo público');
 });
 
-test('unidade autorizada com localização pendente mantém retenções e foto obrigatória', () => {
- const item = {publicCode:'TESTE', locationPending:true, image:'/foto.jpg'};
- assert.equal(tools.publicavel(item), true);
- for (const restricao of [{status:'vendida'}, {situacao:'Cancelada'}, {archived:true},
-   {privateOnly:true}, {published:false}, {status:'bloqueado'}, {publicCode:'GOUL-ART-261105-06'}, {image:''}]) {
-  assert.equal(tools.publicavel({...item, ...restricao}), false);
+test('máquinas autorizadas aparecem sem cidade preenchida e preservam as restrições de publicação', () => {
+ const item = {publicCode:'TESTE', category:'maquinas', title:'Caminhão de teste', image:'/foto.jpg'};
+ const locais = [{}, {location:null}, {location:''}, {location:'GO'}, {local:'Goiás'},
+   {locationPending:true}, {location:'Goiânia/GO'}];
+ for (const local of locais) {
+  const original = {...item, ...local}, antes = JSON.stringify(original);
+  assert.equal(tools.vitrine({items:[original]}).items.length, 1, JSON.stringify(local));
+  assert.equal(JSON.stringify(original), antes, 'A exibição não deve inventar ou alterar a localização.');
+  for (const restricao of [{status:'vendida'}, {situacao:'Vendida'}, {situacao:'Cancelada'}, {archived:true},
+    {privateOnly:true}, {published:false}, {status:'bloqueado'}, {publicCode:'GOUL-ART-261105-06'}, {image:''}]) {
+   assert.equal(tools.vitrine({items:[{...original, ...restricao}]}).items.length, 0, JSON.stringify(restricao));
+  }
  }
+ assert.match(tools.facts(item), /Localização a confirmar$/);
 });

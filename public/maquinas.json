@@ -595,6 +595,7 @@
  {
   "ficha": "radar-2026-10-22",
   "referencia": "RADAR-PC200-2018",
+  "published": false,
   "titulo": "Escavadeira Komatsu PC200",
   "categoria": "Escavadeiras",
   "ano": "2018",
