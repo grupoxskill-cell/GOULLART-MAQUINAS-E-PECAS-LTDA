@@ -951,5 +951,21 @@
    "assets/listings/jd350g-2022-4150-8.jpg"
   ],
   "textoSite": "Escavadeira John Deere 350G LC, ano 2022, com 4.150 horas informadas. O anúncio informa R$ 450.000 pela máquina e comissão de 6% a cargo do comprador (R$ 27.000), totalizando R$ 477.000 antes de frete. Localização, disponibilidade e condições a confirmar."
+ },
+ {
+   "ficha": "catalogo-2026-11-23",
+   "referencia": "GOUL-SANY75-2024-1500",
+   "locationPending": true,
+   "titulo": "Miniescavadeira SANY SY75C",
+   "categoria": "Escavadeiras",
+   "ano": "2024",
+   "horas": "1.500 h",
+   "preco": "R$ 309.000,00",
+   "fotos": [
+     "assets/listings/sany-sy75c-2024-1500-01-geral.jpg",
+     "assets/listings/sany-sy75c-2024-1500-02-lateral.jpg",
+     "assets/listings/sany-sy75c-2024-1500-03-cabine.jpg"
+   ],
+   "textoSite": "Miniescavadeira SANY SY75C, ano 2024, com 1.500 horas. Nota fiscal de origem, único dono e roda motriz em estado impecável, conforme informações fornecidas à GOULLART. Localização sob consulta. Fale agora com Jr. Goullart."
  }
 ]
