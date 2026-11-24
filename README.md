@@ -111,6 +111,16 @@ O `render.yaml` está pronto para Node, `npm run build`, `npm start` e health ch
 - CNPJ 29.759.621/0001-35: presente no projeto e correspondente a Goulart Pecas e Maquinas Pesadas Ltda em consultas públicas Serasa/CNPJ.biz. A razão social anterior do projeto divergia. Não foi obtido novo comprovante diretamente da Receita; o rodapé usa marca e CNPJ.
 - E-mails, horário, promessa de retorno em 24h, cobertura internacional e texto de trocas foram retirados da apresentação por falta de validação atual. Consulte o histórico Git para os valores anteriores.
 
+## Pix dos produtos online
+
+Chave Pix aleatória padrão autorizada por Júnior em 24/11/2026 para os produtos vendidos online:
+
+`645f04d0-e06c-4288-83e6-e489c19aa2e0`
+
+No curso deste repositório, `espelho/curso.html` exibe a chave e o Pix copia e cola de R$ 497,00. O QR Code correspondente está em `espelho/assets/course/pix-curso-49700.svg`. Ao trocar chave ou preço, regenerar o payload completo (comprimentos e CRC), o QR Code e a versão da URL da imagem; validar o QR decodificado contra o payload. Os dados do recebedor já usados pelo curso são `GOULLART PECAS` e `GOIANIA`.
+
+Novos produtos devem usar essa chave nos seus respectivos sistemas de pagamento, com o valor e o identificador de cada pedido. Comprovante, botão “já paguei” ou resposta do navegador não confirmam recebimento. O conteúdo pago só é liberado após a confirmação do Pix. O checkout do laudo é externo a este repositório e precisa da configuração correspondente no serviço responsável.
+
 ## Segurança
 
 Backup diário dos dados privados do ADM (`/www/goullart-dados`): o instalador grava `/usr/local/bin/goullart-backup-dados` e um cron às 03h17 que guarda 14 cópias em `/www/goullart-backups` (só root lê). Restaurar: `systemctl stop goullart-app; tar -xzf /www/goullart-backups/ARQUIVO.tar.gz -C /; systemctl start goullart-app`. Copie as cópias para fora da VM de tempos em tempos.
