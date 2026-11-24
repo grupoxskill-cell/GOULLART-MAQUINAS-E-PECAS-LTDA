@@ -1,5 +1,5 @@
-/* The home introduces the areas; inventory lives inside each area. */
-body.goullart-storefront:not(.area-page) :is(#catalog-results,.search-area,#pecas,#locacao,#publicacoes){display:none!important}
+/* A home mostra o catálogo; as demais áreas mantêm suas páginas próprias. */
+body.goullart-storefront:not(.area-page) :is(.search-area,#pecas,#locacao,#publicacoes){display:none!important}
 .parts-family-browser{margin:20px 0 32px}
 .parts-family-browser h2{font-size:clamp(23px,4vw,32px);color:#102c50;margin:0 0 8px}
 .parts-family-browser>p{font-size:14px;line-height:1.5;color:#566579}
