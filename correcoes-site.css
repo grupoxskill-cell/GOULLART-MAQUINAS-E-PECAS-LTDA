@@ -108,3 +108,15 @@ body.catalogo-comercial :is(input, select, textarea, button) { text-transform: n
   }
   body.catalogo-comercial #maquinas-filtros .chip { flex: none; }
 }
+
+/* Fotos reais das categorias: reservar a mesma proporção das capas da grade. */
+.machine-categories .machine-type-card > .machine-category-photo {
+  aspect-ratio: 3 / 2;
+  flex-shrink: 0;
+}
+.machine-categories .machine-type-card > .machine-category-photo > img {
+  inset: 0;
+  width: 100%;
+  height: 100% !important;
+  object-fit: contain !important;
+}
