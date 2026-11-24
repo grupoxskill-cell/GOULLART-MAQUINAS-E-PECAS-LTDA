@@ -9,21 +9,22 @@ test('nota, foto e visibilidade preservam o preço revisado até uma edição ex
   t.after(() => rm(process.env.DATA_DIR, { recursive: true, force: true }));
   const { importarBackup, listarPublicacoes, alterarPublicacao, catalogoPublico } = await import('../lib/publicacoes.js');
   const id = 'GOUL-329';
+  const precoPublicado = 355000;
   const consulta = async () => (await catalogoPublico()).items.find(i => i.id === id);
   const antigo = { id, category: 'maquinas', title: 'Título de teste', price: 12345, publicText: 'Texto legado de teste.' };
   await importarBackup({ items: [antigo] });
   const editor = (await listarPublicacoes()).itens.find(i => i.id === id);
-  assert.equal((await consulta()).price, null);
-  assert.equal(editor.preco, null);
+  assert.equal((await consulta()).price, precoPublicado);
+  assert.equal(editor.preco, precoPublicado);
   assert.equal(editor.textoPublico, (await consulta()).publicText);
 
   await assert.rejects(alterarPublicacao(id, { titulo: antigo.title, textoPublico: antigo.publicText, preco: String(antigo.price), notasPrivadas: 'Rascunho' }), { status: 409 });
   const nota = await alterarPublicacao(id, { notasPrivadas: 'Somente na administração' });
   const foto = '/fotos/teste.jpg';
   await alterarPublicacao(id, { imagens: [foto] });
-  assert.equal(nota.preco, null);
+  assert.equal(nota.preco, precoPublicado);
   const atualizado = await consulta();
-  assert.equal(atualizado.price, null);
+  assert.equal(atualizado.price, precoPublicado);
   assert.equal(atualizado.publicText, editor.textoPublico);
   assert.equal(atualizado.year, editor.ano);
   assert.equal(atualizado.hours, editor.horas);
@@ -33,7 +34,7 @@ test('nota, foto e visibilidade preservam o preço revisado até uma edição ex
   await alterarPublicacao(id, { noSite: false });
   assert.equal(await consulta(), undefined);
   await alterarPublicacao(id, { noSite: true });
-  assert.equal((await consulta()).price, null);
+  assert.equal((await consulta()).price, precoPublicado);
   await Promise.all([alterarPublicacao(id, { preco: 54321 }), alterarPublicacao(id, { notasPrivadas: 'Outra nota' })]);
   assert.equal((await consulta()).price, 54321);
   await alterarPublicacao(id, { preco: '' });
