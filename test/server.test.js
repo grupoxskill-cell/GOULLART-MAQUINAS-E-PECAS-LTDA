@@ -17,6 +17,16 @@ await once(child.stdout, 'data');
 test.after(() => child.kill());
 const base = 'http://127.0.0.1:4317';
 
+test('endereço antigo do laudo não entrega PDF com ou sem pagamento declarado pelo visitante', async () => {
+  for (const suffix of ['', '?paid=true', '?status=paid', '?pix=confirmado']) {
+    for (const method of ['GET', 'HEAD']) {
+      const response = await fetch(base + '/assets/exemplo-laudo/exemplo-goullart.pdf' + suffix, { method });
+      assert.equal(response.status, 404);
+      assert.notEqual(response.headers.get('content-type'), 'application/pdf');
+    }
+  }
+});
+
 test('chat permanece bloqueado em todos os métodos e com query string', async () => {
   for (const path of ['/api/chat', '/api/chat?origin=legacy', '/api/chat/']) {
     for (const method of ['POST', 'GET', 'PUT']) {
