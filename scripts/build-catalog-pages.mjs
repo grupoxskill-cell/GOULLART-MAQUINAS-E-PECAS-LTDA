@@ -22,18 +22,14 @@ export async function prepareCatalogue(directory,now=Date.now()){
   const path=directory+'/'+filename;let html=await readFile(path,'utf8');
   if(filename==='index.html'){
    html=html.replace(/<section\b[^>]*id="approved-banner"[^>]*>[\s\S]*?<\/section>/,()=>renderMachineBanner(eligibleItems,globalThis.GoullartMachinePagesMap,directory));
-   const firstContact = html.match(/data-machine-whatsapp href="([^"]+)"/)?.[1];
-   if (firstContact) {
-    html = html.replace(/<a\b[^>]*\bclass="[^"]*\b(?:header-contact|dock-whatsapp)\b[^"]*"[^>]*>/g,
-     tag => tag.replace(/href="[^"]*"/, () => 'href="' + firstContact + '"'));
-   }
    if(!html.includes('href="/machine-banner.css'))html=html.replace('</head>','<link rel="stylesheet" href="/machine-banner.css?v=sem-faixa"></head>');
    // Uma foto original do próprio anúncio para cada categoria disponível.
    for(const [id,label] of types.entries){
     const listing=eligibleItems.find(i=>i.category==='maquinas'&&types.matches(i,id)&&i.image);
     if(!listing)continue;
+    const fit=['geradores','outros-equipamentos'].includes(id)?'contain':'cover';
     const re=new RegExp('(<a\\b[^>]*id="tipo-'+id+'"[^>]*>)[\\s\\S]*?(<strong>'+label+'</strong>)');
-    html=html.replace(re,(match,start,end)=>match.includes('class="goullart-category-cover"')?match:start+'<span class="machine-art-window"><img src="'+esc(listing.image)+'" alt="'+esc(label)+' — foto real do anúncio '+esc(listing.publicCode)+'" loading="lazy" style="width:100%;height:100%;object-fit:cover"></span>'+end);
+    html=html.replace(re,(match,start,end)=>match.includes('class="goullart-category-cover"')?match:start+'<span class="machine-art-window"><img src="'+esc(listing.image)+'" alt="'+esc(label)+' — foto real do anúncio '+esc(listing.publicCode)+'" loading="lazy" style="width:100%;height:100%;object-fit:'+fit+'"></span>'+end);
    }
    html=html.replace(/Seja VIP, Entra no canal oficial/g,'Seja VIP: entre no canal oficial');
 
@@ -60,6 +56,8 @@ export async function prepareCatalogue(directory,now=Date.now()){
    // Keep prices such as R$250.000 literal; replacement strings would interpret $2 as </section>.
    html=html.replace(/(<section id="catalog-page-list"[^>]*>)[\s\S]*?(<\/section>)/,(_,start,end)=>start+(cards||fallback)+end);
   }
+  html=html.replace(/(<details\b[^>]*class="sidebar-group"[^>]*>\s*<summary>Máquinas Pesadas[\s\S]*?<\/summary>\s*<div>)([\s\S]*?)(<\/div>\s*<\/details>)/g,
+   (_,start,body,end)=>start+body+['geradores','outros-equipamentos'].filter(id=>!body.includes('href="/maquinas/'+id+'"')).map(id=>'<a href="/maquinas/'+id+'">'+esc(types.label(id))+'</a>').join('')+end);
   html=html.replace(/(<details\b[^>]*class="sidebar-group"[^>]*>\s*<summary>Caminhões[\s\S]*?<\/summary>\s*<div>)([\s\S]*?<\/details>)/g,
    (_,start,body)=>start+(body.includes('href="/maquinas/caminhoes"')?'':'<a href="/maquinas/caminhoes">Todos os caminhões</a>')+body);
   html=html.replace(/<a\b[^>]*href="\/maquinas\/([a-z-]+)\/?"[^>]*>/g,(tag,id)=>
