@@ -54,6 +54,73 @@ test('home tem um único formulário acessível de busca separado do painel ocul
  assert.ok(html.indexOf(form)<html.indexOf('id="maquinas"'));
 });
 
+test('a home mantém carrossel e anúncios antes das categorias, laudo, curso e depoimentos',()=>{
+ const html=source('index.html');
+ const banner=html.indexOf('<section class="approved-banner"');
+ const search=html.indexOf('<form class="catalog-discovery"');
+ const catalog=html.indexOf('<section class="catalog" id="catalog-results"');
+ const products=html.indexOf('<div id="products"');
+ assert.ok(banner>=0&&banner<search&&search<catalog&&catalog<products);
+ for(const marker of ['<aside class="technical-report-banner"','data-testimonials="catalogo"',
+  '<a class="home-course-highlight"','<section class="machine-categories"']){
+  assert.ok(html.indexOf(marker)>products,marker+' deve vir depois dos anúncios reais.');
+ }
+ assert.ok(html.indexOf('<header>')<banner,'O cabeçalho continua antes do carrossel.');
+ for(const id of ['approved-banner','catalog-discovery','catalog-results','products','sort','more','empty']){
+  assert.equal((html.match(new RegExp('\\bid="'+id+'"','g'))||[]).length,1,id);
+ }
+ const catalogMarkup=html.match(/<section class="catalog" id="catalog-results">([\s\S]*?)<\/section>/)[1];
+ assert.doesNotMatch(catalogMarkup,/data-testimonials/,'Depoimentos não interrompem os anúncios.');
+});
+
+test('o script de áreas insere os blocos depois do catálogo sem mover a grade ou o carrossel',()=>{
+ const order=[];
+ const item=id=>({id,after(node){order.splice(order.indexOf(this)+1,0,node);}});
+ const banner=item('banner'),form=item('search'),catalog=item('catalog'),report=item('report'),reviews=item('reviews');
+ order.push(banner,form,catalog,report,reviews);
+ const main={prepend(node){order.unshift(node);}};
+ const context={URLSearchParams,location:new URL('https://example.com/'),window:{GoullartRoutes:{resolve:()=>({area:''})}},
+  document:{querySelector:s=>s==='main'?main:null,querySelectorAll:()=>[],
+   getElementById:id=>id==='approved-banner'?banner:id==='catalog-results'?catalog:null,
+   createElement:()=>({setAttribute(){},insertAdjacentHTML(){}})}};
+ vm.createContext(context);vm.runInContext(source('area-pages.js'),context);
+ const hub=order.find(node=>node.className==='business-cards');
+ assert.ok(hub);assert.deepEqual(order,[banner,form,catalog,hub,report,reviews]);
+ assert.match(hub.innerHTML,/MAGAZINE/);assert.match(hub.innerHTML,/PEÇAS/);assert.match(hub.innerHTML,/VENDAS DE MÁQUINAS/);
+});
+
+test('a home exibe todas as máquinas e caminhões elegíveis; páginas filtradas mantêm Ver mais',async()=>{
+ const eligible=[...Array.from({length:14},(_,i)=>machine('ESC-'+i,'Escavadeira '+i)),
+  machine('CAMINHAO-FINAL','Caminhão basculante'),machine('CAVALO-FINAL','Cavalo mecânico')];
+ const items=[...eligible,machine('PRIVATE','Escavadeira privada',{privateOnly:true}),
+  machine('SOLD','Escavadeira vendida',{situacao:'Vendida'}),machine('PART','Peça',{category:'pecas'})];
+ const home=await storefront('https://example.com/',items);
+ const cards=home.nodes.get('#products').innerHTML;
+ assert.equal(home.nodes.get('#count').textContent,'16 anúncios encontrados');
+ for(const item of eligible)assert.ok(cards.includes('id="item-'+item.id+'"'),item.id);
+ assert.doesNotMatch(cards,/id="item-(PRIVATE|SOLD|PART)"/);
+ assert.equal(home.nodes.get('#more').hidden,true);
+ assert.match(cards,/loading="lazy"/);
+ const area=await storefront('https://example.com/?area=maquinas',items);
+ assert.equal((area.nodes.get('#products').innerHTML.match(/<article\b/g)||[]).length,12);
+ assert.equal(area.nodes.get('#more').hidden,false);
+ area.nodes.get('#more').fire('click');
+ assert.equal((area.nodes.get('#products').innerHTML.match(/<article\b/g)||[]).length,16);
+ assert.equal(area.nodes.get('#more').hidden,true);
+});
+
+test('links legados por hash mantêm a paginação antes da normalização da área',async()=>{
+ const items=Array.from({length:16},(_,i)=>machine('ESC-'+i,'Escavadeira '+i));
+ for(const hash of ['maquinas','tipo-escavadeira']){
+  const area=await storefront('https://example.com/#'+hash,items);
+  assert.equal((area.nodes.get('#products').innerHTML.match(/<article\b/g)||[]).length,12,hash);
+  assert.equal(area.nodes.get('#more').hidden,false,hash);
+  area.nodes.get('#more').fire('click');
+  assert.equal((area.nodes.get('#products').innerHTML.match(/<article\b/g)||[]).length,16,hash);
+  assert.equal(area.nodes.get('#more').hidden,true,hash);
+ }
+});
+
 test('buscar na home abre a área de máquinas com a consulta compartilhável',async()=>{
  const app=await storefront('https://example.com/'),input=app.nodes.get('#search');
  input.value='Hyundai 220 São Luís';input.fire('input');
@@ -65,7 +132,7 @@ test('buscar na home abre a área de máquinas com a consulta compartilhável',a
  assert.equal(destination.searchParams.get('q'),'Hyundai 220 São Luís');
  const results=await storefront(destination.href);
  assert.equal(results.nodes.get('#count').textContent,'1 anúncio encontrado');
- assert.equal(results.nodes.get('#catalog-results').scrolled,true,'A busca da home deve levar aos resultados, depois dos blocos.');
+ assert.equal(results.nodes.get('#catalog-results').scrolled,true,'A busca da home deve levar aos resultados.');
 });
 
 test('links de busca encontram marca, código e cidade sem acentos preenchida só em location',async()=>{
@@ -132,15 +199,16 @@ test('a área move o mesmo formulário para antes das categorias e resultados se
   result.append=child=>{adopt(child);result.children.push(child);};
   result.prepend=child=>{adopt(child);result.children.unshift(child);};
   result.insertBefore=(child,before)=>{adopt(child);const index=result.children.indexOf(before);assert.ok(index>=0);result.children.splice(index,0,child);};
+  result.after=child=>{assert.ok(result.parent);const parent=result.parent;if(child.parent)child.parent.children=child.parent.children.filter(x=>x!==child);child.parent=parent;parent.children.splice(parent.children.indexOf(result)+1,0,child);};
   result.insertAdjacentHTML=()=>{};
   Object.defineProperty(result,'innerHTML',{set(html){this.markup=html;if(html.includes('id="area-page-title"')){this.append(node('a'));const heading=node('h1');heading.id='area-page-title';this.append(heading);}}});
   result.querySelector=selector=>selector==='#area-page-title'?result.children.find(n=>n.id==='area-page-title'):null;
   return result;
  }
- const main=node('main'),form=node('form'),cats=node('section'),catalog=node('section'),label=node('label'),areaInput=node('input');
- for(const child of [form,cats,catalog])main.append(child);
+ const main=node('main'),form=node('form'),cats=node('section'),catalog=node('section'),reviews=node('section'),label=node('label'),areaInput=node('input');
+ for(const child of [form,cats,catalog,reviews])main.append(child);
  const bySelector=new Map([['main',main],['#catalog-discovery',form],['.machine-categories',cats],['#catalog-results',catalog],
-  ['#catalog-discovery label',label],['#catalog-discovery input[name=area]',areaInput]]);
+  ['[data-testimonials="catalogo"]',reviews],['#catalog-discovery label',label],['#catalog-discovery input[name=area]',areaInput]]);
  const classes=new Set(),context={URL,URLSearchParams,location:new URL('https://example.com/?area=maquinas&q=hyundai'),
   history:{replaceState(){}},document:{title:'',body:{classList:{add:name=>classes.add(name)}},createElement:node,
    querySelector:selector=>bySelector.get(selector)||null,querySelectorAll:()=>[],getElementById:id=>bySelector.get('#'+id)||null,
@@ -152,6 +220,7 @@ test('a área move o mesmo formulário para antes das categorias e resultados se
  assert.equal(page.children.filter(n=>n===form).length,1);assert.ok(!main.children.includes(form));
  assert.ok(page.children.indexOf(form)<page.children.indexOf(cats));
  assert.ok(page.children.indexOf(cats)<page.children.indexOf(catalog));
+ assert.equal(page.children.filter(n=>n===reviews).length,1);assert.ok(page.children.indexOf(catalog)<page.children.indexOf(reviews));
  assert.equal(page.children.filter(n=>n.tag==='h1').length,1);
  events['goullart:filterchange']({detail:{category:'maquinas',type:'caminhoes',offers:false}});
  assert.equal(page.querySelector('#area-page-title').textContent,'Todos os caminhões');

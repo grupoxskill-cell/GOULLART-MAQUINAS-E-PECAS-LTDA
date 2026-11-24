@@ -1,4 +1,5 @@
-const initialVisible=12;
+// A home reúne todas as máquinas e caminhões; páginas filtradas mantêm a paginação.
+const initialVisible=window.GoullartRoutes.resolve(location.href).area?12:Number.MAX_SAFE_INTEGER;
 const PHONE='5562999427276';
 const contact=t=>'https://wa.me/'+PHONE+'?text='+encodeURIComponent(t);
 function bind(){document.querySelectorAll('[data-contact]').forEach(a=>{a.href=contact(a.dataset.contact);a.target='_blank';a.rel='noopener';});}bind();

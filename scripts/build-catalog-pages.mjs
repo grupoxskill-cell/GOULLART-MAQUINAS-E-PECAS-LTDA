@@ -29,7 +29,7 @@ export async function prepareCatalogue(directory,now=Date.now()){
     if(!listing)continue;
     const fit=['geradores','outros-equipamentos'].includes(id)?'contain':'cover';
     const re=new RegExp('(<a\\b[^>]*id="tipo-'+id+'"[^>]*>)[\\s\\S]*?(<strong>'+label+'</strong>)');
-    html=html.replace(re,(match,start,end)=>match.includes('class="goullart-category-cover"')?match:start+'<span class="machine-art-window"><img src="'+esc(listing.image)+'" alt="'+esc(label)+' — foto real do anúncio '+esc(listing.publicCode)+'" loading="lazy" style="width:100%;height:100%;object-fit:'+fit+'"></span>'+end);
+    html=html.replace(re,(match,start,end)=>match.includes('class="goullart-category-cover"')?match:start+'<span class="machine-art-window machine-category-photo"><img src="'+esc(listing.image)+'" alt="'+esc(label)+' — foto real do anúncio '+esc(listing.publicCode)+'" loading="lazy" style="width:100%;height:100%;object-fit:'+fit+'"></span>'+end);
    }
    html=html.replace(/Seja VIP, Entra no canal oficial/g,'Seja VIP: entre no canal oficial');
 
