@@ -19,6 +19,8 @@ const definitions = [
  ['munck','Caminhão Munck',/\b(?:munck|munk|guindauto)\b/],
  ['cavalo-mecanico','Cavalo Mecânico',/\bcavalo\s+mecanico\b/],
  ['caminhoes','Todos os caminhões',/^(?:caminh(?:ao|oes)|conjunto de caminhoes)\b/],
+ ['geradores','Geradores',/\b(?:grupo\s+)?gerador(?:es)?\b/],
+ ['outros-equipamentos','Outros equipamentos',null],
 ];
 const truckTypes = new Set(['caminhoes','pipa','basculante','comboio','munck','cavalo-mecanico']);
 const modelRules = [
@@ -34,9 +36,9 @@ function classify(item) {
  const text=normalize(item.title);
  for(const [id,,pattern] of definitions){
   if(id==='trator-agricola'&&/\besteira|rodoviario\b/.test(text))continue;
-  if(pattern.test(text))return id;
+  if(pattern?.test(text))return id;
  }
- return modelRules.find(([,pattern])=>pattern.test(text))?.[0] || '';
+ return modelRules.find(([,pattern])=>pattern.test(text))?.[0] || (item.category==='maquinas'?'outros-equipamentos':'');
 }
 const machineTypes = {
  entries,
