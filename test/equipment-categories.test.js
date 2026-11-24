@@ -102,3 +102,62 @@ test('páginas geradas exibem as novas categorias com fotos reais e conservam to
   }
  }
 });
+
+for(const [referencia,tipo] of [['GOUL-288','geradores'],['GOUL-289','geradores'],['GOUL-273','outros-equipamentos']]){
+ test('ficha '+referencia+' mantém a categoria e o retorno do catálogo',()=>{
+  const read=name=>readFileSync('_site/'+name,'utf8');
+  const fonte=JSON.parse(readFileSync('public/maquinas.json','utf8')).find(item=>item.referencia===referencia);
+  const fichas=JSON.parse(read('fichas-maquinas.json'));
+  const ficha=fichas.find(item=>item.referencia===referencia);
+  const anuncio=JSON.parse(read('api/catalog.json')).items.find(item=>item.publicCode===referencia);
+  assert.ok(fonte&&ficha&&anuncio,'a mesma referência deve existir nas fontes e na publicação');
+  assert.equal(types.classify(anuncio),tipo);
+  const categoria=types.label(tipo);
+  const paginaCategoria=read('maquinas/'+tipo+'/index.html');
+  assert.ok(paginaCategoria.includes('<h1>'+categoria+'</h1>'));
+  assert.ok(paginaCategoria.includes('id="anuncio-'+referencia+'"'));
+  assert.equal(fonte.categoria,categoria,'a fonte da ficha deve concordar com o catálogo');
+  assert.equal(ficha.categoria,categoria);
+
+  const html=read('maquina/'+ficha.slug+'.html');
+  const produto=JSON.parse(html.match(/<script type="application\/ld\+json">([^<]+)<\/script>/)[1]);
+  assert.equal(produto.category,categoria);
+  assert.ok(html.includes('<dt>Tipo</dt><dd>'+categoria+'</dd>'));
+  const info=html.match(/<aside class="maquina-info">([\s\S]*?)<\/aside>/)[1];
+  assert.equal(info.match(/<span class="machine-cat">([^<]+)<\/span>/)[1],categoria);
+  const trilha=html.match(/<nav class="trilha"[^>]*>([\s\S]*?)<\/nav>/)[1];
+  const retorno=[...trilha.matchAll(/<a href="([^"]+)">([^<]+)<\/a>/g)].at(-1);
+  assert.equal(retorno[2],categoria);
+  for(const base of ['https://www.goullartmaquinaspesadas.com.br/','https://grupoxskill-cell.github.io/GOULLART-MAQUINAS-E-PECAS-LTDA/']){
+   assert.equal(new URL(retorno[1],new URL('maquina/'+ficha.slug+'.html',base)).href,new URL('maquinas/'+tipo+'/',base).href);
+  }
+
+  const relacionadas=html.match(/<section class="parecidas"[\s\S]*?<\/section>/)?.[0]||'';
+  if(tipo==='geradores'){
+   const outro=fichas.find(item=>item.referencia===(referencia==='GOUL-288'?'GOUL-289':'GOUL-288'));
+   assert.ok(relacionadas.includes('href="'+outro.slug+'.html"'),'o outro gerador deve continuar nas sugestões');
+   assert.doesNotMatch(relacionadas,/Jet RXTX|Cavalo mecânico/);
+  }else{
+   assert.doesNotMatch(relacionadas,/Gerador 55|Gerador 100|Cavalo mecânico/);
+  }
+ });
+}
+
+test('ficha do jet mantém a oferta do catálogo e explica a alternativa sem caixa térmica',()=>{
+ const read=name=>readFileSync('_site/'+name,'utf8');
+ const ficha=JSON.parse(read('fichas-maquinas.json')).find(item=>item.referencia==='GOUL-273');
+ const anuncio=JSON.parse(read('api/catalog.json')).items.find(item=>item.publicCode==='GOUL-273');
+ const html=read('maquina/'+ficha.slug+'.html');
+ const produto=JSON.parse(html.match(/<script type="application\/ld\+json">([^<]+)<\/script>/)[1]);
+ const conteudo=html.match(/<main[\s\S]*?<\/main>/)[0];
+ assert.equal(produto.offers.price,anuncio.price,'o preço estruturado da ficha deve concordar com a oferta do catálogo');
+ assert.equal(produto.offers.price,195000);
+ assert.match(conteudo,/<p class="maquina-preco">R\$ 195\.000<\/p>/);
+ assert.match(conteudo,/Com carreta esportiva e caixa térmica original: R\$ 195\.000\./);
+ assert.match(conteudo,/Sem a caixa térmica original: R\$ 180\.000\./);
+ assert.doesNotMatch(conteudo,/R\$ 180\.000 ou R\$ 195\.000/);
+ const interesse=new URL(html.match(/data-interesse href="([^"]+)"/)[1]);
+ assert.equal(interesse.pathname,'/5562999427276');
+ assert.ok(interesse.searchParams.get('text').includes('GOUL-273'));
+ assert.ok(interesse.searchParams.get('text').includes('/maquina/'+ficha.slug+'.html'));
+});
