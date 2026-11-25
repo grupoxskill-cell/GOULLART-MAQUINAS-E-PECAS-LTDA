@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { consultaPublica } from "../lib/consulta-maquinas.js";
+import { consultaPublica, registroDaFicha, camposComerciais } from "../lib/consulta-maquinas.js";
 import { catalogoPdf } from "../lib/catalogo-pdf.js";
 import { paginaMaquina } from "../lib/paginas.js";
 import { seisMeses, registroCompra } from "../lib/historico-comercial.js";
@@ -17,6 +17,45 @@ test("uma unidade tem a mesma situação nas duas referências; a comparação n
   assert.equal(lista[0].ano,"2022");
   assert.doesNotMatch(JSON.stringify(lista),/interno/);
   assert.match(lista[0].url,/maquina\/unidade.html$/);
+});
+
+test("o alias GOUL-348 preserva a disponibilidade salva antes do vínculo com GOUL-294", () => {
+  const ficha = {referencia:"GOUL-294", titulo:"Caminhão VW 31.280", categoria:"Caminhões", slug:"caminhao-vw-31-280", situacao:"A confirmar"};
+  const item = {id:"PUB-221", publicCode:"GOUL-348", title:ficha.titulo};
+  for (const situacao of ["Vendida", "Reservada", "Disponível"]) {
+    const salvo = {situacao, confirmado_em:"2026-11-24T15:00:00Z", conferidaEm:"2026-11-24T16:00:00Z", video:"https://example.org/video-goul348", nota:"nota interna"};
+    const registros = {"GOUL-348":salvo};
+    const antes = JSON.stringify(registros);
+    for (const codigo of ["GOUL-348", "GOUL-294"]) {
+      const registro = registroDaFicha(registros, codigo);
+      assert.equal(registro, salvo, codigo);
+      const comercial = camposComerciais(ficha, registro);
+      assert.equal(comercial.situacao, situacao);
+      assert.equal(comercial.status, situacao.toLowerCase());
+      assert.equal(comercial.confirmado_em, salvo.confirmado_em);
+      assert.equal(comercial.video, salvo.video);
+    }
+    const consulta = consultaPublica([{...ficha, id:item.id}, ficha], {items:[item]}, [ficha], registros);
+    assert.equal(consulta.length, 1);
+    assert.equal(consulta[0].referencia, "GOUL-294");
+    assert.equal(consulta[0].codigoVitrine, "GOUL-348");
+    for (const campo of ["situacao", "confirmado_em", "conferidaEm", "video"]) assert.equal(consulta[0][campo], salvo[campo], campo);
+    assert.equal(consulta[0].status, situacao.toLowerCase());
+    assert.doesNotMatch(JSON.stringify(consulta), /nota interna/);
+    assert.equal(JSON.stringify(registros), antes, "A leitura não migra nem modifica os registros salvos.");
+  }
+});
+
+test("o registro canônico GOUL-294 prevalece sobre o histórico GOUL-348 sem mesclar estados", () => {
+  const canonico = {situacao:"Reservada", confirmado_em:null, conferidaEm:"2026-11-25T10:00:00Z", video:null};
+  const registros = {"GOUL-294":canonico, "GOUL-348":{situacao:"Vendida", confirmado_em:"2026-11-24T15:00:00Z", conferidaEm:"2026-11-24T16:00:00Z", video:"https://example.org/video-antigo"}};
+  const antes = JSON.stringify(registros);
+  for (const codigo of ["GOUL-348", "GOUL-294"]) assert.equal(registroDaFicha(registros, codigo), canonico);
+  const ficha = {referencia:"GOUL-294", titulo:"Caminhão VW 31.280", slug:"caminhao-vw-31-280", situacao:"A confirmar"};
+  const consulta = consultaPublica([{...ficha, id:"PUB-221"}], {items:[{id:"PUB-221", publicCode:"GOUL-348"}]}, [ficha], registros);
+  assert.equal(consulta[0].status, "reservada");
+  for (const campo of ["situacao", "confirmado_em", "conferidaEm", "video"]) assert.equal(consulta[0][campo], canonico[campo], campo);
+  assert.equal(JSON.stringify(registros), antes);
 });
 
 test("ficha sem conferência não sinaliza estoque e a ficha vendida permite procurar outra", async () => {
