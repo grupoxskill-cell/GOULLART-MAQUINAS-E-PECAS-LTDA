@@ -54,14 +54,16 @@ test('home tem um único formulário acessível de busca separado do painel ocul
  assert.ok(html.indexOf(form)<html.indexOf('id="maquinas"'));
 });
 
-test('a home mantém carrossel e anúncios antes das categorias, laudo, curso e depoimentos',()=>{
+test('a home destaca o laudo antes do carrossel e mantém os anúncios antes das categorias, curso e depoimentos',()=>{
  const html=source('index.html');
  const banner=html.indexOf('<section class="approved-banner"');
  const search=html.indexOf('<form class="catalog-discovery"');
  const catalog=html.indexOf('<section class="catalog" id="catalog-results"');
  const products=html.indexOf('<div id="products"');
  assert.ok(banner>=0&&banner<search&&search<catalog&&catalog<products);
- for(const marker of ['<aside class="technical-report-banner"','data-testimonials="catalogo"',
+ const report=html.indexOf('<aside class="technical-report-banner"');
+ assert.ok(html.indexOf('<main id="inicio">')<report&&report<banner,'O laudo fica no topo do conteúdo, acima do banner.');
+ for(const marker of ['data-testimonials="catalogo"',
   '<a class="home-course-highlight"','<section class="machine-categories"']){
   assert.ok(html.indexOf(marker)>products,marker+' deve vir depois dos anúncios reais.');
  }
