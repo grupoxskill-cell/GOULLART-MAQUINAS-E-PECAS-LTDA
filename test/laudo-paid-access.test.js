@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 
-const checkout = 'https://laudo.goullartmaquinaspesadas.com.br/';
+const checkout = '/laudo-aberto.html';
 const oldPdf = 'assets/exemplo-laudo/exemplo-goullart.pdf';
 
 test('publicação não distribui o PDF de laudo sem confirmação de pagamento', () => {
@@ -13,11 +13,11 @@ test('publicação não distribui o PDF de laudo sem confirmação de pagamento'
   }
 });
 
-test('home e notícia encaminham a compra de R$ 49,90 sem promessa de PDF grátis', () => {
+test('home e notícia encaminham a compra de R$ 499,00 sem promessa de PDF grátis', () => {
   for (const name of ['index.html', 'noticia-laudo-tecnico-pdf.html']) {
     const html = readFileSync(`_site/${name}`, 'utf8');
     assert.ok(html.includes(checkout), name);
-    assert.match(html, /R\$ 49,90/, name);
+    assert.match(html, /R\$ 499,00/, name);
     assert.doesNotMatch(html, /(?:exemplo|laudo|PDF)[^<>]{0,80}(?:grátis|gratuit)|(?:grátis|gratuit)[^<>]{0,80}(?:laudo|PDF)/i, name);
     assert.ok(!html.includes(oldPdf), name);
   }
@@ -25,7 +25,9 @@ test('home e notícia encaminham a compra de R$ 49,90 sem promessa de PDF gráti
 
 test('o endereço antigo explica Pix confirmado e não contém modelo nem download', () => {
   const html = readFileSync('_site/laudo-aberto.html', 'utf8');
-  assert.ok(html.includes(checkout));
+  assert.match(html, /https:\/\/wa\.me\/5562999427276\?text=/);
+  assert.ok(html.includes('R%24%20499%2C00'));
+  assert.ok(!html.includes('https://laudo.goullartmaquinaspesadas.com.br'));
   assert.match(html, /somente após a confirmação do recebimento do Pix/);
   assert.match(html, /Pagamento pendente, agendado ou em análise não libera o PDF/);
   assert.doesNotMatch(html, /(?:href|src)=["'][^"']*(?:\.pdf|data:application\/pdf)/i);
