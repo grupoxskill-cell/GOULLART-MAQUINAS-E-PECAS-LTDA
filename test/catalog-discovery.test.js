@@ -198,7 +198,8 @@ test('a busca preserva o escape dos anúncios e não insere a consulta como HTML
  assert.doesNotMatch(app.nodes.get('#products').innerHTML,/<svg|alert\(2\)/);
 });
 
-test('a área move o mesmo formulário para antes das categorias e resultados sem duplicar o campo',()=>{
+test('a área organiza a busca e não coloca a galeria de categorias na frente de um anúncio compartilhado',()=>{
+ for(const specificItem of [false,true]){
  const events={};
  function node(tag){
   const result={...element(),tag,children:[],className:'',parent:null};
@@ -216,7 +217,7 @@ test('a área move o mesmo formulário para antes das categorias e resultados se
  for(const child of [form,cats,catalog,reviews])main.append(child);
  const bySelector=new Map([['main',main],['#catalog-discovery',form],['.machine-categories',cats],['#catalog-results',catalog],
   ['[data-testimonials="catalogo"]',reviews],['#catalog-discovery label',label],['#catalog-discovery input[name=area]',areaInput]]);
- const classes=new Set(),context={URL,URLSearchParams,location:new URL('https://example.com/?area=maquinas&q=hyundai'),
+ const classes=new Set(),context={URL,URLSearchParams,location:new URL('https://example.com/?area=maquinas&'+(specificItem?'item=GOUL-348':'q=hyundai')),
   history:{replaceState(){}},document:{title:'',body:{classList:{add:name=>classes.add(name)}},createElement:node,
    querySelector:selector=>bySelector.get(selector)||null,querySelectorAll:()=>[],getElementById:id=>bySelector.get('#'+id)||null,
    addEventListener:(name,fn)=>{events[name]=fn;}}};
@@ -225,12 +226,22 @@ test('a área move o mesmo formulário para antes das categorias e resultados se
  const page=main.children.find(n=>n.className==='area-page-content');
  assert.ok(classes.has('area-page'));assert.ok(page);
  assert.equal(page.children.filter(n=>n===form).length,1);assert.ok(!main.children.includes(form));
- assert.ok(page.children.indexOf(form)<page.children.indexOf(cats));
- assert.ok(page.children.indexOf(cats)<page.children.indexOf(catalog));
+ assert.ok(page.children.indexOf(form)<page.children.indexOf(catalog));
+ if(specificItem)assert.ok(!page.children.includes(cats));
+ else {assert.ok(page.children.indexOf(form)<page.children.indexOf(cats));assert.ok(page.children.indexOf(cats)<page.children.indexOf(catalog));}
  assert.equal(page.children.filter(n=>n===reviews).length,1);assert.ok(page.children.indexOf(catalog)<page.children.indexOf(reviews));
  assert.equal(page.children.filter(n=>n.tag==='h1').length,1);
  events['goullart:filterchange']({detail:{category:'maquinas',type:'caminhoes',offers:false}});
  assert.equal(page.querySelector('#area-page-title').textContent,'Todos os caminhões');
  events['goullart:filterchange']({detail:{category:'maquinas',type:'',offers:false}});
  assert.equal(page.querySelector('#area-page-title').textContent,'VENDAS DE MÁQUINAS');
+ }
+});
+
+test('link compartilhado de anúncio mostra a unidade e leva o cliente até o resultado',async()=>{
+ const app=await storefront('https://example.com/?area=maquinas&item=CAVALO-1');
+ assert.equal(app.nodes.get('#count').textContent,'1 anúncio encontrado');
+ assert.ok(app.nodes.get('#catalog-results').scrolled);
+ assert.match(app.nodes.get('#products').innerHTML,/Cavalo mecânico Mercedes-Benz 2035/);
+ assert.doesNotMatch(app.nodes.get('#products').innerHTML,/GOUL-HY-2020-12000|CONJUNTO-1/);
 });
