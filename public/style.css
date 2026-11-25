@@ -220,6 +220,7 @@ p { margin: 0; }
 .maquina { display: grid; grid-template-columns: 1.4fr 1fr; gap: 32px; align-items: start; }
 .maquina-fotos { display: grid; gap: 10px; }
 .maquina-fotos img, .maquina-fotos .machine-nofoto { width: 100%; border-radius: var(--radius); background: #fff; }
+/* As fotos da ficha mantêm o enquadramento original, inclusive montagens verticais. */
 .maquina-fotos img { height: auto; aspect-ratio: auto; object-fit: contain; }
 .maquina-fotos .machine-nofoto { aspect-ratio: 4 / 3; }
 .maquina-info { position: sticky; top: calc(var(--header) + 16px); background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; display: grid; gap: 10px; }
