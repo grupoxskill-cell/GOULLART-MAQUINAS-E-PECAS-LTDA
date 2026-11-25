@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import vm from 'node:vm';
-import {readFileSync} from 'node:fs';
+import {readFileSync,existsSync} from 'node:fs';
 import '../espelho/catalog-data.js';
 import '../espelho/listing-policy.js';
 
@@ -61,4 +61,51 @@ test('a rota pública agrega todos os caminhões publicados sem repetir cards e 
   assert.equal((menu.match(/href="\/maquinas\/caminhoes"/g)||[]).length,1,file);
   assert.match(menu,/<summary>Caminhões[\s\S]*?<div><a href="\/maquinas\/caminhoes">Todos os caminhões<\/a>/,file);
  }
+});
+
+test('todos os caminhões da vitrine têm ficha, código público e contato consistentes',()=>{
+ const read=name=>readFileSync('_site/'+name,'utf8');
+ const items=globalThis.GoullartCatalogData.vitrine(JSON.parse(read('api/catalog.json'))).items
+  .filter(item=>item.category==='maquinas'&&globalThis.GoullartListingPolicy.eligibleListing(item)&&types.matches(item,'caminhoes'));
+ const map=JSON.parse(read('paginas-maquinas.js').replace(/^window\.GoullartMachinePages=/,'').replace(/;\s*$/,''));
+ const legacy=JSON.parse(read('fichas-maquinas.json')).filter(m=>m.categoria==='Caminhões');
+ assert.deepEqual(legacy.map(m=>m.codigoVitrine||m.referencia).sort(),items.map(i=>i.publicCode).sort(),
+  'A categoria legada e a vitrine devem conter os mesmos anúncios de caminhões.');
+ const html=read('maquinas/caminhoes/index.html');
+ for(const item of items){
+  const path=map[item.publicCode];assert.ok(path,item.publicCode+' precisa de uma ficha.');
+  assert.ok(existsSync('_site'+path),path);
+  const page=read(path),card=html.match(new RegExp('<article id="anuncio-'+item.publicCode+'"[\\s\\S]*?<\\/article>'))?.[0];
+  assert.ok(card,item.publicCode);
+  assert.ok(card.includes('<a href="'+path+'" aria-label="Ver '+item.title+'">'),item.publicCode+' foto');
+  assert.ok(card.includes('<h2><a href="'+path+'">'+item.title+'</a></h2>'),item.publicCode+' título');
+  assert.ok(page.includes('data-public-code="'+item.publicCode+'"'),item.publicCode);
+  assert.ok(page.includes('<dt>Referência</dt><dd>'+item.publicCode+'</dd>'),item.publicCode);
+  assert.ok(page.includes('href="../maquinas/caminhoes/"'),item.publicCode+' retorno à categoria');
+  const tag=page.match(/<a\b[^>]*data-interesse[^>]*>/)?.[0];
+  const url=new URL(tag.match(/href="([^"]+)"/)[1].replaceAll('&amp;','&'));
+  assert.equal(url.hostname,'wa.me');assert.equal(url.pathname,'/5562999427276');
+  assert.ok(url.searchParams.get('text').includes('(ref. '+item.publicCode+')'),item.publicCode+' WhatsApp');
+  assert.ok(url.searchParams.get('text').includes(path),item.publicCode+' contexto');
+  const schema=JSON.parse(page.match(/<script type="application\/ld\+json">([^<]+)<\/script>/)[1]);
+  assert.equal(schema.sku,item.publicCode);
+  assert.equal(schema.category,'Caminhões');
+ }
+ const scania=legacy.find(m=>m.referencia==='GOUL-407'),source=items.find(i=>i.publicCode==='GOUL-407');
+ assert.equal(scania.ano,String(source.year));assert.equal(scania.horas,source.km+' km');
+ assert.equal(scania.fotos[0],source.image.slice(1));
+ assert.equal(scania.textoSite,source.publicText);
+ assert.equal(scania.status,null);assert.equal(scania.confirmado_em,null);
+});
+
+test('mudança de disponibilidade preserva o código público na mensagem sem trocar a chave interna',async()=>{
+ const button={href:'https://wa.me/5562999427276?text=interesse',textContent:''};
+ const status={textContent:''};
+ const document={body:{dataset:{ref:'GOUL-306',publicCode:'GOUL-330'}},querySelector:s=>s==='[data-interesse]'?button:status};
+ const context={URL,document,fetch:async()=>({ok:true,json:async()=>[{referencia:'GOUL-306',codigoVitrine:'GOUL-330',titulo:'Caminhão pipa',situacao:'Reservada'}]})};
+ vm.createContext(context);vm.runInContext(readFileSync('public/situacao-ficha.js','utf8'),context);
+ await new Promise(setImmediate);
+ assert.equal(status.textContent,'Disponibilidade · Reservada');
+ assert.equal(new URL(button.href).searchParams.get('text'),'Consultar reserva: Caminhão pipa (ref. GOUL-330)');
+ assert.equal(document.body.dataset.ref,'GOUL-306');
 });

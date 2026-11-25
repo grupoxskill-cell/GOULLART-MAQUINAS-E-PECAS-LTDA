@@ -15,7 +15,7 @@ test('mapa de fichas e links nos cards do catálogo gerado', { skip: !existsSync
   const esperado = Object.fromEntries(maquinas.filter(m => m.referencia && m.slug && globalThis.GoullartCatalogData.publicavel(m))
     .map(m => [m.referencia, `/maquina/${m.slug}.html`]));
   for (const [codigo, ficha] of Object.entries({
-    'GOUL-330': 'GOUL-306', 'GOUL-331': 'GOUL-307', 'GOUL-333': 'GOUL-315',
+    'GOUL-330': 'GOUL-306', 'GOUL-331': 'GOUL-307', 'GOUL-348': 'GOUL-294', 'GOUL-333': 'GOUL-315',
     'GOUL-316': 'GOUL-334', 'GOUL-281': 'GOUL-405',
   })) {
     if(esperado[ficha]) esperado[codigo] = esperado[ficha];

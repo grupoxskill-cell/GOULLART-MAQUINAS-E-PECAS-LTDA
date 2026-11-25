@@ -327,7 +327,7 @@
   "ficha": "022",
   "referencia": "GOUL-307",
   "titulo": "Cavalo mecânico Mercedes-Benz 2035 S",
-  "categoria": "Outros",
+  "categoria": "Caminhões",
   "ano": "2009",
   "horas": "241.220 km",
   "preco": "R$ 150.000",
@@ -492,7 +492,7 @@
   "ficha": "033",
   "referencia": "GOUL-347",
   "titulo": "Conjunto: VW Fuscão 26260 + Ford Cargo",
-  "categoria": "Outros",
+  "categoria": "Caminhões",
   "ano": "2004/05 e 2008/09",
   "horas": "Fuscão: 300 mil km",
   "preco": "R$ 550.000 o conjunto",
@@ -1038,5 +1038,21 @@
      "assets/listings/hyundai-r220-2023-689-05-rodante.jpg"
    ],
    "textoSite": "Escavadeira Hyundai R220, ano 2023, com 689 horas e nota fiscal de origem, conforme informações fornecidas à GOULLART. Localização sob consulta. Fale agora com Jr. Goullart."
+ },
+ {
+  "ficha": "catalogo-GOUL-407",
+  "referencia": "GOUL-407",
+  "titulo": "Caminhão pipa Scania P310 B6X4",
+  "categoria": "Caminhões",
+  "ano": "2014",
+  "horas": "122.614 km",
+  "preco": "R$ 330.000",
+  "fotos": [
+   "assets/publicacoes/00003528-PHOTO-2026-09-28-10-20-21.webp"
+  ],
+  "status": null,
+  "confirmado_em": null,
+  "video": null,
+  "textoSite": "Caminhão pipa SCANIA P310 B6X4. Ano: 2014. Km: 122.614. Pronto para trabalhar. Confirme localização, disponibilidade e condições com a equipe."
  }
 ]

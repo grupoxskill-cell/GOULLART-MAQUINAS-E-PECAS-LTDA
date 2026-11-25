@@ -45,12 +45,12 @@ const inventory=[
 ];
 class FixedDate extends Date {constructor(...args){super(...(args.length?args:[now]));}static now(){return now;}}
 
-async function client(items,{type='escavadeira',offers=false,fail=false}={}){
+async function client(items,{type='escavadeira',offers=false,fail=false,pages={}}={}){
  const nodes=Object.fromEntries(['catalog-page-list','catalog-page-count','catalog-page-categories','catalog-page-sort','page-order'].map(id=>[id,{dataset:{},innerHTML:'',value:'low',addEventListener(){}}]));
  if(type)delete nodes['catalog-page-categories'];
  const root={dataset:{catalogType:type,catalogOffers:String(offers)}};
  const context={URL,URLSearchParams,Date:FixedDate,location:new URL('https://example.com/maquinas/escavadeira'),history:{replaceState(){}},setInterval(){},CustomEvent:class{},document:{hidden:false,querySelector:()=>root,getElementById:id=>nodes[id],addEventListener(){},dispatchEvent(){}},fetch:async()=>{if(fail)throw Error('offline');return {ok:true,json:async()=>({items})};}};
- context.window=context;context.GoullartRuntime={timeout(){}};vm.createContext(context);
+ context.window=context;context.GoullartRuntime={timeout(){}};context.GoullartMachinePages=pages;vm.createContext(context);
  for(const file of ['listing-policy.js','catalog-types.js','catalog-data.js','catalog-page-client.js'])vm.runInContext(source(file),context);
  await new Promise(resolve=>setImmediate(resolve));
  return nodes;
@@ -82,6 +82,20 @@ test('categorias de caminhões carregam anúncios sem cidade e mantêm vendidos 
   assert.ok(empty['catalog-page-categories'].innerHTML.includes('href="/maquinas/'+type+'"'),type);
  }
  assert.equal(empty['catalog-page-count'].textContent,'0 anúncios encontrados');
+});
+
+test('foto e título abrem a ficha conhecida e mantêm o filtro como alternativa para anúncio novo',async()=>{
+ const list=[machine('COM-FICHA',{title:'Caminhão pipa'}),machine('SEM-FICHA',{title:'Caminhão pipa'})];
+ const nodes=await client(list,{type:'pipa',pages:{'COM-FICHA':'/maquina/caminhao-pipa.html'}});
+ const cards=[...nodes['catalog-page-list'].innerHTML.matchAll(/<article\b[\s\S]*?<\/article>/g)].map(m=>m[0]);
+ assert.equal(cards.length,2);
+ assert.match(cards[0],/<a href="\/maquina\/caminhao-pipa.html" aria-label="Ver Caminhão pipa">/);
+ assert.match(cards[0],/<h2><a href="\/maquina\/caminhao-pipa.html">/);
+ assert.match(cards[1],/<a href="\/\?area=maquinas&amp;item=SEM-FICHA" aria-label=/);
+ const contact=new URL(cards[0].match(/class="catalog-page-contact" href="([^"]+)"/)[1].replaceAll('&amp;','&'));
+ assert.equal(contact.pathname,'/5562999427276');
+ assert.ok(contact.searchParams.get('text').includes('COM-FICHA'));
+ assert.ok(contact.searchParams.get('text').includes('https://example.com/maquina/caminhao-pipa.html'));
 });
 
 test('menu e categorias continuam acessíveis após carregar e atualizar um catálogo vazio',async()=>{

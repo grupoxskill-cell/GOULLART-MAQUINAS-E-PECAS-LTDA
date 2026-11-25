@@ -8,8 +8,12 @@ await mkdir("_site/maquina", { recursive: true });
 await cp("public", "_site", { recursive: true });
 // Mapa código público -> página individual da máquina (/maquina/<slug>.html), usado pelos cards do catálogo novo.
 const { camposComerciais, ofertaConfirmada } = await import("../lib/consulta-maquinas.js");
+const origemVitrine = globalThis.GoullartCatalogData.vitrine(JSON.parse(await readFile("espelho/api/catalog.json", "utf8")));
+const codigoPublicoPorFicha = new Map(origemVitrine.items.filter(i => i.category === "maquinas")
+  .map(i => [FICHAS_DA_VITRINE[i.publicCode] || i.publicCode, i.publicCode]));
 const maquinas = comSlugs(semVendidas(JSON.parse(await readFile("public/maquinas.json", "utf-8"))))
-  .map(m => camposComerciais(m)).filter(globalThis.GoullartCatalogData.publicavel);
+  .map(m => ({...camposComerciais(m), codigoVitrine: codigoPublicoPorFicha.get(m.referencia) || m.referencia}))
+  .filter(globalThis.GoullartCatalogData.publicavel);
 globalThis.GoullartMachinePagesMap = Object.fromEntries(maquinas.filter((m) => m.referencia && m.slug).map((m) => [m.referencia, `/maquina/${m.slug}.html`]));
 // Códigos da vitrine que usam a mesma foto e oferta da ficha pública (lista em lib/paginas.js).
 const paginas = globalThis.GoullartMachinePagesMap;
