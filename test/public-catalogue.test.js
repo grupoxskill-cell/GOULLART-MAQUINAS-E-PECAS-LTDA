@@ -15,7 +15,7 @@ test('approved listing corrections include the D51 price, proper units and the r
    assert.match(tools.facts(item), /^Ano a confirmar · /);
   } else {
    assert.match(item.title, /^[^•]+ • [^•]+ • \d{4}$/);
-   assert.match(tools.facts(item), /Ano \d{4} · .+ · .+/);
+   assert.match(tools.facts(item), /Ano \d{4} · .+/);
   }
  }
 });
@@ -85,5 +85,21 @@ test('máquinas autorizadas aparecem sem cidade preenchida e preservam as restri
    assert.equal(tools.vitrine({items:[{...original, ...restricao}]}).items.length, 0, JSON.stringify(restricao));
   }
  }
- assert.match(tools.facts(item), /Localização a confirmar$/);
+ const semLocal = 'Ano a confirmar · Horímetro a confirmar';
+ for (const location of [null, '', '  ', 'Localização a confirmar', ' LOCALIZACAO  A CONFIRMAR ',
+   'Localização sob consulta', 'Estado a confirmar', 'A confirmar']) {
+  assert.equal(tools.facts({...item, location, state:'Estado a confirmar'}), semLocal);
+ }
+ assert.equal(tools.facts({...item, location:'Goiânia/GO'}), semLocal + ' · Goiânia/GO');
+ assert.equal(tools.facts({...item, location:'Localização a confirmar', state:'GO'}), semLocal + ' · GO');
+ for (const publicText of ['Localização a confirmar. Máquina revisada.', 'Máquina revisada. Localização sob consulta.',
+   'Máquina revisada. Localização sob consulta. Fale com a equipe.']) {
+  const original={...item,publicText};
+  assert.doesNotMatch(tools.cardDescription(original),/Localização (?:a confirmar|sob consulta)|\.  /);
+  assert.match(tools.cardDescription(original),/Máquina revisada\./);
+  assert.equal(original.publicText,publicText);
+ }
+ const real='Máquina revisada. Localização: Goiânia/GO. Fale com a equipe.';
+ assert.equal(tools.cardDescription({...item,publicText:real}),real);
+ assert.equal(tools.cardDescription({category:'locacao',publicText:'Localização a confirmar.'}),'Localização a confirmar.');
 });

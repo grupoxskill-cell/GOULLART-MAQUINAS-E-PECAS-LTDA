@@ -16,9 +16,18 @@
  // Valores pendentes de comprovação, revisão comercial de 22/11.
  const retidas=new Set(['GOUL-345','GOUL-ART-261105-06']);
  const cidadeUf=valor=>/^[\p{L}][\p{L} .’'-]{1,70}\s*[,/–-]\s*(?:AC|AL|AP|AM|BA|CE|DF|ES|GO|MA|MT|MS|MG|PA|PB|PR|PE|PI|RJ|RN|RS|RO|RR|SC|SP|SE|TO)$/iu.test(String(valor||'').trim());
+ function locationText(value){
+  const text=String(value||'').trim();
+  const key=text.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ');
+  return /^(?:(?:localizacao|estado|cidade|local)\s*:?\s*)?(?:a confirmar|sob consulta)$/.test(key)?'':text;
+ }
+ function cardDescription(item){
+  const text=String(item.publicText||'');
+  if(item.category!=='maquinas')return text;
+  return text.replace(/(^|[.!?]\s+|\n[ \t]*)(?:localiza[çc][aã]o|estado)\s*:?\s*(?:a confirmar|sob consulta)(?:[.!?](?=\s|$)|(?=\n|$))[ \t]*/gi,'$1').trim();
+ }
  function publicavel(item){
-  // Júnior autorizou restaurar os anúncios em 23/11: localização pendente
-  // aparece como informação a confirmar, sem esconder a máquina ou o caminhão.
+  // Anúncios autorizados continuam visíveis; localização pendente fica sem texto nos cards.
   const temImagem = temFoto(item) || item.fotos?.some(f => typeof f === 'string' && f.trim());
   return !retidas.has(item.publicCode || item.referencia) && !vendida(item) &&
    !item.archived && !item.privateOnly && item.published !== false &&
@@ -69,7 +78,7 @@
   const i=normalize(item),text=i.publicText||'';
   const year=i.year||text.match(/ano\s*:?\s*((?:19|20)\d{2})/i)?.[1]||i.title.match(/\b(?:19|20)\d{2}\b/)?.[0];
   const hours=i.hours||text.match(/horímetro\s*:?\s*([\d.]+)/i)?.[1],km=i.km||text.match(/\bkm\s*:?\s*([\d.]+)/i)?.[1];
-  return [year?'Ano '+year:'Ano a confirmar',km?km+' km':hours?hours+' h':'Horímetro a confirmar',i.location||i.state||'Localização a confirmar'].join(' · ');
+  return [year?'Ano '+year:'Ano a confirmar',km?km+' km':hours?hours+' h':'Horímetro a confirmar',locationText(i.location)||locationText(i.state)].filter(Boolean).join(' · ');
  }
  // Peças só aparecem no site com foto (pedido de Júnior em 04/11/2026). As demais seguem no ADM e voltam sozinhas quando ganharem foto.
  const temFoto=item=>Boolean((typeof item.image==='string'&&item.image.trim())||(Array.isArray(item.images)&&item.images.some(x=>typeof x==='string'&&x.trim())));
@@ -83,5 +92,5 @@
  const visivel=item=>!vendida(item)&&(item.category!=='pecas'||temFoto(item));
  function vitrine(data){const normalized=feed(data);return {...normalized,items:normalized.items.filter(i=>i.category!=='maquinas'||publicavel(i))};}
  function feed(data){return {...data,items:(data.items||[]).map(normalize).filter(visivel),opportunities:(data.opportunities||[]).map(normalize).filter(i=>!vendida(i))};}
- globalThis.GoullartCatalogData={normalize,feed,vitrine,facts,publicavel,mensagem,cidadeUf,machinePriceIsPerUnit,formatMachinePrice,asset,clean,visivel};
+ globalThis.GoullartCatalogData={normalize,feed,vitrine,facts,publicavel,mensagem,cidadeUf,locationText,cardDescription,machinePriceIsPerUnit,formatMachinePrice,asset,clean,visivel};
 })();

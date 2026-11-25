@@ -28,7 +28,7 @@ export function renderMachineBanner(items, pageMap = {}, directory = 'espelho') 
   const link = pageMap[item.publicCode] || '/?area=maquinas&item=' + encodeURIComponent(item.id);
   const price = Number(item.price).toLocaleString('pt-BR', {style:'currency',currency:'BRL',maximumFractionDigits:0});
   const priceLabel = price + (globalThis.GoullartCatalogData.machinePriceIsPerUnit(item.price, item.publicText) ? ' por unidade' : '');
-  const facts = [item.year, item.hours && item.hours + ' h', item.location || item.state || 'Localização sob consulta'].filter(Boolean).join(' · ');
+  const facts = [item.year, item.hours && item.hours + ' h', globalThis.GoullartCatalogData.locationText(item.location) || globalThis.GoullartCatalogData.locationText(item.state)].filter(Boolean).join(' · ');
   const mobile = fotoMobile(item.image, directory);
   const hd = mobile && mobile.replace(/\.webp$/, '-hd.webp');
   const highDensity = hd && existsSync(join(directory, hd)) ? '<source type="image/webp" srcset="' + esc(hd) + '">' : '';
