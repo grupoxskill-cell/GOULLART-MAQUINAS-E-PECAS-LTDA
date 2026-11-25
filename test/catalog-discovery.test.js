@@ -94,6 +94,8 @@ test('o script de áreas insere os blocos depois do catálogo sem mover a grade 
 test('a home exibe todas as máquinas e caminhões elegíveis; páginas filtradas mantêm Ver mais',async()=>{
  const eligible=[...Array.from({length:14},(_,i)=>machine('ESC-'+i,'Escavadeira '+i)),
   machine('CAMINHAO-FINAL','Caminhão basculante'),machine('CAVALO-FINAL','Cavalo mecânico')];
+ eligible[0].location='Goiânia/GO';
+ eligible[1].location='Localização a confirmar';eligible[1].state='Estado a confirmar';
  const items=[...eligible,machine('PRIVATE','Escavadeira privada',{privateOnly:true}),
   machine('SOLD','Escavadeira vendida',{situacao:'Vendida'}),machine('PART','Peça',{category:'pecas'})];
  const home=await storefront('https://example.com/',items);
@@ -101,6 +103,9 @@ test('a home exibe todas as máquinas e caminhões elegíveis; páginas filtrada
  assert.equal(home.nodes.get('#count').textContent,'16 anúncios encontrados');
  for(const item of eligible)assert.ok(cards.includes('id="item-'+item.id+'"'),item.id);
  assert.doesNotMatch(cards,/id="item-(PRIVATE|SOLD|PART)"/);
+ assert.doesNotMatch(cards,/(?:Localização|Estado) (?:a confirmar|sob consulta)| · <\/p>/);
+ assert.match(cards,/Goiânia\/GO/);
+ assert.ok(cards.includes('<strong>ESC-1</strong></p>'));
  assert.equal(home.nodes.get('#more').hidden,true);
  assert.match(cards,/loading="lazy"/);
  const area=await storefront('https://example.com/?area=maquinas',items);

@@ -12,6 +12,11 @@
   const destaque = Number(lista?.dataset.destaque) || 0;
 
   const normalizar = (s) => String(s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+  function locationText(value) {
+    const texto = String(value || "").trim();
+    const chave = normalizar(texto).replace(/\s+/g, " ");
+    return /^(?:(?:localizacao|estado|cidade|local)\s*:?\s*)?(?:a confirmar|sob consulta)$/.test(chave) ? "" : texto;
+  }
   const ORDEM = ["Escavadeiras", "Pás-carregadeiras", "Retroescavadeiras", "Tratores", "Motoniveladoras", "Caminhões", "Outros"];
   const posicao = (c) => (ORDEM.includes(c) ? ORDEM.indexOf(c) : ORDEM.length);
   let maquinas = [];
@@ -73,7 +78,7 @@
     const h3 = el("h3");
     h3.append(link(m, "machine-titulo", [m.titulo]));
     corpo.append(el("span", "machine-cat", m.categoria), h3);
-    const dados = [m.ano && `Ano ${m.ano}`, m.horas, m.local].filter(Boolean).join(" · ");
+    const dados = [m.ano && `Ano ${m.ano}`, m.horas, locationText(m.local)].filter(Boolean).join(" · ");
     if (dados) corpo.append(el("p", "machine-dados", dados));
     corpo.append(el("p", "machine-preco", m.preco || "Preço sob consulta"));
     corpo.append(el("p", "machine-status", "Disponibilidade · " + (m.situacao || "A confirmar")), botaoInteresse(m));

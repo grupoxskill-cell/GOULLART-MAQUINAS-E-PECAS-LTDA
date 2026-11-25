@@ -67,13 +67,14 @@ test('live category cards and counts use the homepage eligibility policy',async(
 });
 
 test('categorias de caminhões carregam anúncios sem cidade e mantêm vendidos e privados fora da vitrine',async()=>{
- for (const [type,title] of [['pipa','Caminhão pipa'], ['basculante','Caminhão basculante'], ['cavalo-mecanico','Cavalo mecânico']]) {
-  const truck=machine('TRUCK-'+type,{title,location:undefined});
+ for (const [type,title,location] of [['pipa','Caminhão pipa',undefined], ['basculante','Caminhão basculante','Localização a confirmar'], ['cavalo-mecanico','Cavalo mecânico','Localização sob consulta']]) {
+  const truck=machine('TRUCK-'+type,{title,location,state:'Estado a confirmar'});
   const nodes=await client([truck, {...truck,id:'PRIVATE-TRUCK',publicCode:'PRIVATE-TRUCK',privateOnly:true},
    {...truck,id:'SOLD-TRUCK',publicCode:'SOLD-TRUCK',situacao:'Vendida'}],{type});
   assert.equal(nodes['catalog-page-count'].textContent,'1 anúncio encontrado',type);
   assert.ok(nodes['catalog-page-list'].innerHTML.includes('TRUCK-'+type),type);
-  assert.match(nodes['catalog-page-list'].innerHTML,/Localização a confirmar/);
+  assert.doesNotMatch(nodes['catalog-page-list'].innerHTML,/(?:Localização|Estado) (?:a confirmar|sob consulta)| · <\/p>/);
+  assert.ok(nodes['catalog-page-list'].innerHTML.includes('<p class="catalog-page-code">'+truck.publicCode+'</p>'));
   assert.doesNotMatch(nodes['catalog-page-list'].innerHTML,/PRIVATE-TRUCK|SOLD-TRUCK/);
  }
  const empty=await client([],{type:''});
@@ -161,7 +162,7 @@ test('static category prices stay literal and every card remains inside the cata
  try{
   await mkdir(join(dir,'api'));await mkdir(join(dir,'maquinas'));
   const items=[
-   machine('SEM-PRECO',{title:'Retroescavadeira de teste',price:null,publicText:'Consulte a equipe.'}),
+   machine('SEM-PRECO',{title:'Retroescavadeira de teste',price:null,publicText:'Consulte a equipe.',location:'Localização a confirmar',state:'Estado a confirmar'}),
    machine('GOUL-341',{title:'RETROESCAVADEIRA • CAT 416E • 2015',price:250000,publicText:'VENDO\nR$250.000,00\n📍Pará'}),
    machine('GOUL-296',{title:'RETROESCAVADEIRA • CASE 580N • 2018',price:300000,publicText:'R$300.000,00'}),
    machine('GOUL-405',{title:'RETROESCAVADEIRA • JCB 3CX • 2025',price:355000,publicText:'Preço por unidade: R$355.000,00'})
@@ -173,6 +174,9 @@ test('static category prices stay literal and every card remains inside the cata
   const category=await readFile(join(dir,'maquinas/retroescavadeira.html'),'utf8');
   const grid=category.match(/<section id="catalog-page-list">([\s\S]*?)<\/section>/)?.[1];
   assert.ok(grid,'A grade do catálogo deve existir.');
+  assert.doesNotMatch(grid,/(?:Localização|Estado) (?:a confirmar|sob consulta)| · <\/p>/);
+  assert.ok(grid.includes('<p class="catalog-page-code">SEM-PRECO</p>'));
+  assert.match(grid,/Goiânia\/GO/);
   assert.equal((category.match(/<\/section>/g)||[]).length,1);
   assert.equal((grid.match(/<article\b/g)||[]).length,items.length);
   for(const item of items){assert.ok(grid.includes(item.publicCode),item.publicCode);assert.ok(grid.includes(item.publicText),item.publicText);}
@@ -180,6 +184,7 @@ test('static category prices stay literal and every card remains inside the cata
   assert.equal([...grid.matchAll(precoSobConsulta)].length, 1);
   const refreshed = await client(items, {type:'retroescavadeira'});
   assert.equal([...refreshed['catalog-page-list'].innerHTML.matchAll(precoSobConsulta)].length, 1);
+  assert.doesNotMatch(refreshed['catalog-page-list'].innerHTML,/(?:Localização|Estado) (?:a confirmar|sob consulta)| · <\/p>/);
   const unitario = /class="catalog-page-price">R\$\s*355\.000,00 por unidade<\/p>/;
   assert.match(grid, unitario);
   assert.match(refreshed['catalog-page-list'].innerHTML, unitario);
