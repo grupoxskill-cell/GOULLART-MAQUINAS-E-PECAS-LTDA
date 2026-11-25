@@ -36,7 +36,7 @@
   }
 
   function linkInteresse(m) {
-    const texto = `Tenho interesse na máquina: ${m.titulo} (ref. ${m.referencia}). Ainda está disponível?`;
+    const texto = `Tenho interesse na máquina: ${m.titulo} (ref. ${m.codigoVitrine || m.referencia}). Ainda está disponível?`;
     return `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(texto)}`;
   }
 
@@ -52,7 +52,7 @@
   function botaoInteresse(m) {
     const vendida = m.situacao === "Vendida";
     const a = el("a", "btn btn-primary machine-btn", vendida ? "Quero uma igual a essa" : "Tenho interesse");
-    a.href = vendida ? "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent("Quero uma máquina semelhante a " + m.titulo + " (" + m.referencia + ").") : linkInteresse(m);
+    a.href = vendida ? "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent("Quero uma máquina semelhante a " + m.titulo + " (" + (m.codigoVitrine || m.referencia) + ").") : linkInteresse(m);
     a.target = "_blank";
     a.rel = "noopener";
     a.dataset.interesse = "";
@@ -138,7 +138,7 @@
     .then((r) => { if (!r.ok) throw new Error("Catálogo indisponível"); return r.json(); })
     .then((dados) => {
       maquinas = dados
-        .map((m) => ({ ...m, valor: precoNum(m.preco), indice: normalizar([m.titulo, m.categoria, m.ano, m.referencia].join(" ")) }))
+        .map((m) => ({ ...m, valor: precoNum(m.preco), indice: normalizar([m.titulo, m.categoria, m.ano, m.referencia, m.codigoVitrine].join(" ")) }))
         .sort((a, b) => Number(Boolean(b.patio)) - Number(Boolean(a.patio)) || posicao(a.categoria) - posicao(b.categoria));
       if (qtd) qtd.textContent = String(maquinas.length);
       if (filtros) {

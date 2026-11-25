@@ -132,7 +132,7 @@ function routeCategory(){
  else if(c==='ofertas'){setFilter('maquinas',{offers:true});$('#sort').value='low';render();}
  else if(['maquinas','pecas','implementos','locacao'].includes(c))setFilter(c);
  else return;
- if(!area||pageParams.get('q')?.trim())revealCatalogResults();
+ if(!area||pageParams.get('q')?.trim()||pageParams.get('item'))revealCatalogResults();
 }
 window.addEventListener('hashchange',routeCategory);feed.then(routeCategory).catch(()=>{});
 
