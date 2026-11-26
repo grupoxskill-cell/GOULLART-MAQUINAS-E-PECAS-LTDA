@@ -17,7 +17,7 @@ function renderizar() {
   }
 }
 async function carregar() {
-  for (const [url,pdf,arquivo] of [["/adm/consulta-maquinas.json","/adm/catalogo-maquinas.pdf",false],["/consulta-maquinas.json","/catalogo-maquinas.pdf",true]]) {
+  for (const [url,pdf,arquivo] of [["./adm/consulta-maquinas.json","./adm/catalogo-maquinas.pdf",false],["./consulta-maquinas.json","./catalogo-maquinas.pdf",true]]) {
     try {
       const r = await fetch(url, {cache:"no-store"});
       if (!r.ok) continue;

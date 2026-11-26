@@ -1,7 +1,7 @@
 // A página estática também acompanha o estado conferido no ADM.
 (async () => {
   try {
-    const resposta = await fetch("/adm/consulta-maquinas.json", { cache: "no-store" });
+    const resposta = await fetch("../adm/consulta-maquinas.json", { cache: "no-store" });
     if (!resposta.ok) return;
     const ref = document.body.dataset.ref;
     const codigoPublico = document.body.dataset.publicCode || ref;

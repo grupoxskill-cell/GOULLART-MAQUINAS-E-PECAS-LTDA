@@ -2,7 +2,8 @@
 import test from 'node:test';
 import '../espelho/listing-policy.js';
 import assert from 'node:assert/strict';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { runInNewContext } from 'node:vm';
 import { comSlugs, semVendidas, paginaCatalogo, tiposDeMaquina, SITE } from '../lib/paginas.js';
 
 // `npm test` roda o build antes (pretest), então _site está sempre atual aqui.
@@ -91,4 +92,39 @@ test('fichas com preço sob consulta preservam a ressalva no compartilhamento e 
     assert.ok(!texto.includes('R$'), referencia);
     assert.ok(!produto.offers, referencia);
   }
+});
+
+test('URLs e seleção inicial do comparador preservam o subdiretório (DOM simulado)', async () => {
+  const base = 'https://exemplo.github.io/catalogo/';
+  const ficha = readdirSync('_site/maquina').find(nome => nome.includes('hyundai-r220lc-9-2020'));
+  assert.ok(ficha);
+  const html = readFileSync('_site/maquina/' + ficha, 'utf8');
+  const cta = html.match(/href="([^"]+)">Comparar máquinas ou simular troca/)[1];
+  const consulta = new URL(cta, base + 'maquina/' + ficha);
+  assert.equal(consulta.pathname, '/catalogo/consulta-maquinas.html');
+  assert.equal(new URL(cta, SITE + '/maquina/' + ficha).pathname, '/consulta-maquinas.html');
+  assert.equal(consulta.searchParams.get('ref'), 'GOUL-HY-2020-12000');
+  const pagina = readFileSync('_site/consulta-maquinas.html', 'utf8');
+  for (const [, ref] of pagina.matchAll(/(?:src|href)="([^"]+)"/g)) {
+    assert.ok(new URL(ref, consulta).href.startsWith(base), ref);
+  }
+  const estado = { primeira: { options: [], replaceChildren(...v) { this.options = v; } },
+    segunda: { options: [], replaceChildren(...v) { this.options = v; } }, aviso: {}, pdf: {},
+    troca: {}, resultado: {}, comparacao: { tBodies: [{ replaceChildren() {}, insertRow: () => ({ append() {}, insertCell: () => ({}) }) }] } };
+  for (const id of ['primeira', 'segunda', 'troca']) estado[id].addEventListener = () => {};
+  const pedidos = [];
+  const carregou = runInNewContext(readFileSync('_site/consulta-maquinas.js', 'utf8').replace('\ncarregar();', '\nconst testeCarregamento = carregar();') + '; testeCarregamento;', {
+    document: { getElementById: id => estado[id], createElement: () => ({}) },
+    location: consulta, URLSearchParams, Option: function(text, value) { this.value = value; },
+    fetch: async ref => {
+      const destino = new URL(ref, consulta);
+      pedidos.push(destino.pathname);
+      const ok = destino.pathname === '/catalogo/consulta-maquinas.json';
+      return { ok, json: () => [{ referencia: 'GOUL-HY-2020-12000' }] };
+    },
+  });
+  await carregou;
+  assert.ok(pedidos.includes('/catalogo/consulta-maquinas.json'));
+  assert.equal(estado.primeira.value, 'GOUL-HY-2020-12000');
+  assert.equal(new URL(estado.pdf.href, consulta).pathname, '/catalogo/catalogo-maquinas.pdf');
 });
