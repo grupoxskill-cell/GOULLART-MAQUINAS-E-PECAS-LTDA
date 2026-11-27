@@ -308,5 +308,170 @@
    "PEC-AGRES-ISO30-0.jpg"
   ],
   "colecao": "Goullart - Sua casa de Peças"
+ },
+ {
+  "id": "TEX-CHAP-STRASS-VERM",
+  "title": "Chapéu Country Rubi Strass – Goullart Texas",
+  "desc": "Chapéu country feminino em feltro vermelho, faixa de strass e aba bordada em strass. Brilho pra rodeio, show e festa. Consulte tamanhos.",
+  "price": 189.9,
+  "cond": "new",
+  "imgs": [
+   "TEX-CHAP-STRASS-VERM-0.jpg"
+  ],
+  "videos": [],
+  "colecao": "Goullart Texas - Moda",
+  "marca": "Goullart Texas"
+ },
+ {
+  "id": "TEX-CHAP-STRASS-PRETO",
+  "title": "Chapéu Country Noite Strass – Goullart Texas",
+  "desc": "Chapéu country em feltro preto, faixa de strass e aba bordada em strass. Elegante e chamativo. Consulte tamanhos.",
+  "price": 189.9,
+  "cond": "new",
+  "imgs": [
+   "TEX-CHAP-STRASS-PRETO-0.jpg"
+  ],
+  "videos": [],
+  "colecao": "Goullart Texas - Moda",
+  "marca": "Goullart Texas"
+ },
+ {
+  "id": "TEX-CHAP-PALHA-MARFIM",
+  "title": "Chapéu Texas Marfim – Goullart Texas",
+  "desc": "Chapéu country em palha marfim, aba larga, bandinha de couro arame farpado e logo Goullart Texas.",
+  "price": 219.9,
+  "cond": "new",
+  "imgs": [
+   "TEX-CHAP-PALHA-MARFIM-0.jpg",
+   "TEX-CHAP-PALHA-MARFIM-v.jpg"
+  ],
+  "videos": [
+   "TEX-CHAP-PALHA-MARFIM.mp4"
+  ],
+  "colecao": "Goullart Texas - Moda",
+  "marca": "Goullart Texas"
+ },
+ {
+  "id": "TEX-CHAP-PALHA-PRETO",
+  "title": "Chapéu Texas Black – Goullart Texas",
+  "desc": "Chapéu country em palha preta trançada, bandinha de couro com corda e logo Goullart Texas.",
+  "price": 219.9,
+  "cond": "new",
+  "imgs": [
+   "TEX-CHAP-PALHA-PRETO-v.jpg"
+  ],
+  "videos": [
+   "TEX-CHAP-PALHA-PRETO.mp4"
+  ],
+  "colecao": "Goullart Texas - Moda",
+  "marca": "Goullart Texas"
+ },
+ {
+  "id": "TEX-CHAP-PESADOS-BEGE",
+  "title": "Chapéu Peão de Obra Bege – Goullart Pesados",
+  "desc": "Chapéu country bege, aba larga, bandinha de couro e logo Goullart Pesados. Pra quem vive no canteiro.",
+  "price": 199.9,
+  "cond": "new",
+  "imgs": [
+   "TEX-CHAP-PESADOS-BEGE-v.jpg",
+   "TEX-CHAP-PESADOS-BEGE-1.jpg"
+  ],
+  "videos": [
+   "TEX-CHAP-PESADOS-BEGE.mp4"
+  ],
+  "colecao": "Goullart Texas - Moda",
+  "marca": "Goullart Texas"
+ },
+ {
+  "id": "TEX-CHAP-PESADOS-PRETO",
+  "title": "Chapéu Peão de Obra Preto – Goullart Pesados",
+  "desc": "Chapéu country preto trançado, bandinha de couro com corda e logo Goullart Pesados.",
+  "price": 199.9,
+  "cond": "new",
+  "imgs": [
+   "TEX-CHAP-PESADOS-PRETO-v.jpg"
+  ],
+  "videos": [
+   "TEX-CHAP-PESADOS-PRETO.mp4"
+  ],
+  "colecao": "Goullart Texas - Moda",
+  "marca": "Goullart Texas"
+ },
+ {
+  "id": "TEX-BOTA-CROCO",
+  "title": "Botina Croco Café – Goullart Pesados",
+  "desc": "Botina country cano curto, textura croco café, salto em madeira e logo Goullart gravado. Consulte numeração.",
+  "price": 349.9,
+  "cond": "new",
+  "imgs": [
+   "TEX-BOTA-CROCO-v.jpg"
+  ],
+  "videos": [
+   "TEX-BOTA-CROCO.mp4"
+  ],
+  "colecao": "Goullart Texas - Moda",
+  "marca": "Goullart Texas"
+ },
+ {
+  "id": "TEX-KIT-CHURRASCO",
+  "title": "Kit Churrasco do Chefe – Personalizado",
+  "desc": "Estojo de madeira com faca, garfo e chaira em inox, gravado a laser com logo Goullart e o seu nome.",
+  "price": 249.9,
+  "cond": "new",
+  "imgs": [
+   "TEX-KIT-CHURRASCO-v.jpg",
+   "TEX-KIT-CHURRASCO-2-v.jpg"
+  ],
+  "videos": [
+   "TEX-KIT-CHURRASCO.mp4",
+   "TEX-KIT-CHURRASCO-2.mp4"
+  ],
+  "colecao": "Goullart Texas - Moda",
+  "marca": "Goullart Texas"
+ },
+ {
+  "id": "TEX-BONE",
+  "title": "Boné Goullart Brasil",
+  "desc": "Boné aba curva com logo Goullart Pesados gravado. Amarelo, azul e outras cores. Consulte disponibilidade.",
+  "price": 79.9,
+  "cond": "new",
+  "imgs": [
+   "TEX-BONE-v.jpg"
+  ],
+  "videos": [
+   "TEX-BONE.mp4"
+  ],
+  "colecao": "Goullart Texas - Moda",
+  "marca": "Goullart Texas"
+ },
+ {
+  "id": "TEX-SUPORTE-CEL",
+  "title": "Suporte de Celular Goullart",
+  "desc": "Suporte de mesa para celular, preto, com logo Goullart Pesados. Ótimo brinde.",
+  "price": 39.9,
+  "cond": "new",
+  "imgs": [
+   "TEX-SUPORTE-CEL-v.jpg"
+  ],
+  "videos": [
+   "TEX-SUPORTE-CEL.mp4"
+  ],
+  "colecao": "Goullart Texas - Moda",
+  "marca": "Goullart Texas"
+ },
+ {
+  "id": "TEX-CADERNO",
+  "title": "Caderno Executivo Couro + Caneta – Goullart",
+  "desc": "Caderno capa em couro sintético com logo Goullart Pesados e caneta personalizada com nome.",
+  "price": 129.9,
+  "cond": "new",
+  "imgs": [
+   "TEX-CADERNO-v.jpg"
+  ],
+  "videos": [
+   "TEX-CADERNO.mp4"
+  ],
+  "colecao": "Goullart Texas - Moda",
+  "marca": "Goullart Texas"
  }
 ]
